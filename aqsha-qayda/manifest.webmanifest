@@ -1,13 +1,13 @@
 {
-  "name": "Ақша қайда",
-  "short_name": "Ақша қайда",
-  "description": "Шығындарды санаттап, ақша қайда кетіп жатқанын көрсететін жеке қаржы қолданбасы",
+  "name": "Үнем",
+  "short_name": "Үнем",
+  "description": "Ақша қайда кетіп жатқанын санаттап көрсететін жеке қаржы қолданбасы",
   "lang": "kk",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f4f6fb",
+  "background_color": "#2c59e6",
   "theme_color": "#2c59e6",
   "icons": [
     {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
