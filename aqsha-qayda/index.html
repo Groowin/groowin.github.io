@@ -271,6 +271,7 @@ textarea.field{resize:vertical;min-height:116px}
       <div id="accWrap"><span class="lbl" style="margin-top:14px">Түс</span>
       <div class="swrow" id="swrow"></div></div>
     </div>
+    <div class="card" id="nativeCard" hidden><h2>Автоматты оқу</h2><p class="note" id="nativeNote"></p><div class="btns" style="margin-top:12px"><button class="btn" id="nativeBtn" type="button">Рұқсат беру</button></div></div>
     <div class="card"><label class="lbl" for="sBudget">Айлық лимит, ₸</label><input class="field" id="sBudget" inputmode="numeric" placeholder="мысалы, 300000"><p class="note">0 болса, лимит өшірулі. Басты бетте қалған соманы көрсетеміз.</p><div class="btns" style="margin-top:12px"><button class="btn" data-act="saveBudget">Лимитті сақтау</button></div></div>
     <div class="card"><h2>Деректер</h2><p class="note" id="storeNote" style="margin:0 0 12px"></p><div class="btns"><button class="btn ghost" data-act="demoOn">Үлгі деректі қосу</button><button class="btn ghost" data-act="demoOff">Үлгіні өшіру</button></div></div>
     <div class="card"><h2>Үйренген санаттар</h2><p class="note" id="rulesNote" style="margin:0 0 12px"></p><div class="btns"><button class="btn ghost" data-act="clearRules">Тазалау</button></div></div>
@@ -634,7 +635,7 @@ function openSettings(){
   $('#storeNote').textContent=S.mode==='cloud'?'Жазбалар сіздің аккаунтыңызда сақталады және басқа құрылғыдан да ашылады. Басқа ешкім көре алмайды.':'Жазбалар тек осы құрылғыда, осы браузерде сақталады. Браузер деректерін тазаласаңыз, жазбалар жоғалады.';
   const n=Object.keys(S.settings.rules||{}).length;
   $('#rulesNote').textContent=n?('Санатын өзіңіз түзеткен '+n+' орын есте. Келесі жолы автоматты қойылады.'):'Санатты түзетсеңіз, келесіде сол орын автоматты сол санатқа түседі.';
-  openSheet('#sheetSet');
+  nativeUi();openSheet('#sheetSet');
 }
 
 /* ---------- demo ---------- */
@@ -856,7 +857,7 @@ function setupDictation(d){
 /* ---------- boot ---------- */
 function startLocal(){
   S.mode='local';S.txs=lsGet(LS_TX,[]);
-  S.settings=Object.assign({budget:0,rules:{}},lsGet(LS_SET,{}));S.ready=true;render();
+  S.settings=Object.assign({budget:0,rules:{}},lsGet(LS_SET,{}));S.ready=true;render();syncNative();
 }
 function subscribeCloud(){
   let first=true;
@@ -883,6 +884,32 @@ async function boot(){
   C.use('sample').then(f=>{if(f){S.sample=f;if(S.tab==='advice')render()}}).catch(()=>{});
   C.use('dictation').then(d=>{if(d)setupDictation(d)}).catch(()=>{});
 }
+
+/* ---------- Android bridge (қосымша ішінде ғана) ---------- */
+function syncNative(){
+  const N=window.UnemNative;if(!N||!S.ready||S.mode!=='local')return;
+  let list=[];try{list=JSON.parse(N.pending()||'[]')}catch(e){return}
+  if(!list.length)return;
+  const seen=new Set(S.txs.map(t=>t.nid).filter(Boolean));const done=[];let n=0;
+  list.forEach(it=>{
+    done.push(it.id);if(seen.has(it.id))return;
+    const line=((it.title||'')+' '+(it.text||'')).replace(/\s+/g,' ').trim();
+    const p=parseLine(line,S.settings.rules,it.ts);if(!p)return;
+    const t={id:uid(),nid:it.id,ts:p.ts,amount:p.amount,type:p.type,cat:p.cat,merchant:p.merchant,src:'push'};
+    if(p.bank)t.bank=p.bank;S.txs.push(t);n++;
+  });
+  lsSet(LS_TX,S.txs);try{N.ack(JSON.stringify(done))}catch(e){}
+  render();if(n)toast('Хабарламадан '+n+' жазба қосылды');
+}
+function nativeUi(){
+  const N=window.UnemNative,c=$('#nativeCard');if(!N||!c)return;
+  c.hidden=false;let on=false;try{on=N.listenerEnabled()}catch(e){}
+  $('#nativeNote').textContent=on?'Қосулы. Банк хабарламалары (₸ бар) автоматты түрде жазылады.':'Банк хабарламаларын оқу үшін телефонның баптауында Үнем-ге рұқсат беру керек.';
+  $('#nativeBtn').textContent=on?'Баптауды ашу':'Рұқсат беру';
+}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNative();nativeUi()}});
+setInterval(()=>{if(S.ready)syncNative()},4000);
 boot();
 })();
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
