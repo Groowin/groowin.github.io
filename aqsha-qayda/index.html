@@ -24,7 +24,7 @@
   --deep:#b84e18; --deep2:#6e2c0f; --good:#0f7a55; --good-soft:#dcf2e8; --bad:#c3362d; --bad-soft:#fbe4e1; --warn:#a96a00; --warn-soft:#fbefd5;
   --shadow:0 1px 2px rgba(20,28,60,.06),0 8px 24px rgba(20,28,60,.07);
   --scrim:rgba(14,18,32,.45);
-  --c-food:#e0702f; --c-transport:#2f8fd8; --c-subs:#8b5cf6; --c-telecom:#139e9e; --c-trade:#c99a12; --c-shop:#d6477d;
+  --c-food:#e0702f; --c-transport:#2f8fd8; --c-subs:#8b5cf6; --c-telecom:#139e9e; --c-shop:#d6477d;
   --c-health:#3a9b4a; --c-edu:#5b6bd6; --c-home:#8a6a4f; --c-fun:#bb4ccb; --c-transfer:#66779a; --c-other:#8f98ab; --c-income:#0f7a55;
   --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --font-num:'Manrope','Inter',system-ui,sans-serif;
@@ -35,7 +35,7 @@
     --accent:#f2a266; --accent-fg:#2a1507; --accent-soft:#3a2a1e;
     --deep:#a8481a; --deep2:#5a260e; --good:#4cc79a; --good-soft:#0f2d24; --bad:#ff8f86; --bad-soft:#38211f; --warn:#e8b04a; --warn-soft:#352a12;
     --shadow:0 1px 2px rgba(0,0,0,.4); --scrim:rgba(0,0,0,.6);
-    --c-food:#f2935d; --c-transport:#6cb4f0; --c-subs:#b296fa; --c-telecom:#4fd0d0; --c-trade:#e6c14f; --c-shop:#f07fa8;
+    --c-food:#f2935d; --c-transport:#6cb4f0; --c-subs:#b296fa; --c-telecom:#4fd0d0; --c-shop:#f07fa8;
     --c-health:#6fcb7d; --c-edu:#8e9bf0; --c-home:#c4a48a; --c-fun:#da86e6; --c-transfer:#92a2c4; --c-other:#a7b0c4; --c-income:#4cc79a;
     color-scheme:dark;
   }
@@ -45,7 +45,7 @@
   --accent:#f2a266; --accent-fg:#2a1507; --accent-soft:#3a2a1e;
   --deep:#a8481a; --deep2:#5a260e; --good:#4cc79a; --good-soft:#0f2d24; --bad:#ff8f86; --bad-soft:#38211f; --warn:#e8b04a; --warn-soft:#352a12;
   --shadow:0 1px 2px rgba(0,0,0,.4); --scrim:rgba(0,0,0,.6);
-  --c-food:#f2935d; --c-transport:#6cb4f0; --c-subs:#b296fa; --c-telecom:#4fd0d0; --c-trade:#e6c14f; --c-shop:#f07fa8;
+  --c-food:#f2935d; --c-transport:#6cb4f0; --c-subs:#b296fa; --c-telecom:#4fd0d0; --c-shop:#f07fa8;
   --c-health:#6fcb7d; --c-edu:#8e9bf0; --c-home:#c4a48a; --c-fun:#da86e6; --c-transfer:#92a2c4; --c-other:#a7b0c4; --c-income:#4cc79a;
   color-scheme:dark;
 }
@@ -124,6 +124,23 @@ button{cursor:pointer;background:none;border:0;padding:0}
 .dots{display:flex;justify-content:center;gap:6px;padding:2px 0 4px}
 .dots i{width:6px;height:6px;border-radius:99px;background:var(--line);transition:width .2s ease,background .2s ease}
 .dots i.on{width:18px;background:var(--accent)}
+#gate{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:var(--bg);padding:24px max(24px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px))}
+#gate[hidden]{display:none}
+.gate-in{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.gate-mark{width:84px;height:84px;border-radius:28px;display:grid;place-items:center;background:linear-gradient(150deg,#2c59e6,#1b2d8a);color:#fff;font-family:'Manrope','Inter',system-ui,sans-serif;font-weight:800;font-size:44px;box-shadow:var(--shadow);margin-bottom:8px}
+.gate-in h1{margin:0;font-size:32px;letter-spacing:-.02em}
+.gate-in p{margin:0 0 22px;color:var(--muted);font-size:15px}
+.gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 18px;border-radius:999px;background:#fff;color:#1f1f1f;border:1px solid #d6d9de;font-weight:600;font-size:16px}
+.glink{padding:12px;color:var(--muted);font-weight:600;font-size:14px}
+.acct{display:flex;align-items:center;gap:12px}
+.acct .av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:18px;flex:none}
+.acct .grow,.srow .grow{flex:1;min-width:0}
+.acct .t2,.srow .t2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srow{display:flex;align-items:center;gap:12px}
+.btn.sm{padding:8px 16px;font-size:14px}
+.addcard{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.addcard .field{flex:1;min-width:110px}
+.card>h2+.addcard{margin-top:0}
 #splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;overflow:hidden;background:linear-gradient(150deg,#2c59e6,#1b2d8a);color:#fff;text-align:center;transition:opacity .5s ease .12s}
 #splash .w{display:flex;justify-content:center;font-family:'Manrope','Inter',system-ui,sans-serif;font-weight:800;font-size:68px;letter-spacing:-.03em;line-height:1;transition:transform .75s cubic-bezier(.65,0,.9,.35)}
 #splash .w span{display:inline-block;opacity:0;transform:translateY(20px);animation:un-in .6s cubic-bezier(.2,.8,.2,1) forwards}
@@ -213,9 +230,18 @@ textarea.field{resize:vertical;min-height:116px}
 
 <div id="splash" aria-hidden="true"><div><div class="w"><span>Ү</span><span>н</span><span>е</span><span>м</span></div><small>ақша қайда кетті?</small></div></div>
 <script>(function(){var s=document.getElementById('splash');if(!s)return;try{if(sessionStorage.getItem('un.s')||matchMedia('(prefers-reduced-motion: reduce)').matches){s.remove();return}sessionStorage.setItem('un.s','1')}catch(e){}setTimeout(function(){s.classList.add('go')},1100);setTimeout(function(){s.remove()},1950)})();</script>
+<div id="gate" hidden>
+  <div class="gate-in">
+    <div class="gate-mark" aria-hidden="true">Ү</div>
+    <h1>Үнем</h1>
+    <p>Шығындарыңыз өздігінен есептеледі</p>
+    <button class="gbtn" data-act="cloudIn" type="button"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.5-.2-2.2H12v4.2h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.4z"/><path fill="#34A853" d="M12 24c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3C3.7 21.5 7.5 24 12 24z"/><path fill="#FBBC05" d="M5.6 14.7a7.200 7.200 0 0 1 0-4.600v-3H1.800a12 12 0 0 0 0 10.600l3.800-3z"/><path fill="#EA4335" d="M12 4.800c1.700 0 3.200.6 4.400 1.700l3.300-3.300A11.500 11.500 0 0 0 12 0C7.500 0 3.700 2.500 1.800 6.200l3.800 3C6.500 6.800 9 4.800 12 4.800z"/></svg>Google-мен кіру</button>
+    <button class="glink" id="gateSkip" type="button">Кірмей жалғастыру</button>
+  </div>
+</div>
 <div class="shell">
   <header class="top">
-    <div><h1>Үнем</h1><p class="sub" id="subline">Шығындарыңыз бір жерде</p></div>
+    <div><h1>Үнем</h1><p class="sub" id="subline">ақша қайда кетті?</p></div>
     <button class="icon-btn" data-act="settings" aria-label="Баптаулар"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   </header>
   <main id="app"><div class="skel" aria-busy="true"></div></main>
@@ -237,9 +263,8 @@ textarea.field{resize:vertical;min-height:116px}
   <div class="panel" role="dialog" aria-label="Шығын қосу">
     <div class="phead"><h2>Шығын қосу</h2><button class="icon-btn" data-act="close" aria-label="Жабу"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div>
-      <label class="lbl" for="addText">Банк хабарламасын қойыңыз немесе жазыңыз</label>
+      <label class="lbl" for="addText">Хабарлама немесе қысқа жазба</label>
       <textarea class="field" id="addText" placeholder="Покупка: 3 500 ₸, Magnum&#10;кофе 1500, такси 2200&#10;кеше базарға 8 мың"></textarea>
-      <p class="note">Бірнеше төлемді жаңа жолға немесе «;» арқылы жазуға болады. Санат пен сома автоматты танылады.</p>
     </div>
     <div class="btns">
       <button class="btn ghost mic" id="micBtn" data-act="mic" hidden>Дауыспен айту</button>
@@ -267,6 +292,16 @@ textarea.field{resize:vertical;min-height:116px}
   <div class="scrim" data-act="close"></div>
   <div class="panel" role="dialog" aria-label="Баптаулар">
     <div class="phead"><h2>Баптаулар</h2><button class="icon-btn" data-act="close" aria-label="Жабу"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="card acct" id="acctCard">
+      <div class="av" id="acctAv" aria-hidden="true">Ү</div>
+      <div class="grow"><div class="t1" id="acctName">Қонақ</div><div class="t2" id="acctSub">Осы телефонда</div></div>
+      <button class="btn sm" id="cloudBtn" data-act="cloudIn" type="button">Кіру</button>
+      <button class="btn ghost sm" id="cloudOutBtn" data-act="cloudOut" type="button" hidden>Шығу</button>
+    </div>
+    <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div></div>
+    <div class="card"><h2>Карталар</h2><div id="cardList"></div>
+      <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
+    <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
     <div class="card"><h2>Көрініс</h2>
       <span class="lbl">Стиль</span>
       <div class="seg" role="group" aria-label="Стиль" style="margin-bottom:14px"><button data-act="style" data-v="milk" aria-pressed="true">Сүт</button><button data-act="style" data-v="minimal" aria-pressed="false">Минимал</button><button data-act="style" data-v="sunset" aria-pressed="false">Күн батуы</button></div>
@@ -275,19 +310,10 @@ textarea.field{resize:vertical;min-height:116px}
       <div id="accWrap"><span class="lbl" style="margin-top:14px">Түс</span>
       <div class="swrow" id="swrow"></div></div>
     </div>
-    <div class="card"><h2>Карталар</h2><div id="cardList"></div>
-      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><select class="field" id="cBank" style="flex:1;min-width:120px"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" style="flex:1;min-width:120px"></div>
-      <div class="btns" style="margin-top:10px"><button class="btn" data-act="addCard">Картаны қосу</button></div><p class="note">Карта нөмірін толық сақтамаймыз: тек банк және соңғы 4 цифр.</p></div>
-    <div class="card"><h2>Резервтік көшірме</h2><p class="note">Деректер тек осы телефонда сақталады. Көшірмені жиі жасап, Telegram «Таңдаулыға» жіберіп қой.</p>
-      <textarea class="field" id="bkText" rows="3" placeholder="Көшірме осында шығады. Қалпына келтіру үшін мәтінді осында қойыңыз." style="margin-top:10px;font-size:12px"></textarea>
-      <div class="btns" style="margin-top:10px"><button class="btn" data-act="exportBk">Көшірме жасау</button><button class="btn ghost" data-act="importBk">Қалпына келтіру</button></div></div>
-    <div class="card" id="cloudCard" hidden><h2>Бұлт (Google)</h2><p class="note" id="cloudNote"></p>
-      <div class="btns" style="margin-top:12px"><button class="btn" id="cloudBtn" data-act="cloudIn" type="button">Google-мен кіру</button><button class="btn ghost" id="cloudSyncBtn" data-act="cloudSync" type="button" hidden>Қазір синхрондау</button><button class="btn ghost" id="cloudOutBtn" data-act="cloudOut" type="button" hidden>Шығу</button></div></div>
-    <div class="card" id="nativeCard" hidden><h2>Автоматты оқу</h2><p class="note" id="nativeNote"></p><div class="btns" style="margin-top:12px"><button class="btn" id="nativeBtn" type="button">Рұқсат беру</button></div></div>
-    <div class="card"><label class="lbl" for="sBudget">Айлық лимит, ₸</label><input class="field" id="sBudget" inputmode="numeric" placeholder="мысалы, 300000"><p class="note">0 болса, лимит өшірулі. Басты бетте қалған соманы көрсетеміз.</p><div class="btns" style="margin-top:12px"><button class="btn" data-act="saveBudget">Лимитті сақтау</button></div></div>
-    <div class="card"><h2>Деректер</h2><p class="note" id="storeNote" style="margin:0 0 12px"></p><div class="btns"><button class="btn ghost" data-act="demoOn">Үлгі деректі қосу</button><button class="btn ghost" data-act="demoOff">Үлгіні өшіру</button></div></div>
-    <div class="card"><h2>Үйренген санаттар</h2><p class="note" id="rulesNote" style="margin:0 0 12px"></p><div class="btns"><button class="btn ghost" data-act="clearRules">Тазалау</button></div></div>
-    <div class="card"><h2>Хабарламаны автоматты оқу</h2><p class="note" style="margin:0">Қазір хабарламаны қолмен қойып қосасыз. Android-та банк хабарламасын өзі оқитын бөлік келесі қадамда қосылады. iPhone-да Shortcuts арқылы жартылай автомат болады.</p></div>
+    <div class="card"><h2>Деректер</h2>
+      <div class="btns"><button class="btn ghost" data-act="exportBk" type="button">Көшірме жасау</button><button class="btn ghost" data-act="importBk" type="button">Қалпына келтіру</button><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button></div>
+      <textarea class="field" id="bkText" rows="3" hidden placeholder="Көшірме мәтінін осында қойыңыз" style="margin-top:10px;font-size:12px"></textarea>
+    </div>
   </div>
 </div>
 
@@ -300,7 +326,6 @@ const CATS={
   transport:{n:'Көлік',i:'M5 16v-5l2-5h10l2 5v5M5 16h14M5 16v2M19 16v2M8 13h.01M16 13h.01'},
   subs:{n:'Жазылымдар',i:'M20 12a8 8 0 1 1-2.5-5.8M20 4v4h-4'},
   telecom:{n:'Байланыс',i:'M5 12a10 10 0 0 1 14 0M8 15a6 6 0 0 1 8 0M12 19h.01'},
-  trade:{n:'Трейдинг',i:'M4 19V5M4 19h16M8 15l3-4 3 2 4-6'},
   shop:{n:'Сатып алу',i:'M6 8h12l-1 12H7L6 8zM9 8a3 3 0 0 1 6 0'},
   health:{n:'Денсаулық',i:'M12 5v14M5 12h14'},
   edu:{n:'Білім',i:'M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zM5 17a3 3 0 0 1 3-3h10'},
@@ -312,7 +337,6 @@ const CATS={
 };
 const CAT_KEYS=Object.keys(CATS);
 const RULES=[
-  ['trade',/binance|bybit|okx|bitget|mexc|kucoin|gate\.io|tradingview|трейд|trading|usdt|crypto|крипто|ftmo|forex|форекс|exness/],
   ['subs',/netflix|spotify|youtube|apple\.com|itunes|icloud|google ?(one|play|storage)|chatgpt|openai|claude|anthropic|подписк|жазылым|okko|kinopoisk|кинопоиск|ivi\b/],
   ['telecom',/beeline|билайн|kcell|activ\b|tele2|altel|мобильн|байланыс|интернет|megaline|казахтелеком|kazakhtelecom/],
   ['transport',/yandex ?go|яндекс ?go|яндекс ?такси|indrive|indriver|такси|taxi|бензин|азс|helios|sinooil|qazaq ?oil|парковк|автобус|onay|жол ақы|көлік|проезд|мойка|шиномонтаж|техосмотр|заправк/],
@@ -408,7 +432,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const MONTHS=['Қаңтар','Ақпан','Наурыз','Сәуір','Мамыр','Маусым','Шілде','Тамыз','Қыркүйек','Қазан','Қараша','Желтоқсан'];
 const MONTHS_GEN=['қаңтар','ақпан','наурыз','сәуір','мамыр','маусым','шілде','тамыз','қыркүйек','қазан','қараша','желтоқсан'];
 const WD=['жексенбі','дүйсенбі','сейсенбі','сәрсенбі','бейсенбі','жұма','сенбі'];
-const SRC={push:'Хабарлама',text:'Жазба',manual:'Қолмен',demo:'Үлгі'};
+const SRC={push:'Хабарлама',text:'Жазба',manual:'Қолмен'};
 const nf=new Intl.NumberFormat('ru-RU');
 const money=n=>nf.format(Math.round(n))+' ₸';
 const DAY=864e5;
@@ -516,7 +540,7 @@ function cardFor(t){
 }
 function bankCards(){
   const cs=S.settings.cards||[];
-  if(!cs.length)return '<section class="card"><h2>Карталар</h2><p class="note">Картаңызды қосыңыз: банк және соңғы 4 цифр. Хабарламадағы төлем сол картаға автоматты тіркеледі.</p><div class="btns" style="margin-top:10px"><button class="btn" data-act="settings">Карта қосу</button></div></section>';
+  if(!cs.length)return '<section class="card"><h2>Карталар</h2><p class="note">Банк және соңғы 4 цифр жеткілікті.</p><div class="btns" style="margin-top:10px"><button class="btn" data-act="settings">Карта қосу</button></div></section>';
   const html=cs.map(c=>{
     const B=BANKS[c.bank]||BANKS.Other;
     const mine=S.txs.filter(t=>cardFor(t)===c);
@@ -528,11 +552,11 @@ function bankCards(){
 }
 function drawCards(){
   const box=$('#cardList');if(!box)return;const cs=S.settings.cards||[];
-  box.innerHTML=cs.length?cs.map(c=>{const B=BANKS[c.bank]||BANKS.Other;return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0"><i style="width:14px;height:14px;border-radius:5px;background:'+B.a+'"></i><div class="grow" style="flex:1">'+esc(c.name||B.n)+(c.last4?' <span class="t2">••'+esc(c.last4)+'</span>':'')+'</div><button class="btn ghost" data-act="delCard" data-id="'+esc(c.id)+'" aria-label="Өшіру" style="padding:6px 12px">Өшіру</button></div>'}).join(''):'<p class="note">Карта әлі қосылмаған.</p>';
+  box.innerHTML=cs.length?cs.map(c=>{const B=BANKS[c.bank]||BANKS.Other;return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0"><i style="width:14px;height:14px;border-radius:5px;background:'+B.a+'"></i><div class="grow" style="flex:1">'+esc(c.name||B.n)+(c.last4?' <span class="t2">••'+esc(c.last4)+'</span>':'')+'</div><button class="btn ghost" data-act="delCard" data-id="'+esc(c.id)+'" aria-label="Өшіру" style="padding:6px 12px">Өшіру</button></div>'}).join(''):'';
 }
 function viewHome(){
   if(!S.txs.length){
-    return '<section class="card empty"><h2>Әзірге жазба жоқ</h2><p>Банк хабарламасын қойыңыз немесе «кофе 1500» деп жазыңыз. Қалғанын өзіміз санаттап, есеп жасаймыз.</p><div class="btns" style="justify-content:center"><button class="btn" data-act="add">Алғашқы шығынды қосу</button><button class="btn ghost" data-act="demoOn">Үлгі деректермен көру</button></div></section>';
+    return '<section class="card empty"><h2>Әзірге жазба жоқ</h2><p>«Кофе 1500» деп жазыңыз немесе банк хабарламасын қойыңыз.</p><div class="btns" style="justify-content:center"><button class="btn" data-act="add">Алғашқы шығынды қосу</button></div></section>';
   }
   const y=S.y,m=S.m,out=outIn(y,m),total=sumOf(out),cur=isCurrent(y,m);
   const inc=sumOf(S.txs.filter(t=>t.type==='in'&&!OWN.has(t.id)&&inMonth(t.ts,y,m)));
@@ -613,6 +637,7 @@ function viewAdvice(){
   return h;
 }
 function render(){
+  if(S.txs.some(t=>t.demo||!CATS[t.cat])){S.txs=S.txs.filter(t=>!t.demo);S.txs.forEach(t=>{if(!CATS[t.cat])t.cat='other'});if(S.mode==='local')lsSet(LS_TX,S.txs)}
   reconcile();
   const app=$('#app');
   $$('.tabs button').forEach(b=>{if(b.dataset.tab===S.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
@@ -620,7 +645,7 @@ function render(){
   const keepFocus=document.activeElement&&document.activeElement.id;
   app.innerHTML=S.tab==='home'?viewHome():S.tab==='history'?viewHistory():viewAdvice();
   if(keepFocus==='searchBox'){const el=$('#searchBox');if(el){el.focus();const v=el.value;el.setSelectionRange(v.length,v.length)}}
-  $('#subline').textContent=S.mode==='cloud'?'Деректер аккаунтыңызда сақталады':S.mode==='local'?'Деректер осы браузерде сақталады':'Шығындарыңыз бір жерде';
+  
 }
 
 /* ---------- sheets ---------- */
@@ -688,44 +713,7 @@ async function saveEdit(){
 function openSettings(){
   applyLook();
   $('#sBudget').value=S.settings.budget||'';
-  $('#storeNote').textContent=S.mode==='cloud'?'Жазбалар сіздің аккаунтыңызда сақталады және басқа құрылғыдан да ашылады. Басқа ешкім көре алмайды.':'Жазбалар тек осы құрылғыда, осы браузерде сақталады. Браузер деректерін тазаласаңыз, жазбалар жоғалады.';
-  const n=Object.keys(S.settings.rules||{}).length;
-  $('#rulesNote').textContent=n?('Санатын өзіңіз түзеткен '+n+' орын есте. Келесі жолы автоматты қойылады.'):'Санатты түзетсеңіз, келесіде сол орын автоматты сол санатқа түседі.';
   drawCards();nativeUi();fbUi();if(fbEnabled()&&!FB.app)fbLoad();openSheet('#sheetSet');
-}
-
-/* ---------- demo ---------- */
-function makeDemo(){
-  let seed=11;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
-  const pick=a=>a[Math.floor(rnd()*a.length)];const between=(a,b)=>Math.round((a+rnd()*(b-a))/50)*50;
-  const M=[['Magnum',2000,9000,'food'],['Small',1500,6000,'food'],['Coffee Boom',1400,2600,'food'],['Dodo Pizza',3500,6500,'food'],['Wolt',3000,8000,'food'],['Yandex Go',900,2600,'transport'],['inDrive',800,2400,'transport'],['Helios АЗС',5000,12000,'transport'],['Binance комиссия',1500,7000,'trade'],['Europharma',1500,7000,'health'],['Sulpak',15000,45000,'shop'],['Kinopark',2500,4500,'fun'],['Кітапхана',1200,4000,'edu']];
-  const w=[0,0,0,1,1,2,2,2,5,5,6,3,3,4,5,8,9,10,12];
-  const out=[];const base=startOfDay(Date.now());
-  for(let d=0;d<48;d++){
-    const ts0=base-d*DAY;const dd=new Date(ts0);const n=Math.floor(rnd()*3);
-    for(let k=0;k<n;k++){const e=M[w[Math.floor(rnd()*w.length)]%M.length];out.push({ts:ts0+(9+Math.floor(rnd()*12))*36e5,amount:between(e[1],e[2]),type:'out',cat:e[3],merchant:e[0]})}
-    const day=dd.getDate();
-    if(day===5)out.push({ts:ts0+12*36e5,amount:4300,type:'out',cat:'subs',merchant:'Netflix'});
-    if(day===12)out.push({ts:ts0+13*36e5,amount:9000,type:'out',cat:'subs',merchant:'ChatGPT'});
-    if(day===1)out.push({ts:ts0+10*36e5,amount:3000,type:'out',cat:'telecom',merchant:'Beeline'});
-    if(day===3)out.push({ts:ts0+11*36e5,amount:120000,type:'in',cat:'income',merchant:'Аударым келді'});
-  }
-  return out.filter(t=>t.ts<=Date.now()).map(t=>Object.assign({id:uid(),src:'demo',demo:true},t));
-}
-async function demoOn(){
-  if(S.txs.some(t=>t.demo)){toast('Үлгі деректер бұрын қосылған');return}
-  closeSheets();toast('Үлгі деректер қосылып жатыр…');
-  const d=makeDemo();
-  if(S.mode==='cloud'){for(const t of d){await saveTx(t)}}
-  else{S.txs=S.txs.concat(d);lsSet(LS_TX,S.txs);render()}
-  toast('Үлгі деректер қосылды. Баптаудан өшіруге болады.');
-}
-async function demoOff(){
-  const ids=S.txs.filter(t=>t.demo).map(t=>t.id);if(!ids.length){toast('Үлгі деректер жоқ');return}
-  closeSheets();
-  if(S.mode==='cloud'){for(const id of ids)await removeTx(id)}
-  else{S.txs=S.txs.filter(t=>!t.demo);lsSet(LS_TX,S.txs);render()}
-  toast('Үлгі деректер өшірілді');
 }
 
 /* ---------- AI ---------- */
@@ -863,15 +851,15 @@ document.addEventListener('click',e=>{
     case 'etype':setEditType(b.dataset.v);break;
     case 'saveEdit':saveEdit();break;
     case 'delEdit':{const id=S.edit&&S.edit.id;if(id){removeTx(id).then(ok=>{if(ok){closeSheets();toast('Жазба өшірілді')}})}break}
-    case 'saveBudget':{const v=parseFloat(String($('#sBudget').value).replace(/\s/g,'').replace(',','.'));S.settings=Object.assign({},S.settings,{budget:v>0?Math.round(v):0});saveSettings().then(()=>{closeSheets();toast(S.settings.budget?'Лимит сақталды':'Лимит өшірілді')});break}
+    case 'saveBudget':{const v=parseFloat(String($('#sBudget').value).replace(/\s/g,'').replace(',','.'));S.settings=Object.assign({},S.settings,{budget:v>0?Math.round(v):0});saveSettings().then(()=>{toast(S.settings.budget?'Лимит сақталды':'Лимит өшірілді')});break}
     case 'addCard':{const bank=$('#cBank').value,l4=String($('#cLast').value||'').replace(/\D/g,'').slice(0,4);const cs=(S.settings.cards||[]).slice();if(cs.some(c=>c.bank===bank&&c.last4===l4)){toast('Бұл карта бар');break}cs.push({id:uid(),bank,last4:l4});S.settings=Object.assign({},S.settings,{cards:cs});$('#cLast').value='';saveSettings().then(()=>{drawCards();toast('Карта қосылды')});break}
     case 'delCard':{const cs=(S.settings.cards||[]).filter(c=>c.id!==b.dataset.id);S.settings=Object.assign({},S.settings,{cards:cs});saveSettings().then(()=>drawCards());break}
-    case 'exportBk':{const d={v:1,app:'unem',at:Date.now(),txs:S.txs.filter(t=>!t.demo),settings:S.settings};const txt=JSON.stringify(d);$('#bkText').value=txt;
+    case 'exportBk':{const d={v:1,app:'unem',at:Date.now(),txs:S.txs,settings:S.settings};const txt=JSON.stringify(d);$('#bkText').hidden=false;$('#bkText').value=txt;
       let ok=false;try{if(window.UnemNative&&window.UnemNative.share){window.UnemNative.share(txt);ok=true}}catch(e){}
       if(ok){toast('Көшірме: бөлісу терезесі ашылды');break}
       const sel=()=>{const a=$('#bkText');a.focus();a.select();toast('Мәтінді таңдадым, көшіріп алыңыз')};
       if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast('Көшірме алмасу буферіне көшірілді ('+d.txs.length+' жазба)')).catch(sel)}else sel();break}
-    case 'importBk':{let d;try{d=JSON.parse($('#bkText').value.trim())}catch(e){toast('Мәтін дұрыс емес');break}
+    case 'importBk':{if($('#bkText').hidden){$('#bkText').hidden=false;$('#bkText').focus();toast('Көшірме мәтінін қойып, қайта басыңыз');break}let d;try{d=JSON.parse($('#bkText').value.trim())}catch(e){toast('Мәтін дұрыс емес');break}
       if(!d||d.app!=='unem'||!Array.isArray(d.txs)){toast('Бұл Үнем көшірмесі емес');break}
       const have=new Set(S.txs.map(t=>t.id));const add=d.txs.filter(t=>t&&t.id&&Number(t.amount)>0&&Number(t.ts)>0&&!have.has(t.id));
       const st=d.settings||{};const cards=(S.settings.cards||[]).slice();(st.cards||[]).forEach(c=>{if(c&&c.id&&!cards.some(x=>x.id===c.id))cards.push(c)});
@@ -880,8 +868,6 @@ document.addEventListener('click',e=>{
     case 'cloudIn':fbSignIn();break;
     case 'cloudSync':fbSync(true);break;
     case 'cloudOut':fbOut();break;
-    case 'demoOn':demoOn();break;
-    case 'demoOff':demoOff();break;
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
     case 'period':S.adv.period=b.dataset.v;S.adv.text='';S.adv.msg='';S.adv.err='';render();break;
     case 'advice':runAdvice();break;
@@ -928,7 +914,7 @@ function setupDictation(d){
 
 /* ---------- boot ---------- */
 function startLocal(){
-  S.mode='local';S.txs=lsGet(LS_TX,[]);
+  S.mode='local';gateUi();S.txs=lsGet(LS_TX,[]);
   S.settings=Object.assign({budget:0,rules:{},cards:[]},lsGet(LS_SET,{}));S.ready=true;render();syncNative();
   if(!window.claude&&lsGet(LS_FB,{}).on)fbLoad();
 }
@@ -980,11 +966,20 @@ function fbLoad(){
   return FB.loading;
 }
 function fbUi(){
-  const c=$('#cloudCard');if(!c)return;
+  const c=$('#acctCard');if(!c)return;
   if(!fbEnabled()){c.hidden=true;return}
   c.hidden=false;const u=FB.user;
-  $('#cloudNote').textContent=u?('Кірдіңіз: '+(u.email||'Google')+'. Деректер Google аккаунтыңызға байланып бұлтта сақталады, басқа телефонда да қайтады.'+(FB.at?' Соңғы синхрондау: '+new Date(FB.at).toLocaleTimeString('kk-KZ',{hour:'2-digit',minute:'2-digit'})+'.':'')):'Кірсеңіз, деректер бұлтқа сақталады: қосымшаны қайта орнатсаңыз немесе телефонды ауыстырсаңыз, бәрі қайтады.';
-  $('#cloudBtn').hidden=!!u;$('#cloudSyncBtn').hidden=!u;$('#cloudOutBtn').hidden=!u;
+  $('#acctName').textContent=u?(u.displayName||u.email||'Google'):'Қонақ';
+  $('#acctSub').textContent=u?(u.email||'Бұлтқа сақталады'):'Осы телефонда';
+  $('#acctAv').textContent=((u&&(u.displayName||u.email))||'Қ').trim().charAt(0).toUpperCase();
+  $('#cloudBtn').hidden=!!u;$('#cloudOutBtn').hidden=!u;
+  gateUi();
+}
+function gateUi(){
+  const g=$('#gate');if(!g)return;
+  let skip=false;try{skip=!!localStorage.getItem('aq.v1.skip')}catch(e){}
+  const show=fbEnabled()&&!FB.user&&!skip&&!lsGet(LS_FB,{}).on;
+  g.hidden=!show;
 }
 function fbQueue(){if(!FB.user)return;clearTimeout(FB.timer);FB.timer=setTimeout(()=>fbSync(),1500)}
 function fbTomb(id){const d=lsGet(LS_DEL,{});d[id]=Date.now();lsSet(LS_DEL,d);fbQueue()}
@@ -1062,10 +1057,10 @@ function syncNative(){
 function nativeUi(){
   const N=window.UnemNative,c=$('#nativeCard');if(!N||!c)return;
   c.hidden=false;let on=false;try{on=N.listenerEnabled()}catch(e){}
-  $('#nativeNote').textContent=on?'Қосулы. Банк хабарламалары (₸ бар) автоматты түрде жазылады.':'Банк хабарламаларын оқу үшін телефонның баптауында Үнем-ге рұқсат беру керек.';
-  $('#nativeBtn').textContent=on?'Баптауды ашу':'Рұқсат беру';
+  $('#nativeNote').textContent=on?'Қосулы':'Өшірулі';
+  $('#nativeBtn').textContent=on?'Баптау':'Қосу';
 }
-document.addEventListener('click',e=>{if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='gateSkip'){try{localStorage.setItem('aq.v1.skip','1')}catch(x){}gateUi();return}if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNative();nativeUi();fbSync()}});
 setInterval(()=>{if(!document.hidden)fbSync()},60000);
 setInterval(()=>{if(S.ready)syncNative()},4000);
