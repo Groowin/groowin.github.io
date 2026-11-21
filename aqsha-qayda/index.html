@@ -576,7 +576,7 @@ function viewHome(){
    +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+insHtml;
 }
 function rowHtml(t){
-  return '<button class="row-btn" data-act="edit" data-id="'+esc(t.id)+'" style="--cc:var(--c-'+t.cat+')">'+dot(t.cat)+'<div class="grow"><div class="t1">'+esc(t.merchant)+'</div><div class="t2">'+CATS[t.cat].n+' · '+(OWN.has(t.id)?'Өз аударым':(SRC[t.src]||'Қолмен'))+(t.bank?' · '+esc(t.bank):'')+(t.card?' ••'+esc(t.card):'')+'</div></div><div class="amt num '+(t.type==='in'?'in':'')+'">'+(t.type==='in'?'+':'−')+money(t.amount)+'</div></button>';
+  return '<button class="row-btn" data-act="edit" data-id="'+esc(t.id)+'" style="--cc:var(--c-'+t.cat+')">'+dot(t.cat)+'<div class="grow"><div class="t1">'+esc(t.merchant)+'</div><div class="t2">'+CATS[t.cat].n+' · '+(OWN.has(t.id)?'Өз аударым':(t.pay==='nfc'?'NFC':(SRC[t.src]||'Қолмен')))+(t.bank?' · '+esc(t.bank):'')+(t.card?' ••'+esc(t.card):'')+'</div></div><div class="amt num '+(t.type==='in'?'in':'')+'">'+(t.type==='in'?'+':'−')+money(t.amount)+'</div></button>';
 }
 function historyList(){
   let l=S.txs.filter(t=>inMonth(t.ts,S.y,S.m));
@@ -1044,7 +1044,16 @@ function syncNative(){
     done.push(it.id);if(seen.has(it.id))return;
     const line=((it.title||'')+' '+(it.text||'')).replace(/\s+/g,' ').trim();
     const p=parseLine(line,S.settings.rules,it.ts);if(!p)return;
+    const isW=/walletnfcrel|google\.android\.apps\.wallet|com\.google\.android\.gms/i.test(it.pkg||'');
+    const twin=p.type==='out'?S.txs.find(x=>x.type==='out'&&x.amount===p.amount&&Math.abs(x.ts-p.ts)<=5*60*1000&&x.src==='push'&&!!x.wallet!==isW):null;
+    if(twin){
+      twin.pay='nfc';
+      if(isW){twin.nid2=it.id}
+      else{twin.merchant=p.merchant||twin.merchant;if(p.cat&&p.cat!=='other')twin.cat=p.cat;if(p.bank)twin.bank=p.bank;if(p.card)twin.card=p.card;if(p.bal!=null)twin.bal=p.bal;twin.wallet=false;twin.nid=it.id;twin.ts=p.ts}
+      twin.mt=Date.now();n++;return;
+    }
     const t={id:uid(),nid:it.id,ts:p.ts,amount:p.amount,type:p.type,cat:p.cat,merchant:p.merchant,src:'push'};
+    if(isW){t.wallet=true;t.pay='nfc'}
     const tb=bankOfName(it.title)||(/kaspi/i.test(it.pkg||'')?'Kaspi':'');if(tb||p.bank)t.bank=tb||p.bank;if(p.card)t.card=p.card;if(p.bal!=null)t.bal=p.bal;S.txs.push(t);n++;
   });
   lsSet(LS_TX,S.txs);if(n)fbQueue();try{N.ack(JSON.stringify(done))}catch(e){}
