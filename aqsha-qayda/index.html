@@ -278,6 +278,9 @@ textarea.field{resize:vertical;min-height:116px}
     <div class="card"><h2>Карталар</h2><div id="cardList"></div>
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><select class="field" id="cBank" style="flex:1;min-width:120px"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" style="flex:1;min-width:120px"></div>
       <div class="btns" style="margin-top:10px"><button class="btn" data-act="addCard">Картаны қосу</button></div><p class="note">Карта нөмірін толық сақтамаймыз: тек банк және соңғы 4 цифр.</p></div>
+    <div class="card"><h2>Резервтік көшірме</h2><p class="note">Деректер тек осы телефонда сақталады. Көшірмені жиі жасап, Telegram «Таңдаулыға» жіберіп қой.</p>
+      <textarea class="field" id="bkText" rows="3" placeholder="Көшірме осында шығады. Қалпына келтіру үшін мәтінді осында қойыңыз." style="margin-top:10px;font-size:12px"></textarea>
+      <div class="btns" style="margin-top:10px"><button class="btn" data-act="exportBk">Көшірме жасау</button><button class="btn ghost" data-act="importBk">Қалпына келтіру</button></div></div>
     <div class="card" id="nativeCard" hidden><h2>Автоматты оқу</h2><p class="note" id="nativeNote"></p><div class="btns" style="margin-top:12px"><button class="btn" id="nativeBtn" type="button">Рұқсат беру</button></div></div>
     <div class="card"><label class="lbl" for="sBudget">Айлық лимит, ₸</label><input class="field" id="sBudget" inputmode="numeric" placeholder="мысалы, 300000"><p class="note">0 болса, лимит өшірулі. Басты бетте қалған соманы көрсетеміз.</p><div class="btns" style="margin-top:12px"><button class="btn" data-act="saveBudget">Лимитті сақтау</button></div></div>
     <div class="card"><h2>Деректер</h2><p class="note" id="storeNote" style="margin:0 0 12px"></p><div class="btns"><button class="btn ghost" data-act="demoOn">Үлгі деректі қосу</button><button class="btn ghost" data-act="demoOff">Үлгіні өшіру</button></div></div>
@@ -861,6 +864,17 @@ document.addEventListener('click',e=>{
     case 'saveBudget':{const v=parseFloat(String($('#sBudget').value).replace(/\s/g,'').replace(',','.'));S.settings=Object.assign({},S.settings,{budget:v>0?Math.round(v):0});saveSettings().then(()=>{closeSheets();toast(S.settings.budget?'Лимит сақталды':'Лимит өшірілді')});break}
     case 'addCard':{const bank=$('#cBank').value,l4=String($('#cLast').value||'').replace(/\D/g,'').slice(0,4);const cs=(S.settings.cards||[]).slice();if(cs.some(c=>c.bank===bank&&c.last4===l4)){toast('Бұл карта бар');break}cs.push({id:uid(),bank,last4:l4});S.settings=Object.assign({},S.settings,{cards:cs});$('#cLast').value='';saveSettings().then(()=>{drawCards();toast('Карта қосылды')});break}
     case 'delCard':{const cs=(S.settings.cards||[]).filter(c=>c.id!==b.dataset.id);S.settings=Object.assign({},S.settings,{cards:cs});saveSettings().then(()=>drawCards());break}
+    case 'exportBk':{const d={v:1,app:'unem',at:Date.now(),txs:S.txs.filter(t=>!t.demo),settings:S.settings};const txt=JSON.stringify(d);$('#bkText').value=txt;
+      let ok=false;try{if(window.UnemNative&&window.UnemNative.share){window.UnemNative.share(txt);ok=true}}catch(e){}
+      if(ok){toast('Көшірме: бөлісу терезесі ашылды');break}
+      const sel=()=>{const a=$('#bkText');a.focus();a.select();toast('Мәтінді таңдадым, көшіріп алыңыз')};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast('Көшірме алмасу буферіне көшірілді ('+d.txs.length+' жазба)')).catch(sel)}else sel();break}
+    case 'importBk':{let d;try{d=JSON.parse($('#bkText').value.trim())}catch(e){toast('Мәтін дұрыс емес');break}
+      if(!d||d.app!=='unem'||!Array.isArray(d.txs)){toast('Бұл Үнем көшірмесі емес');break}
+      const have=new Set(S.txs.map(t=>t.id));const add=d.txs.filter(t=>t&&t.id&&Number(t.amount)>0&&Number(t.ts)>0&&!have.has(t.id));
+      const st=d.settings||{};const cards=(S.settings.cards||[]).slice();(st.cards||[]).forEach(c=>{if(c&&c.id&&!cards.some(x=>x.id===c.id))cards.push(c)});
+      S.settings=Object.assign({},S.settings,{cards,budget:S.settings.budget||Number(st.budget)||0,rules:Object.assign({},st.rules||{},S.settings.rules||{})});
+      (async()=>{if(S.mode==='cloud'){for(const t of add)await saveTx(t)}else{S.txs=S.txs.concat(add);lsSet(LS_TX,S.txs)}await saveSettings();drawCards();toast(add.length+' жазба қалпына келтірілді')})();break}
     case 'demoOn':demoOn();break;
     case 'demoOff':demoOff();break;
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
