@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="kk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Үнем: кіру</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;box-sizing:border-box;background:#f4eee4;color:#2d2620;font:16px/1.5 system-ui,sans-serif;text-align:center}
+h1{margin:0 0 6px}p{max-width:320px;margin:8px auto;color:#655b4f}
+button,a.b{font:inherit;font-weight:600;padding:14px 24px;border:0;border-radius:14px;background:#a8441a;color:#fff;text-decoration:none;display:inline-block;margin-top:14px;cursor:pointer}
+@media(prefers-color-scheme:dark){body{background:#1a1613;color:#f4ede4}p{color:#aa9f92}button,a.b{background:#f2a266;color:#2a1507}}</style></head>
+<body><div><h1>Үнем</h1><p id="m">Google аккаунтыңызбен кіріңіз. Кіргеннен кейін қосымшаға ораласыз.</p>
+<button id="b" type="button">Google-мен кіру</button><a class="b" id="back" hidden>Қосымшаға оралу</a></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyALpHSoRYlM_L_Elsus6z4x3aqrSJ-31OI",authDomain:"jarvis-jxbujh.firebaseapp.com",projectId:"jarvis-jxbujh",appId:"1:127999750841:web:1a81b5ca4e358599766168"});
+var m=document.getElementById('m'),b=document.getElementById('b'),back=document.getElementById('back');
+b.onclick=function(){
+  b.disabled=true;
+  firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(function(r){
+    var t=r.credential&&r.credential.idToken;
+    if(!t){m.textContent='Токен алынбады. Қайта көріңіз.';b.disabled=false;return}
+    var url='unem://auth#'+encodeURIComponent(t);
+    back.href=url;back.hidden=false;b.hidden=true;
+    m.textContent='Кірдіңіз. Қосымша өзі ашылмаса, төмендегі батырманы басыңыз.';
+    location.href=url;
+  }).catch(function(e){m.textContent='Кіру сәтсіз: '+(e.code||e.message);b.disabled=false});
+};
+</script></body></html>

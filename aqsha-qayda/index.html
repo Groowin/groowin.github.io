@@ -281,6 +281,8 @@ textarea.field{resize:vertical;min-height:116px}
     <div class="card"><h2>Резервтік көшірме</h2><p class="note">Деректер тек осы телефонда сақталады. Көшірмені жиі жасап, Telegram «Таңдаулыға» жіберіп қой.</p>
       <textarea class="field" id="bkText" rows="3" placeholder="Көшірме осында шығады. Қалпына келтіру үшін мәтінді осында қойыңыз." style="margin-top:10px;font-size:12px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn" data-act="exportBk">Көшірме жасау</button><button class="btn ghost" data-act="importBk">Қалпына келтіру</button></div></div>
+    <div class="card" id="cloudCard" hidden><h2>Бұлт (Google)</h2><p class="note" id="cloudNote"></p>
+      <div class="btns" style="margin-top:12px"><button class="btn" id="cloudBtn" data-act="cloudIn" type="button">Google-мен кіру</button><button class="btn ghost" id="cloudSyncBtn" data-act="cloudSync" type="button" hidden>Қазір синхрондау</button><button class="btn ghost" id="cloudOutBtn" data-act="cloudOut" type="button" hidden>Шығу</button></div></div>
     <div class="card" id="nativeCard" hidden><h2>Автоматты оқу</h2><p class="note" id="nativeNote"></p><div class="btns" style="margin-top:12px"><button class="btn" id="nativeBtn" type="button">Рұқсат беру</button></div></div>
     <div class="card"><label class="lbl" for="sBudget">Айлық лимит, ₸</label><input class="field" id="sBudget" inputmode="numeric" placeholder="мысалы, 300000"><p class="note">0 болса, лимит өшірулі. Басты бетте қалған соманы көрсетеміз.</p><div class="btns" style="margin-top:12px"><button class="btn" data-act="saveBudget">Лимитті сақтау</button></div></div>
     <div class="card"><h2>Деректер</h2><p class="note" id="storeNote" style="margin:0 0 12px"></p><div class="btns"><button class="btn ghost" data-act="demoOn">Үлгі деректі қосу</button><button class="btn ghost" data-act="demoOff">Үлгіні өшіру</button></div></div>
@@ -436,16 +438,16 @@ async function saveTx(t){
     const o=Object.assign({},t,{kind:'tx'});const id=o.id;delete o.id;
     try{await S.coll.doc(id).set(o);return true}catch(e){toast('Сақтау мүмкін болмады');return false}
   }
-  const i=S.txs.findIndex(x=>x.id===t.id);if(i>=0)S.txs[i]=t;else S.txs.push(t);
-  lsSet(LS_TX,S.txs);render();return true;
+  t.mt=Date.now();const i=S.txs.findIndex(x=>x.id===t.id);if(i>=0)S.txs[i]=t;else S.txs.push(t);
+  lsSet(LS_TX,S.txs);render();fbQueue();return true;
 }
 async function removeTx(id){
   if(S.mode==='cloud'){try{await S.coll.doc(id).delete();return true}catch(e){toast('Өшіру мүмкін болмады');return false}}
-  S.txs=S.txs.filter(x=>x.id!==id);lsSet(LS_TX,S.txs);render();return true;
+  S.txs=S.txs.filter(x=>x.id!==id);lsSet(LS_TX,S.txs);fbTomb(id);render();return true;
 }
 async function saveSettings(){
   if(S.mode==='cloud'){try{await S.coll.doc('settings').set({kind:'settings',budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[]})}catch(e){toast('Баптау сақталмады')}}
-  else lsSet(LS_SET,S.settings);
+  else{S.settings=Object.assign({},S.settings,{mt:Date.now()});lsSet(LS_SET,S.settings);fbQueue()}
   render();
 }
 
@@ -689,7 +691,7 @@ function openSettings(){
   $('#storeNote').textContent=S.mode==='cloud'?'Жазбалар сіздің аккаунтыңызда сақталады және басқа құрылғыдан да ашылады. Басқа ешкім көре алмайды.':'Жазбалар тек осы құрылғыда, осы браузерде сақталады. Браузер деректерін тазаласаңыз, жазбалар жоғалады.';
   const n=Object.keys(S.settings.rules||{}).length;
   $('#rulesNote').textContent=n?('Санатын өзіңіз түзеткен '+n+' орын есте. Келесі жолы автоматты қойылады.'):'Санатты түзетсеңіз, келесіде сол орын автоматты сол санатқа түседі.';
-  drawCards();nativeUi();openSheet('#sheetSet');
+  drawCards();nativeUi();fbUi();if(fbEnabled()&&!FB.app)fbLoad();openSheet('#sheetSet');
 }
 
 /* ---------- demo ---------- */
@@ -874,7 +876,10 @@ document.addEventListener('click',e=>{
       const have=new Set(S.txs.map(t=>t.id));const add=d.txs.filter(t=>t&&t.id&&Number(t.amount)>0&&Number(t.ts)>0&&!have.has(t.id));
       const st=d.settings||{};const cards=(S.settings.cards||[]).slice();(st.cards||[]).forEach(c=>{if(c&&c.id&&!cards.some(x=>x.id===c.id))cards.push(c)});
       S.settings=Object.assign({},S.settings,{cards,budget:S.settings.budget||Number(st.budget)||0,rules:Object.assign({},st.rules||{},S.settings.rules||{})});
-      (async()=>{if(S.mode==='cloud'){for(const t of add)await saveTx(t)}else{S.txs=S.txs.concat(add);lsSet(LS_TX,S.txs)}await saveSettings();drawCards();toast(add.length+' жазба қалпына келтірілді')})();break}
+      (async()=>{if(S.mode==='cloud'){for(const t of add)await saveTx(t)}else{S.txs=S.txs.concat(add);lsSet(LS_TX,S.txs);fbQueue()}await saveSettings();drawCards();toast(add.length+' жазба қалпына келтірілді')})();break}
+    case 'cloudIn':fbSignIn();break;
+    case 'cloudSync':fbSync(true);break;
+    case 'cloudOut':fbOut();break;
     case 'demoOn':demoOn();break;
     case 'demoOff':demoOff();break;
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
@@ -925,6 +930,7 @@ function setupDictation(d){
 function startLocal(){
   S.mode='local';S.txs=lsGet(LS_TX,[]);
   S.settings=Object.assign({budget:0,rules:{},cards:[]},lsGet(LS_SET,{}));S.ready=true;render();syncNative();
+  if(!window.claude&&lsGet(LS_FB,{}).on)fbLoad();
 }
 function subscribeCloud(){
   let first=true;
@@ -952,6 +958,82 @@ async function boot(){
   C.use('dictation').then(d=>{if(d)setupDictation(d)}).catch(()=>{});
 }
 
+/* ---------- Бұлт: Firebase (тек жеке нұсқа) ---------- */
+const FBCFG={apiKey:"AIzaSyALpHSoRYlM_L_Elsus6z4x3aqrSJ-31OI",authDomain:"jarvis-jxbujh.firebaseapp.com",databaseURL:"https://jarvis-jxbujh.firebaseio.com",projectId:"jarvis-jxbujh",storageBucket:"jarvis-jxbujh.firebasestorage.app",messagingSenderId:"127999750841",appId:"1:127999750841:web:1a81b5ca4e358599766168"};
+const LS_DEL='aq.v1.del',LS_FB='aq.v1.fb';
+const FB={app:null,auth:null,db:null,user:null,loading:null,timer:0,busy:false,again:false,at:0};
+const fbEnabled=()=>!window.claude&&S.mode==='local';
+function loadScript(src){return new Promise((res,rej)=>{const e=document.createElement('script');e.src=src;e.onload=res;e.onerror=rej;document.head.appendChild(e)})}
+function fbLoad(){
+  if(FB.app)return Promise.resolve(true);
+  if(FB.loading)return FB.loading;
+  FB.loading=(async()=>{
+    try{
+      const B='https://www.gstatic.com/firebasejs/10.12.2/';
+      if(!window.firebase){await loadScript(B+'firebase-app-compat.js');await Promise.all([loadScript(B+'firebase-auth-compat.js'),loadScript(B+'firebase-database-compat.js')])}
+      FB.app=firebase.apps.length?firebase.app():firebase.initializeApp(FBCFG);
+      FB.auth=firebase.auth();FB.db=firebase.database();
+      FB.auth.onAuthStateChanged(u=>{FB.user=u;fbUi();if(u)fbSync()});
+      return true;
+    }catch(e){FB.loading=null;return false}
+  })();
+  return FB.loading;
+}
+function fbUi(){
+  const c=$('#cloudCard');if(!c)return;
+  if(!fbEnabled()){c.hidden=true;return}
+  c.hidden=false;const u=FB.user;
+  $('#cloudNote').textContent=u?('Кірдіңіз: '+(u.email||'Google')+'. Деректер Google аккаунтыңызға байланып бұлтта сақталады, басқа телефонда да қайтады.'+(FB.at?' Соңғы синхрондау: '+new Date(FB.at).toLocaleTimeString('kk-KZ',{hour:'2-digit',minute:'2-digit'})+'.':'')):'Кірсеңіз, деректер бұлтқа сақталады: қосымшаны қайта орнатсаңыз немесе телефонды ауыстырсаңыз, бәрі қайтады.';
+  $('#cloudBtn').hidden=!!u;$('#cloudSyncBtn').hidden=!u;$('#cloudOutBtn').hidden=!u;
+}
+function fbQueue(){if(!FB.user)return;clearTimeout(FB.timer);FB.timer=setTimeout(()=>fbSync(),1500)}
+function fbTomb(id){const d=lsGet(LS_DEL,{});d[id]=Date.now();lsSet(LS_DEL,d);fbQueue()}
+async function fbSync(manual){
+  if(!FB.user||!fbEnabled())return;
+  if(FB.busy){FB.again=true;return}
+  FB.busy=true;
+  try{
+    const ref=FB.db.ref('unem/'+FB.user.uid);
+    const val=(await ref.once('value')).val()||{};
+    const cTx=val.txs||{},cDel=val.del||{},lDel=lsGet(LS_DEL,{}),up={};
+    Object.keys(lDel).forEach(id=>{if(!cDel[id])up['del/'+id]=lDel[id];if(cTx[id])up['txs/'+id]=null});
+    Object.keys(cDel).forEach(id=>{if(!lDel[id])lDel[id]=cDel[id]});
+    const loc=new Map(S.txs.map(t=>[t.id,t]));let changed=false;
+    Object.keys(lDel).forEach(id=>{if(loc.has(id)){loc.delete(id);changed=true}});
+    Object.keys(cTx).forEach(id=>{
+      if(lDel[id])return;const c=cTx[id],l=loc.get(id);
+      if(!l||(c.mt||0)>(l.mt||0)){c.id=id;loc.set(id,c);changed=true}
+    });
+    loc.forEach((t,id)=>{const c=cTx[id];if(!c||(t.mt||0)>(c.mt||0))up['txs/'+id]=JSON.parse(JSON.stringify(t))});
+    let cs=null;try{cs=val.settings?JSON.parse(val.settings):null}catch(e){}
+    const ls=S.settings;
+    if(cs){
+      const cards=(ls.cards||[]).slice();(cs.cards||[]).forEach(c=>{if(c&&!cards.some(x=>x.id===c.id))cards.push(c)});
+      const lNew=(ls.mt||0)>=(cs.mt||0);
+      const merged={budget:lNew?(ls.budget||0):(cs.budget||0),rules:Object.assign({},cs.rules||{},ls.rules||{}),cards,mt:Math.max(ls.mt||0,cs.mt||0)};
+      const before=JSON.stringify({budget:ls.budget||0,rules:ls.rules||{},cards:ls.cards||[],mt:ls.mt||0});
+      if(JSON.stringify(merged)!==before){S.settings=Object.assign({},ls,merged);changed=true}
+    }
+    const sStr=JSON.stringify({budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[],mt:S.settings.mt||0});
+    if(sStr!==val.settings)up['settings']=sStr;
+    if(Object.keys(up).length)await ref.update(up);
+    lsSet(LS_DEL,lDel);
+    if(changed){S.txs=Array.from(loc.values());lsSet(LS_TX,S.txs);lsSet(LS_SET,S.settings);render()}
+    FB.at=Date.now();fbUi();if(manual)toast('Синхрондалды');
+  }catch(e){if(manual)toast('Синхрондау қатесі: '+(e.code||e.message||''))}
+  finally{FB.busy=false;if(FB.again){FB.again=false;fbQueue()}}
+}
+async function fbSignIn(){
+  if(window.UnemNative&&window.UnemNative.googleSignIn){try{window.UnemNative.googleSignIn()}catch(e){}return}
+  if(!await fbLoad()){toast('Интернет керек');return}
+  try{await FB.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());lsSet(LS_FB,{on:true})}catch(e){toast('Кіру сәтсіз: '+(e.code||''))}
+}
+window.unemAuth=async function(idToken){
+  if(!await fbLoad()){toast('Интернет керек');return}
+  try{await FB.auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(idToken));lsSet(LS_FB,{on:true});toast('Google-мен кірдіңіз')}catch(e){toast('Кіру сәтсіз: '+(e.code||''))}
+};
+async function fbOut(){try{await FB.auth.signOut()}catch(e){}lsSet(LS_FB,{on:false});FB.user=null;fbUi();toast('Шықтыңыз')}
+
 /* ---------- Android bridge (қосымша ішінде ғана) ---------- */
 function syncNative(){
   const N=window.UnemNative;if(!N||!S.ready||S.mode!=='local')return;
@@ -965,7 +1047,7 @@ function syncNative(){
     const t={id:uid(),nid:it.id,ts:p.ts,amount:p.amount,type:p.type,cat:p.cat,merchant:p.merchant,src:'push'};
     const tb=bankOfName(it.title)||(/kaspi/i.test(it.pkg||'')?'Kaspi':'');if(tb||p.bank)t.bank=tb||p.bank;if(p.card)t.card=p.card;if(p.bal!=null)t.bal=p.bal;S.txs.push(t);n++;
   });
-  lsSet(LS_TX,S.txs);try{N.ack(JSON.stringify(done))}catch(e){}
+  lsSet(LS_TX,S.txs);if(n)fbQueue();try{N.ack(JSON.stringify(done))}catch(e){}
   render();if(n)toast('Хабарламадан '+n+' жазба қосылды');
 }
 function nativeUi(){
@@ -975,7 +1057,8 @@ function nativeUi(){
   $('#nativeBtn').textContent=on?'Баптауды ашу':'Рұқсат беру';
 }
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNative();nativeUi()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNative();nativeUi();fbSync()}});
+setInterval(()=>{if(!document.hidden)fbSync()},60000);
 setInterval(()=>{if(S.ready)syncNative()},4000);
 boot();
 })();
