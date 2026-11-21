@@ -100,6 +100,10 @@ button{cursor:pointer;background:none;border:0;padding:0}
 .wcard{flex:none;width:min(84%,330px);min-height:218px;scroll-snap-align:center;border-radius:28px;padding:20px;color:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:12px;
   background:var(--cardimg,none) center/cover no-repeat,radial-gradient(120% 90% at 100% 0%,rgba(255,255,255,.22),rgba(255,255,255,0) 55%),linear-gradient(150deg,var(--deep),var(--deep2,color-mix(in srgb,var(--deep) 58%,#000)));
   box-shadow:0 10px 28px color-mix(in srgb,var(--deep) 38%,transparent)}
+.wcard.bk{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='white' stroke-opacity='.16' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M112 112C70 112 44 90 44 60c0-20 14-32 30-32 13 0 22 9 22 20 0 9-7 16-15 16-7 0-12-5-12-11'/%3E%3Cpath d='M112 80c-20 0-32-10-32-24'/%3E%3Cpath d='M84 112c-16-4-26-14-30-26'/%3E%3C/g%3E%3C/svg%3E") right -8px bottom -12px/140px no-repeat,linear-gradient(150deg,var(--bk1),var(--bk2));min-height:158px;width:min(76%,250px);box-shadow:0 8px 22px color-mix(in srgb,var(--bk2) 40%,transparent)}
+.wcard.bk .nm{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:15px;color:#fff}
+.wcard.bk .bal{font-size:26px;font-weight:800;line-height:1.15;overflow-wrap:anywhere}
+.cards2{margin-top:0}
 .wcard .eyebrow{color:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:space-between;gap:8px}
 .wcard .eyebrow .ic{width:20px;height:20px;opacity:.85}
 .wcard .big{font-size:34px;line-height:1.1;font-weight:800;margin:6px 0 0;overflow-wrap:anywhere}
@@ -271,6 +275,9 @@ textarea.field{resize:vertical;min-height:116px}
       <div id="accWrap"><span class="lbl" style="margin-top:14px">Түс</span>
       <div class="swrow" id="swrow"></div></div>
     </div>
+    <div class="card"><h2>Карталар</h2><div id="cardList"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><select class="field" id="cBank" style="flex:1;min-width:120px"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" style="flex:1;min-width:120px"></div>
+      <div class="btns" style="margin-top:10px"><button class="btn" data-act="addCard">Картаны қосу</button></div><p class="note">Карта нөмірін толық сақтамаймыз: тек банк және соңғы 4 цифр.</p></div>
     <div class="card" id="nativeCard" hidden><h2>Автоматты оқу</h2><p class="note" id="nativeNote"></p><div class="btns" style="margin-top:12px"><button class="btn" id="nativeBtn" type="button">Рұқсат беру</button></div></div>
     <div class="card"><label class="lbl" for="sBudget">Айлық лимит, ₸</label><input class="field" id="sBudget" inputmode="numeric" placeholder="мысалы, 300000"><p class="note">0 болса, лимит өшірулі. Басты бетте қалған соманы көрсетеміз.</p><div class="btns" style="margin-top:12px"><button class="btn" data-act="saveBudget">Лимитті сақтау</button></div></div>
     <div class="card"><h2>Деректер</h2><p class="note" id="storeNote" style="margin:0 0 12px"></p><div class="btns"><button class="btn ghost" data-act="demoOn">Үлгі деректі қосу</button><button class="btn ghost" data-act="demoOff">Үлгіні өшіру</button></div></div>
@@ -304,7 +311,7 @@ const RULES=[
   ['subs',/netflix|spotify|youtube|apple\.com|itunes|icloud|google ?(one|play|storage)|chatgpt|openai|claude|anthropic|подписк|жазылым|okko|kinopoisk|кинопоиск|ivi\b/],
   ['telecom',/beeline|билайн|kcell|activ\b|tele2|altel|мобильн|байланыс|интернет|megaline|казахтелеком|kazakhtelecom/],
   ['transport',/yandex ?go|яндекс ?go|яндекс ?такси|indrive|indriver|такси|taxi|бензин|азс|helios|sinooil|qazaq ?oil|парковк|автобус|onay|жол ақы|көлік|проезд|мойка|шиномонтаж|техосмотр|заправк/],
-  ['food',/magnum|small|galmart|arbuz|ромат|ресторан|кафе|кофе|coffee|cafe|starbucks|dodo|kfc|burger|бургер|pizza|пицц|шаурма|glovo|wolt|яндекс ?еда|yandex ?eda|еда|тамақ|нан|дүкен|продукт|базар|рынок|шай|чай|обед|ужин|завтрак|суши|лагман|бешбармақ|айран|сүт|молоко|хлеб|market|маркет|пекарн|булочн|столов|асхана/],
+  ['food',/hlebzavod|hleb|xleb|bakery|пекарн|хлеб|нан\b|продукт|market\b|маркет|supermarket|магазин продукт|magnum|small|galmart|arbuz|ромат|ресторан|кафе|кофе|coffee|cafe|starbucks|dodo|kfc|burger|бургер|pizza|пицц|шаурма|glovo|wolt|яндекс ?еда|yandex ?eda|еда|тамақ|нан|дүкен|продукт|базар|рынок|шай|чай|обед|ужин|завтрак|суши|лагман|бешбармақ|айран|сүт|молоко|хлеб|market|маркет|пекарн|булочн|столов|асхана/],
   ['shop',/zara|lcw|waikiki|bershka|stradivarius|sportmaster|спортмастер|wildberries|ozon|aliexpress|temu|mechta|мечта|sulpak|технодом|одежда|киім|обувь|аяқ киім|lamoda|shop|kaspi магазин|техника|телефон|наушник/],
   ['health',/аптека|дәріхана|pharm|europharma|sadykhan|клиника|больница|стоматолог|дәрі|врач|анализ|медцентр|emirmed|invivo|олимп|дәрігер/],
   ['edu',/университет|универ|оқулық|книга|кітап|курс|udemy|coursera|stepik|репетитор|оқу|обучение|школа|колледж|канцтовар|канцеляр|принтер|ксерокс|xerox/],
@@ -312,9 +319,9 @@ const RULES=[
   ['fun',/кино|cinema|kinopark|chaplin|steam|playstation|psn|xbox|ойын|игра|клуб|концерт|билет|театр|караоке|боулинг|бильярд|toy|аттракцион/],
   ['transfer',/перевод|аударым|p2p|перечисление|снятие наличных|банкомат|atm|қолма-қол|наличн/]
 ];
-const STOP=new Set(['покупка','оплата','платеж','платёж','списание','перевод','пополнение','снятие','төлем','сатып','алу','аударым','карта','карте','картой','со','на','в','по','с','тенге','тг','kzt','₸','бүгін','сегодня','кеше','вчера','позавчера','мың','тыс','оплачено','успешно','kaspi','kaspi.kz','каспи','freedom','фридом','bank','банк','bcc','бцк','halyk','халык']);
+const STOP=new Set(['покупку','поступил','поступит','за','кешбэк','кэшбэк','доступно','списано','supercard','покупка','оплата','платеж','платёж','списание','перевод','пополнение','снятие','төлем','сатып','алу','аударым','карта','карте','картой','со','на','в','по','с','тенге','тг','kzt','₸','бүгін','сегодня','кеше','вчера','позавчера','мың','тыс','оплачено','успешно','kaspi','kaspi.kz','каспи','freedom','фридом','bank','банк','bcc','бцк','halyk','халык']);
 const BANKISH=/(покупка|оплата|списание|платеж|платёж|пополнение|перевод|снятие|баланс|доступно|₸|kzt)/i;
-const INCOME_RE=/(пополнение (счета|карты|депозита|баланса kaspi)|поступление|зачисление|получен|жалақы|зарплата|түсім|келді|түсті|возврат|кэшбэк|кешбэк|cashback|перевод от|стипендия)/i;
+const INCOME_RE=/(пополнение\s*[:(]|пополнение (счета|карты|депозита|баланса kaspi)|перевод поступил|поступил|поступление|зачисление|получен|жалақы|зарплата|түсім|келді|түсті|возврат|кэшбэк|кешбэк|cashback|перевод от|стипендия)/i;
 const LET='a-zа-яәіңғүұқөһё';
 function mkey(s){return String(s||'').toLowerCase().replace(new RegExp('[^'+LET+'0-9 ]','g'),'').replace(/\s+/g,' ').trim()}
 function toNum(int,dec){const n=parseFloat(String(int).replace(/[   ]/g,'')+(dec?'.'+dec:''));return isFinite(n)?n:0}
@@ -340,6 +347,8 @@ function detectCat(text,rules){
   return 'other';
 }
 function parseLine(line,rules,nowTs){
+  const cashback=/кеш?бэк|cashback/i.test(line);
+  line=line.replace(/\s*кеш?бэк в обработке[\s\S]*$/i,'').replace(/кеш?бэк\s*\d+(?:[.,]\d+)?\s*%/ig,' ').replace(/списано с\s*\S+\s*\*+\d{3,4}/ig,function(m){return m.replace(/^[^*]*/,'')});
   const a=findAmount(line);
   if(!a||!(a.value>0))return null;
   let low=line.toLowerCase();
@@ -351,16 +360,24 @@ function parseLine(line,rules,nowTs){
   if(/kaspi|каспи/.test(low))bank='Kaspi';else if(/freedom|фридом/.test(low))bank='Freedom';else if(/bcc|бцк|центркредит/.test(low))bank='BCC';else if(/halyk|халык/.test(low))bank='Halyk';
   let rest=a.rest.replace(a.text,' ');
   const toks=rest.split(/\s+/).map(x=>x.trim()).filter(Boolean).filter(x=>{
-    const w=x.toLowerCase().replace(/^[\s,.;:·\-–—|()"'«»]+|[\s,.;:·\-–—|()"'«»]+$/g,'');
+    const w=x.toLowerCase().replace(/^[\s,.;:·+\-–—|()"'«»]+|[\s,.;:·+\-–—|()"'«»]+$/g,'');
     return w&&!STOP.has(w);
   });
   let merchant=toks.join(' ').replace(/^[\s,.;:·\-–—|]+|[\s,.;:·\-–—|]+$/g,'').replace(/\s*[,;]\s*/g,', ').slice(0,48);
+  merchant=merchant.replace(/^(?:IP|ИП|ТОО|TOO|LLP|AO|АО)\s+/i,'').replace(/["«»“”']/g,'').replace(/\s*#\s*\d+\s*$/,'').replace(/\.$/,'').trim();
+  if(merchant.length>3&&merchant===merchant.toUpperCase()&&/[A-Z]/.test(merchant))merchant=merchant.toLowerCase().replace(/(^|[\s.\-])([a-zа-яәіңғүұқөһё])/g,(m,a,b)=>a+b.toUpperCase());
   if(!merchant)merchant='Атаусыз төлем';
   merchant=merchant.charAt(0).toUpperCase()+merchant.slice(1);
+  if(/^карту другого банка$/i.test(merchant))merchant='Перевод на карту другого банка';
+  if(/^(карты другого банка|карты)$/i.test(merchant))merchant='Пополнение с карты';
+  if(cashback)merchant='Кешбэк'+(merchant&&!/^кешбэк$/i.test(merchant)?' · '+merchant:'');
   let type='out',cat;
-  if(INCOME_RE.test(low)){type='in';cat='income'}
+  if(cashback){type='in';cat='income'}
+  else if(INCOME_RE.test(low)){type='in';cat='income'}
   else{cat=detectCat(low,rules)}
-  return{amount:Math.round(a.value*100)/100,type,merchant,cat,ts,bank,src:(BANKISH.test(line)||bank)?'push':'text'};
+  const bm=line.match(/(?:доступно|остаток|қолжетімді|қалдық)\s*:?\s*(\d{1,3}(?:[ \u00A0\u202F]\d{3})+|\d+)(?:[.,](\d{1,2}))?/i);
+  const cm=line.match(/(?:\*{1,}|•{1,}|·{2,}|карт[аыиойе]*\s*)\s*(\d{4})(?!\d)/i);
+  return{amount:Math.round(a.value*100)/100,type,merchant,cat,ts,bank,card:cm?cm[1]:'',bal:bm?toNum(bm[1],bm[2]):null,src:(BANKISH.test(line)||bank)?'push':'text'};
 }
 function splitItems(text){
   const out=[];
@@ -424,13 +441,13 @@ async function removeTx(id){
   S.txs=S.txs.filter(x=>x.id!==id);lsSet(LS_TX,S.txs);render();return true;
 }
 async function saveSettings(){
-  if(S.mode==='cloud'){try{await S.coll.doc('settings').set({kind:'settings',budget:S.settings.budget||0,rules:S.settings.rules||{}})}catch(e){toast('Баптау сақталмады')}}
+  if(S.mode==='cloud'){try{await S.coll.doc('settings').set({kind:'settings',budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[]})}catch(e){toast('Баптау сақталмады')}}
   else lsSet(LS_SET,S.settings);
   render();
 }
 
 /* ---------- aggregates ---------- */
-const outIn=(y,m)=>S.txs.filter(t=>t.type==='out'&&inMonth(t.ts,y,m));
+const outIn=(y,m)=>S.txs.filter(t=>t.type==='out'&&!OWN.has(t.id)&&inMonth(t.ts,y,m));
 const sumOf=l=>l.reduce((a,t)=>a+t.amount,0);
 function groupBy(list,fn){const m=new Map();list.forEach(t=>{const k=fn(t);const v=m.get(k)||{sum:0,n:0,items:[]};v.sum+=t.amount;v.n++;v.items.push(t);m.set(k,v)});return m}
 function isCurrent(y,m){return y===now0.getFullYear()&&m===now0.getMonth()}
@@ -475,12 +492,45 @@ function ringSvg(p){
   const r=42,C=2*Math.PI*r,d=Math.min(1,Math.max(0,p))*C;
   return '<svg viewBox="0 0 100 100" role="img" aria-label="Лимит: '+Math.round(p*100)+'%"><g transform="rotate(-90 50 50)"><circle class="trk" cx="50" cy="50" r="'+r+'" fill="none" stroke-width="10"/><circle class="prg" cx="50" cy="50" r="'+r+'" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+d.toFixed(1)+' '+C.toFixed(1)+'"/></g><text class="pc" x="50" y="56" text-anchor="middle">'+Math.round(p*100)+'%</text></svg>';
 }
+
+/* ---------- карталар ---------- */
+const BANKS={Kaspi:{n:'Kaspi',a:'#d4262c',b:'#8a1218'},Freedom:{n:'Freedom',a:'#187a41',b:'#0b4a27'},BCC:{n:'BCC',a:'#1d5fd1',b:'#0e2f73'},Halyk:{n:'Halyk',a:'#0b7a45',b:'#06452a'},Other:{n:'Басқа',a:'#4a5160',b:'#262a33'}};
+function bankOfName(x){const l=String(x||'').toLowerCase();if(/kaspi|каспи/.test(l))return 'Kaspi';if(/freedom|фридом|ffin/.test(l))return 'Freedom';if(/bcc|бцк|центркредит|center ?credit/.test(l))return 'BCC';if(/halyk|халык|халық/.test(l))return 'Halyk';return ''}
+let OWN=new Set();
+function reconcile(){
+  OWN=new Set();const cs=S.settings.cards||[];const banks=new Set(cs.map(c=>c.bank));
+  const outs=S.txs.filter(t=>t.type==='out'&&t.cat==='transfer'),ins=S.txs.filter(t=>t.type==='in');
+  outs.forEach(o=>{const mb=bankOfName(o.merchant);if(mb&&mb!==o.bank&&banks.has(mb))OWN.add(o.id)});
+  outs.forEach(o=>{const m=ins.find(i=>!OWN.has(i.id)&&i.amount===o.amount&&Math.abs(i.ts-o.ts)<=20*60*1000&&(i.bank||'')!==(o.bank||''));if(m){OWN.add(o.id);OWN.add(m.id)}});
+}
+function cardFor(t){
+  const cs=S.settings.cards||[];if(!cs.length)return null;
+  if(t.card){const c=cs.find(c=>c.last4===t.card);if(c)return c}
+  if(t.bank){const l=cs.filter(c=>c.bank===t.bank);if(l.length===1)return l[0]}
+  return null;
+}
+function bankCards(){
+  const cs=S.settings.cards||[];
+  if(!cs.length)return '<section class="card"><h2>Карталар</h2><p class="note">Картаңызды қосыңыз: банк және соңғы 4 цифр. Хабарламадағы төлем сол картаға автоматты тіркеледі.</p><div class="btns" style="margin-top:10px"><button class="btn" data-act="settings">Карта қосу</button></div></section>';
+  const html=cs.map(c=>{
+    const B=BANKS[c.bank]||BANKS.Other;
+    const mine=S.txs.filter(t=>cardFor(t)===c);
+    const last=mine.filter(t=>t.bal!=null).sort((a,b)=>b.ts-a.ts)[0];
+    const spent=sumOf(outIn(S.y,S.m).filter(t=>cardFor(t)===c));
+    return '<article class="wcard bk" style="--bk1:'+B.a+';--bk2:'+B.b+'"><div class="nm"><span>'+esc(c.name||B.n)+'</span><span class="num">'+(c.last4?'••'+esc(c.last4):'')+'</span></div><div><div class="sub2">Қолжетімді</div><div class="bal num">'+(last?money(last.bal):'—')+'</div></div><div class="sub2">Айда жұмсалды: <b class="num">'+money(spent)+'</b></div></article>';
+  }).join('');
+  return '<div class="lbl" style="margin:4px 4px 8px">Карталарым</div><div class="cards cards2">'+html+'</div>';
+}
+function drawCards(){
+  const box=$('#cardList');if(!box)return;const cs=S.settings.cards||[];
+  box.innerHTML=cs.length?cs.map(c=>{const B=BANKS[c.bank]||BANKS.Other;return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0"><i style="width:14px;height:14px;border-radius:5px;background:'+B.a+'"></i><div class="grow" style="flex:1">'+esc(c.name||B.n)+(c.last4?' <span class="t2">••'+esc(c.last4)+'</span>':'')+'</div><button class="btn ghost" data-act="delCard" data-id="'+esc(c.id)+'" aria-label="Өшіру" style="padding:6px 12px">Өшіру</button></div>'}).join(''):'<p class="note">Карта әлі қосылмаған.</p>';
+}
 function viewHome(){
   if(!S.txs.length){
     return '<section class="card empty"><h2>Әзірге жазба жоқ</h2><p>Банк хабарламасын қойыңыз немесе «кофе 1500» деп жазыңыз. Қалғанын өзіміз санаттап, есеп жасаймыз.</p><div class="btns" style="justify-content:center"><button class="btn" data-act="add">Алғашқы шығынды қосу</button><button class="btn ghost" data-act="demoOn">Үлгі деректермен көру</button></div></section>';
   }
   const y=S.y,m=S.m,out=outIn(y,m),total=sumOf(out),cur=isCurrent(y,m);
-  const inc=sumOf(S.txs.filter(t=>t.type==='in'&&inMonth(t.ts,y,m)));
+  const inc=sumOf(S.txs.filter(t=>t.type==='in'&&!OWN.has(t.id)&&inMonth(t.ts,y,m)));
   const dim=new Date(y,m+1,0).getDate();const dn=cur?now0.getDate():dim;
   const py=m===0?y-1:y,pm=(m+11)%12;
   const prev=sumOf(outIn(py,pm).filter(t=>new Date(t.ts).getDate()<=(cur?dn:31)));
@@ -513,15 +563,15 @@ function viewHome(){
   }else{
     c4='<article class="wcard"><p class="eyebrow"><span>Ең көп кеткен</span></p><p class="sub2">Бұл айда шығын жоқ.</p></article>';
   }
-  const catHtml=catRows.length?catRows.map(([c,v])=>'<button class="row-btn" data-act="cat" data-cat="'+c+'" style="--cc:var(--c-'+c+')">'+dot(c)+'<div class="grow"><div class="t1">'+CATS[c].n+'</div><div class="share"><i style="width:'+(v.sum/total*100).toFixed(1)+'%"></i></div></div><div style="text-align:right"><div class="amt num">'+money(v.sum)+'</div><div class="t2">'+Math.round(v.sum/total*100)+'% · '+v.n+' рет</div></div></button>').join(''):'<p class="note">Бұл айда шығын жоқ.</p>';
+  const catHtml=catRows.length?catRows.slice(0,4).map(([c,v])=>'<button class="row-btn" data-act="cat" data-cat="'+c+'" style="--cc:var(--c-'+c+')">'+dot(c)+'<div class="grow"><div class="t1">'+CATS[c].n+'</div><div class="share"><i style="width:'+(v.sum/total*100).toFixed(1)+'%"></i></div></div><div style="text-align:right"><div class="amt num">'+money(v.sum)+'</div><div class="t2">'+Math.round(v.sum/total*100)+'% · '+v.n+' рет</div></div></button>').join(''):'<p class="note">Бұл айда шығын жоқ.</p>';
   const ins=insightsFor(out,total,y,m);
-  const insHtml=ins.length?'<section class="card"><h2>Назар аударыңыз</h2><div class="ins">'+ins.map(i=>'<div><b>'+esc(i.h)+'</b><span>'+esc(i.t)+'</span></div>').join('')+'</div></section>':'';
-  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'
-   +'<section class="card"><h2>Ай қорытындысы</h2><div class="kv" style="border:0;padding:0"><div><span>Кіріс</span><b class="num">'+money(inc)+'</b></div><div><span>Төлем саны</span><b class="num">'+out.length+'</b></div><div><span>Күніне орта</span><b class="num">'+money(total/dn)+'</b></div></div></section>'
+  const insHtml=ins.length?'<section class="card"><h2>Назар аударыңыз</h2><div class="ins">'+ins.slice(0,2).map(i=>'<div><b>'+esc(i.h)+'</b><span>'+esc(i.t)+'</span></div>').join('')+'</div></section>':'';
+  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+bankCards()
+   +(out.length?'<section class="card"><h2>Соңғы төлемдер</h2><div class="list">'+out.slice().sort((a,b)=>b.ts-a.ts).slice(0,4).map(rowHtml).join('')+'</div><div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="tab" data-tab="history">Барлығы</button></div></section>':'')
    +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+insHtml;
 }
 function rowHtml(t){
-  return '<button class="row-btn" data-act="edit" data-id="'+esc(t.id)+'" style="--cc:var(--c-'+t.cat+')">'+dot(t.cat)+'<div class="grow"><div class="t1">'+esc(t.merchant)+'</div><div class="t2">'+CATS[t.cat].n+' · '+(SRC[t.src]||'Қолмен')+(t.bank?' · '+esc(t.bank):'')+'</div></div><div class="amt num '+(t.type==='in'?'in':'')+'">'+(t.type==='in'?'+':'−')+money(t.amount)+'</div></button>';
+  return '<button class="row-btn" data-act="edit" data-id="'+esc(t.id)+'" style="--cc:var(--c-'+t.cat+')">'+dot(t.cat)+'<div class="grow"><div class="t1">'+esc(t.merchant)+'</div><div class="t2">'+CATS[t.cat].n+' · '+(OWN.has(t.id)?'Өз аударым':(SRC[t.src]||'Қолмен'))+(t.bank?' · '+esc(t.bank):'')+(t.card?' ••'+esc(t.card):'')+'</div></div><div class="amt num '+(t.type==='in'?'in':'')+'">'+(t.type==='in'?'+':'−')+money(t.amount)+'</div></button>';
 }
 function historyList(){
   let l=S.txs.filter(t=>inMonth(t.ts,S.y,S.m));
@@ -530,7 +580,7 @@ function historyList(){
   l.sort((a,b)=>b.ts-a.ts);
   if(!l.length)return '<p class="note" style="text-align:center;padding:24px 0">Жазба табылмады.</p>';
   const g=new Map();l.forEach(t=>{const k=startOfDay(t.ts);if(!g.has(k))g.set(k,[]);g.get(k).push(t)});
-  let h='';g.forEach((arr,k)=>{const sp=sumOf(arr.filter(t=>t.type==='out'));h+='<div class="daygroup"><span>'+dayLabel(k)+'</span><span class="num">'+(sp?money(sp):'')+'</span></div><div class="card" style="padding:4px 16px"><div class="list">'+arr.map(rowHtml).join('')+'</div></div>'});
+  let h='';g.forEach((arr,k)=>{const sp=sumOf(arr.filter(t=>t.type==='out'&&!OWN.has(t.id)));h+='<div class="daygroup"><span>'+dayLabel(k)+'</span><span class="num">'+(sp?money(sp):'')+'</span></div><div class="card" style="padding:4px 16px"><div class="list">'+arr.map(rowHtml).join('')+'</div></div>'});
   return h;
 }
 function viewHistory(){
@@ -558,6 +608,7 @@ function viewAdvice(){
   return h;
 }
 function render(){
+  reconcile();
   const app=$('#app');
   $$('.tabs button').forEach(b=>{if(b.dataset.tab===S.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   if(!S.ready){app.innerHTML='<div class="skel" aria-busy="true"></div>';return}
@@ -588,7 +639,7 @@ function drawPreview(){
 async function saveAdd(){
   const rows=S.preview.filter(p=>p.amount>0);if(!rows.length)return;
   $('#saveAdd').disabled=true;let n=0;
-  for(const p of rows){const t={id:uid(),ts:p.ts,amount:p.amount,type:p.type,cat:p.cat,merchant:p.merchant,src:p.src||'manual'};if(p.bank)t.bank=p.bank;if(await saveTx(t))n++}
+  for(const p of rows){const t={id:uid(),ts:p.ts,amount:p.amount,type:p.type,cat:p.cat,merchant:p.merchant,src:p.src||'manual'};if(p.bank)t.bank=p.bank;if(p.card)t.card=p.card;if(p.bal!=null)t.bal=p.bal;if(await saveTx(t))n++}
   closeSheets();$('#addText').value='';S.preview=[];S.fails=[];
   toast(n+' жазба қосылды');
 }
@@ -607,7 +658,7 @@ async function refineAI(){
 }
 function openEdit(id){
   const t=S.txs.find(x=>x.id===id);if(!t)return;
-  S.edit={id,cat:t.cat,type:t.type,ts:t.ts,src:t.src,bank:t.bank,orig:t.cat};
+  S.edit={id,cat:t.cat,type:t.type,ts:t.ts,src:t.src,bank:t.bank,orig:t.cat,card:t.card,bal:t.bal,nid:t.nid};
   $('#eAmount').value=t.amount;$('#eMerchant').value=t.merchant;$('#eDate').value=dateVal(t.ts);
   drawEditCats();setEditType(t.type);openSheet('#sheetEdit');
 }
@@ -623,7 +674,7 @@ async function saveEdit(){
   const dv=$('#eDate').value;let ts=E.ts;
   if(dv){const p=dv.split('-').map(Number);const d=new Date(E.ts);ts=new Date(p[0],p[1]-1,p[2],d.getHours(),d.getMinutes(),d.getSeconds()).getTime()}
   const cat=E.type==='in'?'income':(E.cat==='income'?'other':E.cat);
-  const t={id:E.id,ts,amount,type:E.type,cat,merchant,src:E.src||'manual'};if(E.bank)t.bank=E.bank;
+  const t={id:E.id,ts,amount,type:E.type,cat,merchant,src:E.src||'manual'};if(E.bank)t.bank=E.bank;if(E.card)t.card=E.card;if(E.bal!=null)t.bal=E.bal;if(E.nid)t.nid=E.nid;
   if(await saveTx(t)){
     if(E.type==='out'&&cat!==E.orig){const k=mkey(merchant);if(k){S.settings.rules=Object.assign({},S.settings.rules);S.settings.rules[k]=cat;const ks=Object.keys(S.settings.rules);if(ks.length>300)delete S.settings.rules[ks[0]];await saveSettings();toast('Келесіде «'+merchant+'» осы санатқа түседі')}}
     closeSheets();
@@ -635,7 +686,7 @@ function openSettings(){
   $('#storeNote').textContent=S.mode==='cloud'?'Жазбалар сіздің аккаунтыңызда сақталады және басқа құрылғыдан да ашылады. Басқа ешкім көре алмайды.':'Жазбалар тек осы құрылғыда, осы браузерде сақталады. Браузер деректерін тазаласаңыз, жазбалар жоғалады.';
   const n=Object.keys(S.settings.rules||{}).length;
   $('#rulesNote').textContent=n?('Санатын өзіңіз түзеткен '+n+' орын есте. Келесі жолы автоматты қойылады.'):'Санатты түзетсеңіз, келесіде сол орын автоматты сол санатқа түседі.';
-  nativeUi();openSheet('#sheetSet');
+  drawCards();nativeUi();openSheet('#sheetSet');
 }
 
 /* ---------- demo ---------- */
@@ -808,6 +859,8 @@ document.addEventListener('click',e=>{
     case 'saveEdit':saveEdit();break;
     case 'delEdit':{const id=S.edit&&S.edit.id;if(id){removeTx(id).then(ok=>{if(ok){closeSheets();toast('Жазба өшірілді')}})}break}
     case 'saveBudget':{const v=parseFloat(String($('#sBudget').value).replace(/\s/g,'').replace(',','.'));S.settings=Object.assign({},S.settings,{budget:v>0?Math.round(v):0});saveSettings().then(()=>{closeSheets();toast(S.settings.budget?'Лимит сақталды':'Лимит өшірілді')});break}
+    case 'addCard':{const bank=$('#cBank').value,l4=String($('#cLast').value||'').replace(/\D/g,'').slice(0,4);const cs=(S.settings.cards||[]).slice();if(cs.some(c=>c.bank===bank&&c.last4===l4)){toast('Бұл карта бар');break}cs.push({id:uid(),bank,last4:l4});S.settings=Object.assign({},S.settings,{cards:cs});$('#cLast').value='';saveSettings().then(()=>{drawCards();toast('Карта қосылды')});break}
+    case 'delCard':{const cs=(S.settings.cards||[]).filter(c=>c.id!==b.dataset.id);S.settings=Object.assign({},S.settings,{cards:cs});saveSettings().then(()=>drawCards());break}
     case 'demoOn':demoOn();break;
     case 'demoOff':demoOff();break;
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
@@ -857,14 +910,14 @@ function setupDictation(d){
 /* ---------- boot ---------- */
 function startLocal(){
   S.mode='local';S.txs=lsGet(LS_TX,[]);
-  S.settings=Object.assign({budget:0,rules:{}},lsGet(LS_SET,{}));S.ready=true;render();syncNative();
+  S.settings=Object.assign({budget:0,rules:{},cards:[]},lsGet(LS_SET,{}));S.ready=true;render();syncNative();
 }
 function subscribeCloud(){
   let first=true;
   S.coll.onSnapshot(snap=>{
     const txs=[];let st=null;
     snap.docs.forEach(d=>{const x=d.data();if(!x)return;if(d.id==='settings')st=x;else if(x.kind==='tx')txs.push(Object.assign({},x,{id:d.id}))});
-    S.txs=txs;if(st)S.settings={budget:Number(st.budget)||0,rules:st.rules||{}};
+    S.txs=txs;if(st)S.settings={budget:Number(st.budget)||0,rules:st.rules||{},cards:st.cards||[]};
     S.ready=true;first=false;render();
   },err=>{if(first||!S.ready){startLocal()}else{toast('Байланыс үзілді. Жазбалар жаңармай тұр.')}});
 }
@@ -896,7 +949,7 @@ function syncNative(){
     const line=((it.title||'')+' '+(it.text||'')).replace(/\s+/g,' ').trim();
     const p=parseLine(line,S.settings.rules,it.ts);if(!p)return;
     const t={id:uid(),nid:it.id,ts:p.ts,amount:p.amount,type:p.type,cat:p.cat,merchant:p.merchant,src:'push'};
-    if(p.bank)t.bank=p.bank;S.txs.push(t);n++;
+    const tb=bankOfName(it.title)||(/kaspi/i.test(it.pkg||'')?'Kaspi':'');if(tb||p.bank)t.bank=tb||p.bank;if(p.card)t.card=p.card;if(p.bal!=null)t.bal=p.bal;S.txs.push(t);n++;
   });
   lsSet(LS_TX,S.txs);try{N.ack(JSON.stringify(done))}catch(e){}
   render();if(n)toast('Хабарламадан '+n+' жазба қосылды');
