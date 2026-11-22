@@ -398,7 +398,7 @@ function detectCat(text,rules){
 function parseLine(line,rules,nowTs){
   const cashback=/кеш?бэк|cashback/i.test(line);
   line=line.replace(/\s*кеш?бэк в обработке[\s\S]*$/i,'').replace(/кеш?бэк\s*\d+(?:[.,]\d+)?\s*%/ig,' ').replace(/списано с\s*\S+\s*\*+\d{3,4}/ig,function(m){return m.replace(/^[^*]*/,'')});
-  line=line.replace(/\s+с\s+карты\s+[^\s*,.;]+/ig,' ');
+  line=line.replace(/\s+с\s+карты(?=\s|$).*$/i,' ');
   const a=findAmount(line);
   if(!a||!(a.value>0))return null;
   let low=line.toLowerCase();
