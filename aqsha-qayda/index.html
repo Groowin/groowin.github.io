@@ -19,7 +19,7 @@
 <style>
 /* Layout: one phone-width column, like a wallet app. Header, one hero card with the month's spending and a daily chart, stacked cards below, bottom tab bar with a floating add button. */
 :root{
-  --bg:#f5f6f3; --surface:#ffffff; --surface-2:#e9ece8; --fg:#16201f; --muted:#586563; --line:#dde2de;
+  --bg:#f1ece1; --surface:#fcfaf5; --surface-2:#e7e1d4; --fg:#1c211f; --muted:#5b605b; --line:#ddd6c7;
   --accent:#0b6477; --accent-fg:#ffffff; --accent-soft:#d9eef2;
   --deep:#0e7490; --deep2:#0a3f4d; --good:#0f7a55; --good-soft:#dcf2e8; --bad:#c3362d; --bad-soft:#fbe4e1; --warn:#a96a00; --warn-soft:#fbefd5;
   --shadow:0 1px 2px rgba(20,28,60,.06),0 8px 24px rgba(20,28,60,.07);
@@ -124,6 +124,12 @@ button{cursor:pointer;background:none;border:0;padding:0}
 .dots{display:flex;justify-content:center;gap:6px;padding:2px 0 4px}
 .dots i{width:6px;height:6px;border-radius:99px;background:var(--line);transition:width .2s ease,background .2s ease}
 .dots i.on{width:18px;background:var(--accent)}
+#perm{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:var(--bg);padding:24px}
+#perm[hidden]{display:none}
+.perm-in{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.perm-ic{width:72px;height:72px;border-radius:24px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);margin-bottom:6px}
+.perm-in h2{margin:0;font-size:22px}.perm-in p{margin:0 0 18px;color:var(--muted);font-size:15px}
+.gbtn.perm-go{background:var(--accent);color:var(--accent-fg);border-color:transparent}
 #gate{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:var(--bg);padding:24px max(24px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px))}
 #gate[hidden]{display:none}
 .gate-in{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
@@ -242,9 +248,18 @@ textarea.field{resize:vertical;min-height:116px}
     <button class="gbtn" data-act="cloudIn" type="button"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#4285F4" d="M23 12.3c0-.8-.1-1.5-.2-2.2H12v4.2h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.4z"/><path fill="#34A853" d="M12 24c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3C3.7 21.5 7.5 24 12 24z"/><path fill="#FBBC05" d="M5.6 14.7a7.200 7.200 0 0 1 0-4.600v-3H1.800a12 12 0 0 0 0 10.600l3.800-3z"/><path fill="#EA4335" d="M12 4.800c1.700 0 3.200.6 4.400 1.700l3.300-3.300A11.500 11.500 0 0 0 12 0C7.500 0 3.700 2.500 1.800 6.200l3.800 3C6.500 6.800 9 4.800 12 4.800z"/></svg>Google-мен кіру</button>
   </div>
 </div>
+<div id="perm" hidden>
+  <div class="perm-in">
+    <div class="perm-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7M10 20a2 2 0 0 0 4 0"/></svg></div>
+    <h2>Хабарламаларға рұқсат</h2>
+    <p>Банк хабарламаларынан шығындар өздігінен жазылады.</p>
+    <button class="gbtn perm-go" id="permGo" type="button">Рұқсат беру</button>
+    <button class="glink" id="permLater" type="button">Кейін</button>
+  </div>
+</div>
 <div class="shell">
   <header class="top">
-    <div><h1>Үнем</h1><p class="sub" id="subline">ақша қайда кетті?</p></div>
+    <div><h1>Үнем</h1></div>
     <button class="icon-btn" data-act="settings" aria-label="Баптаулар"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   </header>
   <main id="app"><div class="skel" aria-busy="true"></div></main>
@@ -797,7 +812,7 @@ const STYLES={
     k:{'--bg':'#0d0f15','--surface':'#161a24','--surface-2':'#1f2431','--fg':'#eceff7','--muted':'#9aa3b8','--line':'#272d3b','--accent':'#86a2ff','--accent-soft':'#1c2748','--accent-fg':'#0b1020','--deep':'#2f4fc4'}
   },
   milk:{
-    l:{'--bg':'#f5f6f3','--surface':'#ffffff','--surface-2':'#e9ece8','--fg':'#16201f','--muted':'#586563','--line':'#dde2de','--accent':'#0b6477','--accent-soft':'#d9eef2','--accent-fg':'#ffffff','--deep':'#0e7490','--deep2':'#0a3f4d'},
+    l:{'--bg':'#f1ece1','--surface':'#fcfaf5','--surface-2':'#e7e1d4','--fg':'#1c211f','--muted':'#5b605b','--line':'#ddd6c7','--accent':'#0b6477','--accent-soft':'#d9eef2','--accent-fg':'#ffffff','--deep':'#0e7490','--deep2':'#0a3f4d'},
     k:{'--bg':'#0f1516','--surface':'#172021','--surface-2':'#1f2b2c','--fg':'#e8f0ef','--muted':'#9bacaa','--line':'#283636','--accent':'#6cc4d6','--accent-soft':'#17323a','--accent-fg':'#04181d','--deep':'#0b6477','--deep2':'#06303a'}
   },
   sunset:{
@@ -1007,6 +1022,7 @@ function gateUi(){
   const g=$('#gate');if(!g)return;
   const show=fbEnabled()&&!FB.user&&!lsGet(LS_FB,{}).on;
   g.hidden=!show;
+  if(typeof permUi==='function')permUi();
 }
 function fbQueue(){if(!FB.user)return;clearTimeout(FB.timer);FB.timer=setTimeout(()=>fbSync(),1500)}
 function fbTomb(id){const d=lsGet(LS_DEL,{});d[id]=Date.now();lsSet(LS_DEL,d);fbQueue()}
@@ -1098,13 +1114,21 @@ function drawLog(){
     const d=new Date(x.ts),tm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
     return '<div class="logrow"><div class="lt"><span>'+tm+' · '+esc(String(x.pkg||'').split('.').slice(-2).join('.'))+'</span><b class="'+cl+'">'+esc(st)+'</b></div><div class="lx">'+esc(line.slice(0,160))+'</div>'+(cl!=='good'?'<button class="btn ghost sm" data-act="logAdd" data-i="'+i+'" type="button">Қолмен қосу</button>':'')+'</div>'}).join('');
 }
+function permUi(){
+  const N=window.UnemNative,g=$('#perm');if(!N||!g)return;
+  let on=true;try{on=N.listenerEnabled()}catch(e){}
+  let later=false;try{later=!!sessionStorage.getItem('aq.permLater')}catch(e){}
+  const gate=$('#gate');
+  g.hidden=on||later||(gate&&!gate.hidden);
+}
 function nativeUi(){
+  permUi();
   const N=window.UnemNative,c=$('#nativeCard');if(!N||!c)return;
   c.hidden=false;$('#logCard').hidden=false;let on=false;try{on=N.listenerEnabled()}catch(e){}
   $('#nativeNote').textContent=on?'Қосулы':'Өшірулі';
   $('#nativeBtn').textContent=on?'Баптау':'Қосу';
 }
-document.addEventListener('click',e=>{if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
+document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#permGo,#permLater');if(t){if(t.id==='permGo'){try{window.UnemNative.openSettings()}catch(x){}}else{try{sessionStorage.setItem('aq.permLater','1')}catch(x){}permUi()}return}if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNative();nativeUi();fbSync()}});
 setInterval(()=>{if(!document.hidden)fbSync()},60000);
 setInterval(()=>{if(S.ready)syncNative()},4000);
