@@ -320,6 +320,7 @@ textarea.field{resize:vertical;min-height:116px}
     <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div></div>
     <div class="card" id="logCard" hidden><div class="srow"><div class="grow"><div class="t1">Хабарламалар</div><div class="t2">Соңғы ұсталғандар</div></div><button class="btn ghost sm" id="logBtn" data-act="logToggle" type="button">Көру</button></div><div id="logList" hidden></div></div>
     <div class="card" id="devCard" hidden><h2>Құрылғылар</h2><div id="devList"></div></div>
+    <div class="card" id="aiCard" hidden><h2>ЖИ</h2><div class="addcard"><input class="field" id="aiKey" type="password" autocomplete="off" placeholder="Gemini кілті" aria-label="Gemini API кілті"><button class="btn" data-act="saveAiKey" type="button">Сақтау</button></div><p class="note" id="aiNote"></p></div>
     <div class="card"><h2>Карталар</h2><div id="cardList"></div>
       <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
     <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
@@ -874,6 +875,8 @@ document.addEventListener('click',e=>{
     case 'logToggle':{const l=$('#logList');l.hidden=!l.hidden;$('#logBtn').textContent=l.hidden?'Көру':'Жасыру';if(!l.hidden)drawLog();break}
     case 'logAdd':{const x=LOGI[Number(b.dataset.i)];if(x){const line=((x.title||'')+' '+(x.text||'')).replace(/\s+/g,' ').trim();closeSheets();S.addType='out';setAddType('out');openSheet('#sheetAdd');$('#addText').value=line;parseAdd()}break}
     case 'devDel':{const id=b.dataset.id;if(FB.user&&id&&id!==DEVID){FB.db.ref('unem/'+FB.user.uid+'/devices/'+id).remove().then(()=>{delete FB.devices[id];drawDevs()}).catch(()=>toast('Алып тастау болмады'))}break}
+    case 'saveAiKey':{const v=$('#aiKey').value.trim();try{if(v)localStorage.setItem(LS_AIK,v);else if(!$('#aiKey').value)localStorage.removeItem(LS_AIK)}catch(e){}$('#aiKey').value='';GMODEL='';AINEXT=0;
+      if(v){toast('Тексеріп жатырмын…');gemJson('Тек JSON: {"ok":true}',v).then(()=>{toast('ЖИ қосылды');aiUi()}).catch(()=>{try{localStorage.removeItem(LS_AIK)}catch(e){}toast('Кілт жұмыс істемейді');aiUi()})}else{toast('ЖИ өшірілді');aiUi()}break}
     case 'atype':{S.addType=b.dataset.v;setAddType(S.addType);parseAdd();break}
     case 'ptype':{const p=S.preview[Number(b.dataset.i)];if(p){p.type=p.type==='in'?'out':'in';p.cat=p.type==='in'?'income':detectCat(p.raw,S.settings.rules);drawPreview()}break}
     case 'epick':S.edit.cat=b.dataset.cat;drawEditCats();break;
@@ -1016,7 +1019,7 @@ function fbUi(){
   $('#acctSub').textContent=u?(u.email||'Бұлтқа сақталады'):'Осы телефонда';
   $('#acctAv').textContent=((u&&(u.displayName||u.email))||'Қ').trim().charAt(0).toUpperCase();
   $('#cloudBtn').hidden=!!u;$('#cloudOutBtn').hidden=!u;
-  drawDevs();gateUi();
+  drawDevs();aiUi();gateUi();
 }
 function gateUi(){
   const g=$('#gate');if(!g)return;
@@ -1076,6 +1079,64 @@ window.unemAuth=async function(idToken){
 async function fbOut(){try{await FB.auth.signOut()}catch(e){}lsSet(LS_FB,{on:false});FB.user=null;fbUi();toast('Шықтыңыз')}
 
 /* ---------- Android bridge (қосымша ішінде ғана) ---------- */
+/* ---------- ЖИ: танылмаған хабарламаларды Gemini оқиды ---------- */
+const LS_AIK='aq.v1.gk';
+function aiKey(){try{return localStorage.getItem(LS_AIK)||''}catch(e){return ''}}
+let GMODEL='',AIBUSY=false,AINEXT=0;const AIING=new Set(),aiQ=[];
+async function gemModel(k){
+  if(GMODEL)return GMODEL;
+  try{
+    const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key='+encodeURIComponent(k));
+    const j=await r.json();
+    const ns=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>String(m.name).replace('models/','')).filter(n=>/^gemini-\d+(\.\d+)?-flash$/.test(n));
+    ns.sort((a,b)=>parseFloat(b.split('-')[1])-parseFloat(a.split('-')[1]));
+    GMODEL=ns[0]||'gemini-2.5-flash';
+  }catch(e){GMODEL='gemini-2.5-flash'}
+  return GMODEL;
+}
+async function gemJson(prompt,k){
+  const m=await gemModel(k);
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent?key='+encodeURIComponent(k),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',temperature:0}})});
+  if(!r.ok)throw new Error('http '+r.status);
+  const j=await r.json();const c=j.candidates&&j.candidates[0];
+  const t=c&&c.content&&c.content.parts&&c.content.parts[0]&&c.content.parts[0].text;
+  return JSON.parse(t);
+}
+function aiRedact(t){return String(t).replace(/(баланс|остаток|доступно|қалдық|қолжетімді|available)[\s\S]*$/i,' ').replace(/\*+\s*\d{3,4}/g,' ').replace(/\s+/g,' ').trim().slice(0,300)}
+function aiPrompt(line){
+  const cats=Object.keys(CATS).map(k=>k+'='+CATS[k].n).join(', ');
+  return 'Қазақстан банкінің push-хабарламасы. Тек JSON қайтар: {"amount":сан,"type":"out"|"in","merchant":"дүкеннің немесе адамның қысқа таза аты","cat":"санат кілті"}. Санаттар: '+cats+'. Кіріс болса cat=income. Төлем емес болса (код, жарнама, кіру, бонус) тек {"skip":true}. Хабарлама: '+aiRedact(line);
+}
+async function aiRun(){
+  if(AIBUSY)return;AIBUSY=true;const k=aiKey();const N=window.UnemNative;let ch=0,cnt=0;
+  try{
+    while(aiQ.length&&k&&cnt++<8){
+      const q=aiQ.shift();let res;
+      try{res=await gemJson(aiPrompt(q.line),k)}catch(e){AINEXT=Date.now()+90000;if(q.it)AIING.delete(q.it.id);aiQ.length=0;break}
+      const ack=()=>{if(q.it&&N){try{N.ack(JSON.stringify([q.it.id]))}catch(e){}}};
+      if(!res||res.skip||!(res.amount>0)){ack();continue}
+      const cat=CATS[res.cat]?res.cat:(res.type==='in'?'income':'other');
+      const mer=String(res.merchant||'').trim().slice(0,40);
+      const key=mkey(q.orig||mer);
+      if(q.kind==='fix'){
+        const t=S.txs.find(x=>x.id===q.txid);if(!t)continue;
+        if(mer)t.merchant=mer;if(cat!=='other')t.cat=cat;t.ai=1;t.mt=Date.now();
+      }else{
+        const it=q.it;
+        S.txs.push({id:uid(),nid:it.id,ts:it.ts,amount:res.amount,type:res.type==='in'?'in':'out',cat,merchant:mer||'Төлем',src:'push',ai:1});
+        ack();
+      }
+      if(key&&cat!=='other'&&cat!=='income'){S.settings.rules=Object.assign({},S.settings.rules);S.settings.rules[key]=cat}
+      if(key&&mer){S.settings.alias=Object.assign({},S.settings.alias);S.settings.alias[key]=mer}
+      ch++;
+    }
+  }finally{AIBUSY=false}
+  if(ch){lsSet(LS_TX,S.txs);try{saveSettings()}catch(e){}fbQueue();render();toast('ЖИ '+ch+' жазбаны реттеді')}
+}
+function aiUi(){
+  const c=$('#aiCard');if(!c)return;c.hidden=!fbEnabled();
+  const k=aiKey();$('#aiNote').innerHTML=k?'Қосулы. Кілт тек осы құрылғыда сақталады.':'Кілт: <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>';
+}
 function syncNative(){
   const N=window.UnemNative;if(!N||!S.ready||S.mode!=='local')return;
   let list=[];try{list=JSON.parse(N.pending()||'[]')}catch(e){return}
@@ -1084,7 +1145,9 @@ function syncNative(){
   list.forEach(it=>{
     done.push(it.id);if(seen.has(it.id))return;
     const line=((it.title||'').replace(/^\s*(kaspi\s*(gold|pay|red|bank)?|freedom\s*(bank)?|halyk|bcc|jusan)\s*$/i,'')+' '+(it.text||'')).replace(/\s+/g,' ').trim();
-    const p=parseLine(line,S.settings.rules,it.ts);if(!p)return;
+    const p=parseLine(line,S.settings.rules,it.ts);
+    if(!p){if(aiKey()&&!AIING.has(it.id)&&Date.now()>=AINEXT){done.pop();AIING.add(it.id);aiQ.push({kind:'new',it,line})}return}
+    {const al=S.settings.alias&&S.settings.alias[mkey(p.merchant)];if(al)p.merchant=al}
     if(p.type==='in'&&p.merchant&&p.merchant.indexOf(':')>0)p.merchant=p.merchant.split(':')[0].trim();
     const isW=/walletnfcrel|google\.android\.apps\.wallet|com\.google\.android\.gms/i.test(it.pkg||'');
     const twin=p.type==='out'?S.txs.find(x=>x.type==='out'&&x.amount===p.amount&&Math.abs(x.ts-p.ts)<=5*60*1000&&x.src==='push'&&!!x.wallet!==isW):null;
@@ -1097,9 +1160,11 @@ function syncNative(){
     const t={id:uid(),nid:it.id,ts:p.ts,amount:p.amount,type:p.type,cat:p.cat,merchant:p.merchant,src:'push'};
     if(isW){t.wallet=true;t.pay='nfc'}
     const tb=bankOfName(it.title)||(/kaspi/i.test(it.pkg||'')?'Kaspi':'');if(tb||p.bank)t.bank=tb||p.bank;if(p.card)t.card=p.card;if(p.bal!=null)t.bal=p.bal;S.txs.push(t);n++;
+    if(p.cat==='other'&&p.type==='out'&&aiKey())aiQ.push({kind:'fix',txid:t.id,line,orig:p.merchant});
   });
   lsSet(LS_TX,S.txs);if(n)fbQueue();try{N.ack(JSON.stringify(done))}catch(e){}
   render();if(n)toast('Хабарламадан '+n+' жазба қосылды');
+  if(aiQ.length)aiRun();
 }
 let LOGI=[];
 function drawLog(){
