@@ -320,7 +320,7 @@ textarea.field{resize:vertical;min-height:116px}
     <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div></div>
     <div class="card" id="logCard" hidden><div class="srow"><div class="grow"><div class="t1">Хабарламалар</div><div class="t2">Соңғы ұсталғандар</div></div><button class="btn ghost sm" id="logBtn" data-act="logToggle" type="button">Көру</button></div><div id="logList" hidden></div></div>
     <div class="card" id="devCard" hidden><h2>Құрылғылар</h2><div id="devList"></div></div>
-    <div class="card" id="aiCard" hidden><h2>ЖИ</h2><div class="addcard"><input class="field" id="aiKey" type="password" autocomplete="off" placeholder="Gemini кілті" aria-label="Gemini API кілті"><button class="btn" data-act="saveAiKey" type="button">Сақтау</button></div><p class="note" id="aiNote"></p></div>
+    <div class="card" id="aiCard" hidden><h2>ЖИ</h2><div class="addcard"><input class="field" id="aiKey" type="password" autocomplete="off" placeholder="Groq немесе Gemini кілті" aria-label="ЖИ API кілті"><button class="btn" data-act="saveAiKey" type="button">Сақтау</button></div><p class="note" id="aiNote"></p></div>
     <div class="card"><h2>Карталар</h2><div id="cardList"></div>
       <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
     <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
@@ -875,7 +875,7 @@ document.addEventListener('click',e=>{
     case 'logToggle':{const l=$('#logList');l.hidden=!l.hidden;$('#logBtn').textContent=l.hidden?'Көру':'Жасыру';if(!l.hidden)drawLog();break}
     case 'logAdd':{const x=LOGI[Number(b.dataset.i)];if(x){const line=((x.title||'')+' '+(x.text||'')).replace(/\s+/g,' ').trim();closeSheets();S.addType='out';setAddType('out');openSheet('#sheetAdd');$('#addText').value=line;parseAdd()}break}
     case 'devDel':{const id=b.dataset.id;if(FB.user&&id&&id!==DEVID){FB.db.ref('unem/'+FB.user.uid+'/devices/'+id).remove().then(()=>{delete FB.devices[id];drawDevs()}).catch(()=>toast('Алып тастау болмады'))}break}
-    case 'saveAiKey':{const v=$('#aiKey').value.trim();try{if(v)localStorage.setItem(LS_AIK,v);else if(!$('#aiKey').value)localStorage.removeItem(LS_AIK)}catch(e){}$('#aiKey').value='';GMODEL='';AINEXT=0;
+    case 'saveAiKey':{const v=$('#aiKey').value.trim();try{if(v)localStorage.setItem(LS_AIK,v);else if(!$('#aiKey').value)localStorage.removeItem(LS_AIK)}catch(e){}$('#aiKey').value='';GMODEL='';QMODEL='';AINEXT=0;
       if(v){toast('Тексеріп жатырмын…');gemJson('Тек JSON: {"ok":true}',v).then(()=>{toast('ЖИ қосылды');aiUi()}).catch(()=>{try{localStorage.removeItem(LS_AIK)}catch(e){}toast('Кілт жұмыс істемейді');aiUi()})}else{toast('ЖИ өшірілді');aiUi()}break}
     case 'atype':{S.addType=b.dataset.v;setAddType(S.addType);parseAdd();break}
     case 'ptype':{const p=S.preview[Number(b.dataset.i)];if(p){p.type=p.type==='in'?'out':'in';p.cat=p.type==='in'?'income':detectCat(p.raw,S.settings.rules);drawPreview()}break}
@@ -1094,7 +1094,25 @@ async function gemModel(k){
   }catch(e){GMODEL='gemini-2.5-flash'}
   return GMODEL;
 }
+let QMODEL='';
+async function groqModel(k){
+  if(QMODEL)return QMODEL;
+  try{
+    const r=await fetch('https://api.groq.com/openai/v1/models',{headers:{Authorization:'Bearer '+k}});
+    const j=await r.json();const ids=(j.data||[]).map(m=>m.id);
+    QMODEL=ids.find(i=>/llama-3\.3-70b/.test(i))||ids.find(i=>/^llama.*(70b|versatile)/.test(i)&&!/guard|whisper/.test(i))||'llama-3.3-70b-versatile';
+  }catch(e){QMODEL='llama-3.3-70b-versatile'}
+  return QMODEL;
+}
+async function groqJson(prompt,k){
+  const m=await groqModel(k);
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k},body:JSON.stringify({model:m,temperature:0,response_format:{type:'json_object'},messages:[{role:'user',content:prompt}]})});
+  if(!r.ok)throw new Error('http '+r.status);
+  const j=await r.json();
+  return JSON.parse(j.choices[0].message.content);
+}
 async function gemJson(prompt,k){
+  if(/^gsk_/.test(k))return groqJson(prompt,k);
   const m=await gemModel(k);
   const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent?key='+encodeURIComponent(k),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',temperature:0}})});
   if(!r.ok)throw new Error('http '+r.status);
@@ -1135,7 +1153,7 @@ async function aiRun(){
 }
 function aiUi(){
   const c=$('#aiCard');if(!c)return;c.hidden=!fbEnabled();
-  const k=aiKey();$('#aiNote').innerHTML=k?'Қосулы. Кілт тек осы құрылғыда сақталады.':'Кілт: <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>';
+  const k=aiKey();$('#aiNote').innerHTML=k?'Қосулы. Кілт тек осы құрылғыда сақталады.':'Кілт: <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>';
 }
 function syncNative(){
   const N=window.UnemNative;if(!N||!S.ready||S.mode!=='local')return;
