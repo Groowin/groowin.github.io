@@ -1083,8 +1083,9 @@ function syncNative(){
   const seen=new Set(S.txs.map(t=>t.nid).filter(Boolean));const done=[];let n=0;
   list.forEach(it=>{
     done.push(it.id);if(seen.has(it.id))return;
-    const line=((it.title||'')+' '+(it.text||'')).replace(/\s+/g,' ').trim();
+    const line=((it.title||'').replace(/^\s*(kaspi\s*(gold|pay|red|bank)?|freedom\s*(bank)?|halyk|bcc|jusan)\s*$/i,'')+' '+(it.text||'')).replace(/\s+/g,' ').trim();
     const p=parseLine(line,S.settings.rules,it.ts);if(!p)return;
+    if(p.type==='in'&&p.merchant&&p.merchant.indexOf(':')>0)p.merchant=p.merchant.split(':')[0].trim();
     const isW=/walletnfcrel|google\.android\.apps\.wallet|com\.google\.android\.gms/i.test(it.pkg||'');
     const twin=p.type==='out'?S.txs.find(x=>x.type==='out'&&x.amount===p.amount&&Math.abs(x.ts-p.ts)<=5*60*1000&&x.src==='push'&&!!x.wallet!==isW):null;
     if(twin){
