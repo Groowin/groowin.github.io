@@ -132,6 +132,7 @@ button{cursor:pointer;background:none;border:0;padding:0}
 .gate-in p{margin:0 0 26px;color:var(--muted);font-size:15px}
 .gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 18px;border-radius:999px;background:#fff;color:#1f1f1f;border:1px solid #d6d9de;font-weight:600;font-size:16px}
 .addrow{width:100%;padding:14px 16px;border-radius:20px;border:1.5px dashed var(--line);color:var(--muted);font-weight:600;font-size:14px;text-align:left}
+.logrow{padding:10px 0;border-top:1px solid var(--line);font-size:13px}.logrow .lt{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px}.logrow .lx{margin:4px 0 6px;word-break:break-word}.logrow b.good{color:var(--good)}.logrow b.bad{color:var(--bad)}.logrow b.warn{color:var(--warn)}
 .acct{display:flex;align-items:center;gap:12px}
 .acct .av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:18px;flex:none}
 .acct .grow,.srow .grow{flex:1;min-width:0}
@@ -301,6 +302,7 @@ textarea.field{resize:vertical;min-height:116px}
       <button class="btn ghost sm" id="cloudOutBtn" data-act="cloudOut" type="button" hidden>Шығу</button>
     </div>
     <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div></div>
+    <div class="card" id="logCard" hidden><div class="srow"><div class="grow"><div class="t1">Хабарламалар</div><div class="t2">Соңғы ұсталғандар</div></div><button class="btn ghost sm" id="logBtn" data-act="logToggle" type="button">Көру</button></div><div id="logList" hidden></div></div>
     <div class="card"><h2>Карталар</h2><div id="cardList"></div>
       <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
     <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
@@ -853,6 +855,8 @@ document.addEventListener('click',e=>{
     case 'saveAdd':saveAdd();break;
     case 'refine':refineAI();break;
     case 'pdel':S.preview.splice(Number(b.dataset.i),1);drawPreview();break;
+    case 'logToggle':{const l=$('#logList');l.hidden=!l.hidden;$('#logBtn').textContent=l.hidden?'Көру':'Жасыру';if(!l.hidden)drawLog();break}
+    case 'logAdd':{const x=LOGI[Number(b.dataset.i)];if(x){const line=((x.title||'')+' '+(x.text||'')).replace(/\s+/g,' ').trim();closeSheets();S.addType='out';setAddType('out');openSheet('#sheetAdd');$('#addText').value=line;parseAdd()}break}
     case 'atype':{S.addType=b.dataset.v;setAddType(S.addType);parseAdd();break}
     case 'ptype':{const p=S.preview[Number(b.dataset.i)];if(p){p.type=p.type==='in'?'out':'in';p.cat=p.type==='in'?'income':detectCat(p.raw,S.settings.rules);drawPreview()}break}
     case 'epick':S.edit.cat=b.dataset.cat;drawEditCats();break;
@@ -1061,9 +1065,23 @@ function syncNative(){
   lsSet(LS_TX,S.txs);if(n)fbQueue();try{N.ack(JSON.stringify(done))}catch(e){}
   render();if(n)toast('Хабарламадан '+n+' жазба қосылды');
 }
+let LOGI=[];
+function drawLog(){
+  const N=window.UnemNative,box=$('#logList');if(!N||!box)return;
+  let a=[];try{a=JSON.parse(N.log()||'[]')}catch(e){}
+  LOGI=a.slice().reverse().slice(0,25);
+  if(!LOGI.length){box.innerHTML='<p class="note">Әзірге хабарлама жоқ. Төлем жасап көріңіз.</p>';return}
+  box.innerHTML=LOGI.map((x,i)=>{
+    const line=((x.title||'')+' '+(x.text||'')).replace(/\s+/g,' ').trim();
+    let st,cl='';
+    if(!x.ok){st='өткізілді';cl='warn'}
+    else{const p=parseLine(line,S.settings.rules,x.ts);if(p){st=(p.type==='in'?'+':'−')+money(p.amount)+' · '+(CATS[p.cat]?CATS[p.cat].n:'');cl='good'}else{st='танылмады';cl='bad'}}
+    const d=new Date(x.ts),tm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+    return '<div class="logrow"><div class="lt"><span>'+tm+' · '+esc(String(x.pkg||'').split('.').slice(-2).join('.'))+'</span><b class="'+cl+'">'+esc(st)+'</b></div><div class="lx">'+esc(line.slice(0,160))+'</div>'+(cl!=='good'?'<button class="btn ghost sm" data-act="logAdd" data-i="'+i+'" type="button">Қолмен қосу</button>':'')+'</div>'}).join('');
+}
 function nativeUi(){
   const N=window.UnemNative,c=$('#nativeCard');if(!N||!c)return;
-  c.hidden=false;let on=false;try{on=N.listenerEnabled()}catch(e){}
+  c.hidden=false;$('#logCard').hidden=false;let on=false;try{on=N.listenerEnabled()}catch(e){}
   $('#nativeNote').textContent=on?'Қосулы':'Өшірулі';
   $('#nativeBtn').textContent=on?'Баптау':'Қосу';
 }
