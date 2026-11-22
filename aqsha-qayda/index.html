@@ -251,8 +251,8 @@ textarea.field{resize:vertical;min-height:116px}
 <div id="perm" hidden>
   <div class="perm-in">
     <div class="perm-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7M10 20a2 2 0 0 0 4 0"/></svg></div>
-    <h2>Хабарламаларға рұқсат</h2>
-    <p>Банк хабарламаларынан шығындар өздігінен жазылады.</p>
+    <h2 id="permT">Хабарламаларға рұқсат</h2>
+    <p id="permP">Банк хабарламаларынан шығындар өздігінен жазылады.</p>
     <button class="gbtn perm-go" id="permGo" type="button">Рұқсат беру</button>
     <button class="glink" id="permLater" type="button">Кейін</button>
   </div>
@@ -1117,10 +1117,14 @@ function drawLog(){
 }
 function permUi(){
   const N=window.UnemNative,g=$('#perm');if(!N||!g)return;
-  let on=true;try{on=N.listenerEnabled()}catch(e){}
-  let later=false;try{later=!!sessionStorage.getItem('aq.permLater')}catch(e){}
+  let on=true,bat=true;try{on=N.listenerEnabled()}catch(e){}try{bat=N.batteryOk()}catch(e){}
+  const step=!on?'listener':(!bat?'battery':'');
+  let later=false;try{later=!!sessionStorage.getItem('aq.permLater.'+step)}catch(e){}
   const gate=$('#gate');
-  g.hidden=on||later||(gate&&!gate.hidden);
+  g.dataset.step=step;
+  $('#permT').textContent=step==='battery'?'Фонда жұмыс істеу':'Хабарламаларға рұқсат';
+  $('#permP').textContent=step==='battery'?'Телефон Үнемді өшіріп тастамауы үшін батарея шектеуін алыңыз.':'Банк хабарламаларынан шығындар өздігінен жазылады.';
+  g.hidden=!step||later||(gate&&!gate.hidden);
 }
 function nativeUi(){
   permUi();
@@ -1129,7 +1133,7 @@ function nativeUi(){
   $('#nativeNote').textContent=on?'Қосулы':'Өшірулі';
   $('#nativeBtn').textContent=on?'Баптау':'Қосу';
 }
-document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#permGo,#permLater');if(t){if(t.id==='permGo'){try{window.UnemNative.openSettings()}catch(x){}}else{try{sessionStorage.setItem('aq.permLater','1')}catch(x){}permUi()}return}if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
+document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#permGo,#permLater');if(t){const st=$('#perm').dataset.step;if(t.id==='permGo'){try{st==='battery'?window.UnemNative.askBattery():window.UnemNative.openSettings()}catch(x){}}else{try{sessionStorage.setItem('aq.permLater.'+st,'1')}catch(x){}permUi()}return}if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNative();nativeUi();fbSync()}});
 setInterval(()=>{if(!document.hidden)fbSync()},60000);
 setInterval(()=>{if(S.ready)syncNative()},4000);
