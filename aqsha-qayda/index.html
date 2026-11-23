@@ -949,8 +949,8 @@ document.addEventListener('click',e=>{
     case 'logToggle':{const l=$('#logList');l.hidden=!l.hidden;$('#logBtn').textContent=l.hidden?'Көру':'Жасыру';if(!l.hidden)drawLog();break}
     case 'logAdd':{const x=LOGI[Number(b.dataset.i)];if(x){const line=((x.title||'')+' '+(x.text||'')).replace(/\s+/g,' ').trim();closeSheets();S.addType='out';setAddType('out');openSheet('#sheetAdd');$('#addText').value=line;parseAdd()}break}
     case 'devDel':{const id=b.dataset.id;if(FB.user&&id&&id!==DEVID){FB.db.ref('unem/'+FB.user.uid+'/devices/'+id).remove().then(()=>{delete FB.devices[id];drawDevs()}).catch(()=>toast('Алып тастау болмады'))}break}
-    case 'saveAiKey':{const v=$('#aiKey').value.trim();try{if(v)localStorage.setItem(LS_AIK,v);else if(!$('#aiKey').value)localStorage.removeItem(LS_AIK)}catch(e){}$('#aiKey').value='';QMODEL='';AINEXT=0;
-      if(v){toast('Тексеріп жатырмын…');aiJson('Тек JSON: {"ok":true}',v).then(()=>{toast('ЖИ қосылды');aiUi()}).catch(e=>{const c=e&&e.code;if(c===401||c===403){try{localStorage.removeItem(LS_AIK)}catch(x){}toast('Кілт қате')}else toast('Тексеру болмады'+(c?' ('+c+')':' — желі'));aiUi()})}else{toast('ЖИ өшірілді');aiUi()}break}
+    case 'saveAiKey':{const v=$('#aiKey').value.trim();try{if(v)localStorage.setItem(LS_AIK,v);else if(!$('#aiKey').value)localStorage.removeItem(LS_AIK)}catch(e){}$('#aiKey').value='';QMODEL='';QLIST=null;AINEXT=0;
+      if(v){toast('Тексеріп жатырмын…');aiJson('Тек JSON: {"ok":true}',v).then(()=>{toast('ЖИ қосылды');aiUi()}).catch(e=>{const c=e&&e.code;if(c===401||c===403){try{localStorage.removeItem(LS_AIK)}catch(x){}toast('Кілт қате')}else {let m='';try{m=(JSON.parse(e.text).error.message||'').slice(0,60)}catch(x){}toast('Тексеру болмады'+(c?' ('+c+')':' — желі')+(m?': '+m:''))};aiUi()})}else{toast('ЖИ өшірілді');aiUi()}break}
     case 'atype':{S.addType=b.dataset.v;setAddType(S.addType);parseAdd();break}
     case 'ptype':{const p=S.preview[Number(b.dataset.i)];if(p){p.type=p.type==='in'?'out':'in';p.cat=p.type==='in'?'income':detectCat(p.raw,S.settings.rules);drawPreview()}break}
     case 'epick':S.edit.cat=b.dataset.cat;drawEditCats();break;
@@ -1153,18 +1153,26 @@ function nfetch(method,url,auth,body){
   }
   return fetch(url,{method,headers:Object.assign({'Content-Type':'application/json'},auth?{Authorization:auth}:{}),body:method==='POST'?body:undefined}).then(async r=>{const t=await r.text();if(!r.ok)throw Object.assign(new Error('http '+r.status),{code:r.status,text:t});return t});
 }
-async function groqModel(k){
-  if(QMODEL)return QMODEL;
-  try{
-    const j=JSON.parse(await nfetch('GET','https://api.groq.com/openai/v1/models','Bearer '+k));const ids=(j.data||[]).map(m=>m.id);
-    QMODEL=ids.find(i=>/llama-3\.3-70b/.test(i))||ids.find(i=>/^llama.*(70b|versatile)/.test(i)&&!/guard|whisper/.test(i))||'llama-3.3-70b-versatile';
-  }catch(e){if(e&&(e.code===401||e.code===403))throw e;QMODEL='llama-3.3-70b-versatile'}
-  return QMODEL;
+let QLIST=null;
+async function groqModels(k){
+  if(QLIST)return QLIST;
+  let ids=[];
+  try{ids=(JSON.parse(await nfetch('GET','https://api.groq.com/openai/v1/models','Bearer '+k)).data||[]).map(m=>m.id)}catch(e){if(e&&(e.code===401||e.code===403))throw e}
+  const ok=ids.filter(i=>!/whisper|guard|tts|embed|playai|distil/i.test(i));
+  const pref=['llama-3.3-70b-versatile','llama-3.1-8b-instant','openai/gpt-oss-20b','openai/gpt-oss-120b'];
+  const l=[];pref.forEach(p=>{if(!ok.length||ok.includes(p))l.push(p)});ok.forEach(i=>{if(!l.includes(i))l.push(i)});
+  QLIST=l.length?l:pref;return QLIST;
+}
+async function groqChat(k,mk){
+  const list=await groqModels(k);let last;
+  for(const m of (QMODEL?[QMODEL].concat(list.filter(x=>x!==QMODEL)):list).slice(0,5)){
+    try{const t=await nfetch('POST','https://api.groq.com/openai/v1/chat/completions','Bearer '+k,JSON.stringify(mk(m)));QMODEL=m;return JSON.parse(t).choices[0].message.content}
+    catch(e){last=e;const c=e&&e.code;if(c===404||c===400||c===413)continue;throw e}
+  }
+  throw last;
 }
 async function aiJson(prompt,k){
-  const m=await groqModel(k);
-  const t=await nfetch('POST','https://api.groq.com/openai/v1/chat/completions','Bearer '+k,JSON.stringify({model:m,temperature:0,response_format:{type:'json_object'},messages:[{role:'user',content:prompt}]}));
-  return JSON.parse(JSON.parse(t).choices[0].message.content);
+  return JSON.parse(await groqChat(k,m=>({model:m,temperature:0,response_format:{type:'json_object'},messages:[{role:'user',content:prompt}]})));
 }
 function aiRedact(t){return String(t).replace(/(баланс|остаток|доступно|қалдық|қолжетімді|available)[\s\S]*$/i,' ').replace(/\*+\s*\d{3,4}/g,' ').replace(/\s+/g,' ').trim().slice(0,300)}
 function aiPrompt(line){
@@ -1202,9 +1210,8 @@ function aiAvail(){return !!(S.sample||aiKey())}
 function llmErr(e){const c=e&&e.code;if(c===401||c===403)return 'Кілт жұмыс істемейді. Баптаудан жаңасын енгізіңіз.';if(c===429||c==='rate_limited')return 'Лимит таусылды. Сәл кейін қайталаңыз.';if(c==='not_granted')return 'ЖИ-ға рұқсат берілмеді.';return 'ЖИ жауап бермеді. Қайталап көріңіз.'}
 async function llmText(sys,user){
   if(S.sample){const r=await S.sample(sys+'\n\n'+user,{cache:false});return String(r.text||'').trim()}
-  const k=aiKey(),m=await groqModel(k);
-  const t=await nfetch('POST','https://api.groq.com/openai/v1/chat/completions','Bearer '+k,JSON.stringify({model:m,temperature:0.2,messages:[{role:'system',content:sys},{role:'user',content:user}]}));
-  return String(JSON.parse(t).choices[0].message.content||'').trim();
+  const k=aiKey();
+  return String(await groqChat(k,m=>({model:m,temperature:0.2,messages:[{role:'system',content:sys},{role:'user',content:user}]}))||'').trim();
 }
 async function llmJson(prompt){
   if(S.sample)return S.sample.json(prompt,{modelTier:'quick'});
