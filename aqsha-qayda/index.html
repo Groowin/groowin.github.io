@@ -313,7 +313,7 @@ textarea.field{resize:vertical;min-height:116px}
       <button class="btn sm" id="cloudBtn" data-act="cloudIn" type="button">Кіру</button>
       <button class="btn ghost sm" id="cloudOutBtn" data-act="cloudOut" type="button" hidden>Шығу</button>
     </div>
-    <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div></div>
+    <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div><div class="srow" style="margin-top:12px"><div class="grow"><div class="t1">Фонда жұмыс</div></div><button class="btn ghost sm" id="batBtn" type="button">Баптау</button></div></div>
     <div class="card" id="logCard" hidden><div class="srow"><div class="grow"><div class="t1">Хабарламалар</div><div class="t2">Соңғы ұсталғандар</div></div><button class="btn ghost sm" id="logBtn" data-act="logToggle" type="button">Көру</button></div><div id="logList" hidden></div></div>
     <div class="card" id="devCard" hidden><h2>Құрылғылар</h2><div id="devList"></div></div>
     <div class="card" id="aiCard" hidden><h2>ЖИ</h2><div class="addcard"><input class="field" id="aiKey" type="password" autocomplete="off" placeholder="Groq кілті" aria-label="Groq API кілті"><button class="btn" data-act="saveAiKey" type="button">Сақтау</button></div></div>
@@ -1268,7 +1268,7 @@ function permUi(){
   const N=window.UnemNative,g=$('#perm');if(!N||!g)return;
   let on=true,bat=true;try{on=N.listenerEnabled()}catch(e){}try{bat=N.batteryOk()}catch(e){}
   const step=!on?'listener':(!bat?'battery':'');
-  let later=false;try{later=!!sessionStorage.getItem('aq.permLater.'+step)}catch(e){}
+  let later=false;try{later=step==='battery'?!!localStorage.getItem('aq.permBat'):!!sessionStorage.getItem('aq.permLater.'+step)}catch(e){}
   const gate=$('#gate');
   g.dataset.step=step;
   $('#permT').textContent=step==='battery'?'Фонда жұмыс істеу':'Хабарламаларға рұқсат';
@@ -1282,7 +1282,7 @@ function nativeUi(){
   $('#nativeNote').textContent=on?'Қосулы':'Өшірулі';
   $('#nativeBtn').textContent=on?'Баптау':'Қосу';
 }
-document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#permGo,#permLater');if(t){const st=$('#perm').dataset.step;if(t.id==='permGo'){try{st==='battery'?window.UnemNative.askBattery():window.UnemNative.openSettings()}catch(x){}}else{try{sessionStorage.setItem('aq.permLater.'+st,'1')}catch(x){}permUi()}return}if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
+document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#permGo,#permLater');if(t){const st=$('#perm').dataset.step;if(st==='battery'){try{localStorage.setItem('aq.permBat','1')}catch(x){}}if(t.id==='permGo'){try{st==='battery'?window.UnemNative.askBattery():window.UnemNative.openSettings()}catch(x){}}else{try{sessionStorage.setItem('aq.permLater.'+st,'1')}catch(x){}}permUi();return}if(e.target&&e.target.id==='batBtn'){try{window.UnemNative.askBattery()}catch(x){}return}if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNative();nativeUi();fbSync()}});
 setInterval(()=>{if(!document.hidden)fbSync()},60000);
 setInterval(()=>{if(S.ready)syncNative()},4000);
