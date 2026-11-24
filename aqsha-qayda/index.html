@@ -182,6 +182,8 @@ body.kb :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border
 .ins b{display:block;font-size:14px}
 .ins span{color:var(--muted);font-size:13px}
 .ins .warnb{border-left-color:var(--warn)}
+.newchat{display:flex;justify-content:flex-end;margin:-4px 0 6px}.tbtn{border:0;background:var(--accent-soft);color:var(--accent);font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}
+.fxrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px}.fxrow span{color:var(--muted);font-size:12px}.fxrow b{font-size:15px;font-weight:700}.fxrow div{text-align:center}
 .daygroup{display:flex;justify-content:space-between;align-items:baseline;padding:14px 4px 6px;color:var(--muted);font-size:13px;font-weight:600}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:4px 4px 12px;margin:0 -4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
@@ -459,7 +461,7 @@ const RULES=[
   ['subs',/netflix|spotify|youtube|apple\.com|itunes|icloud|google ?(one|play|storage)|chatgpt|openai|claude|anthropic|подписк|жазылым|okko|kinopoisk|кинопоиск|ivi\b/],
   ['telecom',/beeline|билайн|kcell|activ\b|tele2|altel|мобильн|байланыс|интернет|megaline|казахтелеком|kazakhtelecom/],
   ['transport',/yandex ?go|яндекс ?go|яндекс ?такси|indrive|indriver|такси|taxi|бензин|азс|helios|sinooil|qazaq ?oil|парковк|автобус|onay|жол ақы|көлік|проезд|мойка|шиномонтаж|техосмотр|заправк/],
-  ['food',/hlebzavod|hleb|xleb|bakery|пекарн|хлеб|нан\b|продукт|market\b|маркет|supermarket|магазин продукт|magnum|small|galmart|arbuz|ромат|ресторан|кафе|кофе|coffee|cafe|starbucks|dodo|kfc|burger|бургер|pizza|пицц|шаурма|glovo|wolt|яндекс ?еда|yandex ?eda|еда|тамақ|нан|дүкен|продукт|базар|рынок|шай|чай|обед|ужин|завтрак|суши|лагман|бешбармақ|айран|сүт|молоко|хлеб|market|маркет|пекарн|булочн|столов|асхана/],
+  ['food',/шашлык|шаурма|донер|самса|лагман|бешбармақ|плов|пицц|бургер|суши|кофе|кафе|ресторан|обед|ланч|түскі ас|тамақ|ас ішу|hlebzavod|hleb|xleb|bakery|пекарн|хлеб|нан\b|продукт|market\b|маркет|supermarket|магазин продукт|magnum|small|galmart|arbuz|ромат|ресторан|кафе|кофе|coffee|cafe|starbucks|dodo|kfc|burger|бургер|pizza|пицц|шаурма|glovo|wolt|яндекс ?еда|yandex ?eda|еда|тамақ|нан|дүкен|продукт|базар|рынок|шай|чай|обед|ужин|завтрак|суши|лагман|бешбармақ|айран|сүт|молоко|хлеб|market|маркет|пекарн|булочн|столов|асхана/],
   ['shop',/zara|lcw|waikiki|bershka|stradivarius|sportmaster|спортмастер|wildberries|ozon|aliexpress|temu|mechta|мечта|sulpak|технодом|одежда|киім|обувь|аяқ киім|lamoda|shop|kaspi магазин|техника|телефон|наушник/],
   ['health',/drug ?stores?|\bfarm\b|фарм|аптека|дәріхана|pharm|europharma|sadykhan|клиника|больница|стоматолог|дәрі|врач|анализ|медцентр|emirmed|invivo|олимп|дәрігер/],
   ['edu',/университет|универ|оқулық|книга|кітап|курс|udemy|coursera|stepik|репетитор|оқу|обучение|школа|колледж|канцтовар|канцеляр|принтер|ксерокс|xerox/],
@@ -730,7 +732,7 @@ function viewHome(){
   const catHtml=catRows.length?catRows.slice(0,4).map(([c,v])=>'<button class="row-btn" data-act="cat" data-cat="'+c+'" style="--cc:var(--c-'+c+')">'+dot(c)+'<div class="grow"><div class="t1">'+CATS[c].n+((S.settings.catLimits||{})[c]?' · лимиттің '+Math.round(v.sum/S.settings.catLimits[c]*100)+'%-ы':'')+'</div><div class="share"><i style="width:'+(v.sum/total*100).toFixed(1)+'%"></i></div></div><div style="text-align:right"><div class="amt num">'+money(v.sum)+'</div><div class="t2">'+Math.round(v.sum/total*100)+'% · '+v.n+' рет</div></div></button>').join(''):'<p class="note">Бұл айда шығын жоқ.</p>';
   let ins=insightsFor(out,total,y,m);
   const insHtml=(ins=alerts().concat(ins)).length?'<section class="card"><h2>Назар аударыңыз</h2><div class="ins">'+ins.slice(0,3).map(i=>'<div'+(i.bad?' class="warnb"':'')+'><b>'+esc(i.h)+'</b><span>'+esc(i.t)+'</span></div>').join('')+'</div></section>':'';
-  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+bankCards()+homeExtra()
+  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+bankCards()+homeExtra()+ratesStrip()
    +(out.length?'<section class="card"><h2>Соңғы төлемдер</h2><div class="list">'+out.slice().sort((a,b)=>b.ts-a.ts).slice(0,4).map(rowHtml).join('')+'</div><div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="tab" data-tab="history">Барлығы</button></div></section>':'')
    +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+insHtml;
 }
@@ -810,7 +812,7 @@ const GREET={r:'a',t:'Сәлем! 👋 Мен Үнемнің ЖИ көмекші
 function viewAdvice(){
   if(!aiAvail())return '<section class="card"><h2>ЖИ көмекші</h2><p class="note">Көмекшіні қосу үшін баптауда Groq кілтін енгізіңіз.</p><div class="btns" style="margin-top:10px"><button class="btn" data-act="settings">Баптау</button></div></section>';
   const C=S.chat,ms=C.msgs.length?C.msgs:[GREET];
-  return '<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+(C.busy?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
+  return (C.msgs.length?'<div class="newchat"><button class="tbtn" data-act="chatClear" type="button">Жаңа сөйлесу</button></div>':'')+'<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+(C.busy?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
 }
 function render(){
   if(S.txs.some(t=>t.demo||!CATS[t.cat])){S.txs=S.txs.filter(t=>!t.demo);S.txs.forEach(t=>{if(!CATS[t.cat])t.cat='other'});if(S.mode==='local')lsSet(LS_TX,S.txs)}
@@ -1180,6 +1182,13 @@ async function weeklyEnsure(){
   }
   lsSet(LS_WK,{k:key,text,ai,x:same?c.x:0});render();
 }
+function ratesStrip(){
+  const r=S.rates||lsGet('aq.v1.rates',null);
+  if(!r&&!ratesStrip.f){ratesStrip.f=1;getRates().then(x=>{if(x&&S.tab==='home')render()})}
+  else if(r&&Date.now()-r.t>3600e3&&!ratesStrip.f){ratesStrip.f=1;getRates().then(x=>{ratesStrip.f=0;if(x&&S.tab==='home')render()})}
+  if(!r)return '';
+  return '<section class="card fxrow" aria-label="Валюта бағамы"><div><span>USD</span><br><b class="num">'+fx(r.USD)+' ₸</b></div><div><span>EUR</span><br><b class="num">'+fx(r.EUR)+' ₸</b></div><div><span>RUB</span><br><b class="num">'+fx(r.RUB)+' ₸</b></div></section>';
+}
 function homeExtra(){
   if(!isCurrent(S.y,S.m))return '';
   let h='';
@@ -1309,6 +1318,7 @@ document.addEventListener('click',e=>{
     case 'cloudOut':fbOut();break;
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
     case 'ask':runAsk();break;
+    case 'chatClear':S.chat.msgs=[];S.chat.err='';lsSet('aq.v1.chat',[]);render();toast('Жаңа сөйлесу');break;
     case 'sug':runChip(Number(b.dataset.i));break;
     case 'actOk':actRun(b.dataset.m,Number(b.dataset.i),true);break;
     case 'actNo':actRun(b.dataset.m,Number(b.dataset.i),false);break;
@@ -1561,18 +1571,30 @@ function aiUi(){
 }
 function pkgBank(p){p=p||'';return /kaspi/i.test(p)?'Kaspi':/ffin|freedom/i.test(p)?'Freedom':/halyk|homebank/i.test(p)?'Halyk':/bcc|centercredit/i.test(p)?'BCC':''}
 function pushRules(){const N=window.UnemNative;if(!N||!N.setRules||!S.settings)return;try{const j=JSON.stringify(S.settings.rules||{});if(j!==pushRules.l){pushRules.l=j;N.setRules(j)}}catch(e){}}
-function applyCorr(){
-  const N=window.UnemNative;if(!N||!N.corrections)return;
+async function catFromText(text){
+  let c=detectCat(text,S.settings.rules);if(c!=='other'||!aiKey())return c;
+  try{const r=await llmText('Қолданушы төлемге түсініктеме жазды. Мәтінге қарап санат кілтін таңда: food, transport, subs, telecom, shop, health, edu, home, fun, transfer, other. Тек кілтті қайтар.','Мәтін: '+text);
+    const k=String(r||'').toLowerCase().match(/food|transport|subs|telecom|shop|health|edu|home|fun|transfer|other/);if(k)return k[0]}catch(e){}
+  return 'other';
+}
+let CORRING=false;
+async function applyCorr(){
+  const N=window.UnemNative;if(!N||!N.corrections||CORRING)return;
   let c=[];try{c=JSON.parse(N.corrections()||'[]')}catch(e){return}
   if(!c.length)return;
-  let ok=0;
-  c.forEach(x=>{
-    const t=S.txs.find(y=>y.nid===x.nid||y.nid2===x.nid);
-    if(!t)return
-    if(CATS[x.cat]){t.cat=x.cat;t.mt=Date.now();const k=mkey(t.merchant);if(k){S.settings.rules=Object.assign({},S.settings.rules);S.settings.rules[k]=x.cat}ok++}
-  });
-  if(ok){saveSettings();lsSet(LS_TX,S.txs);fbQueue();render();pushRules()}
-  try{N.ackCorr(c.length)}catch(e){}
+  CORRING=true;let ok=0;
+  try{
+    for(const x of c){
+      const t=S.txs.find(y=>y.nid===x.nid||y.nid2===x.nid);
+      if(!t)continue;
+      let cat=x.cat;
+      if(x.text){t.note=String(x.text).slice(0,80);if(!cat)cat=await catFromText(x.text)}
+      if(cat&&CATS[cat]){t.cat=cat;const k=mkey(t.merchant);if(k&&cat!=='other'){S.settings.rules=Object.assign({},S.settings.rules);S.settings.rules[k]=cat}}
+      t.mt=Date.now();ok++;
+    }
+    if(ok){saveSettings();lsSet(LS_TX,S.txs);fbQueue();render();pushRules()}
+    try{N.ackCorr(c.length)}catch(e){}
+  }finally{CORRING=false}
 }
 function syncNative(){
   const N=window.UnemNative;if(!N||!S.ready||S.mode!=='local')return;
