@@ -1484,10 +1484,25 @@ function aiUi(){
   const c=$('#aiCard');if(!c)return;c.hidden=!fbEnabled();
   $('#aiKey').placeholder=aiKey()?'Кілт сақталған':'Groq кілті';
 }
+function pushRules(){const N=window.UnemNative;if(!N||!N.setRules||!S.settings)return;try{const j=JSON.stringify(S.settings.rules||{});if(j!==pushRules.l){pushRules.l=j;N.setRules(j)}}catch(e){}}
+function applyCorr(){
+  const N=window.UnemNative;if(!N||!N.corrections)return;
+  let c=[];try{c=JSON.parse(N.corrections()||'[]')}catch(e){return}
+  if(!c.length)return;
+  let ok=0;
+  c.forEach(x=>{
+    const t=S.txs.find(y=>y.nid===x.nid||y.nid2===x.nid);
+    if(!t)return
+    if(CATS[x.cat]){t.cat=x.cat;t.mt=Date.now();const k=mkey(t.merchant);if(k){S.settings.rules=Object.assign({},S.settings.rules);S.settings.rules[k]=x.cat}ok++}
+  });
+  if(ok){saveSettings();lsSet(LS_TX,S.txs);fbQueue();render();pushRules()}
+  try{N.ackCorr(c.length)}catch(e){}
+}
 function syncNative(){
   const N=window.UnemNative;if(!N||!S.ready||S.mode!=='local')return;
+  pushRules();
   let list=[];try{list=JSON.parse(N.pending()||'[]')}catch(e){return}
-  if(!list.length)return;
+  if(!list.length){applyCorr();return}
   const seen=new Set(S.txs.map(t=>t.nid).filter(Boolean));const done=[];let n=0;
   list.forEach(it=>{
     done.push(it.id);if(seen.has(it.id))return;
@@ -1511,7 +1526,7 @@ function syncNative(){
   });
   lsSet(LS_TX,S.txs);if(n)fbQueue();try{N.ack(JSON.stringify(done))}catch(e){}
   render();if(n)toast('Хабарламадан '+n+' жазба қосылды');
-  if(aiQ.length)aiRun();
+  applyCorr();if(aiQ.length)aiRun();
 }
 let LOGI=[];
 function drawLog(){
