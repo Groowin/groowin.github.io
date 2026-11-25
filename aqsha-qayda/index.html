@@ -192,6 +192,11 @@ body.kb :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border
 .wbtn{align-self:flex-start;margin-top:8px;border:0;border-radius:999px;background:#fff;color:#111;font:inherit;font-weight:700;padding:12px 22px;cursor:pointer}
 @keyframes wup{from{opacity:0;transform:translateY(26px)}}@keyframes wfill{to{width:100%}}
 .wpill{padding:6px 11px;border-radius:999px;background:var(--surface-2);font-size:13px;font-weight:600}
+.chathead{position:sticky;top:0;z-index:6;display:flex;justify-content:space-between;align-items:center;padding:8px 2px;margin:0 0 4px;background:linear-gradient(var(--bg) 78%,transparent)}
+.ibtn{width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--surface);color:var(--fg);box-shadow:var(--shadow);cursor:pointer}.ibtn .ic{width:20px;height:20px}.ibtn.sm{width:34px;height:34px;box-shadow:none;background:transparent;color:var(--muted)}
+.hlist{display:flex;flex-direction:column;gap:6px;margin-top:6px}.hrow{display:flex;align-items:center;background:var(--surface);border-radius:18px;padding:4px 6px 4px 4px}.hrow .ht{flex:1;min-width:0;text-align:left;border:0;background:none;font:inherit;color:inherit;padding:10px 12px;cursor:pointer}.hrow .ht b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hrow .ht span{font-size:12px;color:var(--muted)}
+.w{opacity:0;display:inline-block;white-space:pre-wrap;animation:wshow .32s ease forwards}@keyframes wshow{from{opacity:0;filter:blur(5px);transform:translateY(3px)}to{opacity:1;filter:none;transform:none}}
+html{overscroll-behavior-x:none}
 .newchat{display:flex;justify-content:flex-end;margin:-4px 0 6px}.tbtn{border:0;background:var(--accent-soft);color:var(--accent);font:inherit;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer}
 .fxrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px}.fxrow span{color:var(--muted);font-size:12px}.fxrow b{font-size:15px;font-weight:700}.fxrow div{text-align:center}
 .daygroup{display:flex;justify-content:space-between;align-items:baseline;padding:14px 4px 6px;color:var(--muted);font-size:13px;font-weight:600}
@@ -398,7 +403,7 @@ body.chat.kbd #app{padding-bottom:64px}
   </div>
 </div>
 
-<div id="composer" hidden><div id="qchips" class="qchips"></div><div class="cmp-in"><input id="qaIn" type="text" enterkeyhint="send" autocomplete="off" placeholder="Көмекшіге жазыңыз" aria-label="Көмекшіге жазу"><button class="send" data-act="ask" aria-label="Жіберу" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div></div>
+<div id="composer" hidden><div class="cmp-in"><input id="qaIn" type="text" enterkeyhint="send" autocomplete="off" placeholder="Көмекшіге жазыңыз" aria-label="Көмекшіге жазу"><button class="send" data-act="ask" aria-label="Жіберу" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div></div>
 
 <div class="sheet" id="sheetAdd" hidden>
   <div class="scrim" data-act="close"></div>
@@ -836,13 +841,28 @@ function countUp(){
 function msgHtml(m){
   if(m.r!=='a')return '<div class="bub u"><p>'+esc(m.t)+'</p></div>';
   const wide=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan)\]\]/.test(m.t);
-  return '<div class="bub a'+(wide?' wide':'')+'">'+richHtml(m.t)+(m.acts||[]).map((x,i)=>actHtml(m,x,i)).join('')+(m.web?'<small>Интернеттен</small>':'')+'</div>';
+  return '<div class="bub a'+(wide?' wide':'')+'"'+(S.chat.rv&&S.chat.rv===m.ts?' data-rv="1"':'')+'>'+richHtml(m.t)+(m.acts||[]).map((x,i)=>actHtml(m,x,i)).join('')+(m.web?'<small>Интернеттен</small>':'')+'</div>';
 }
 const GREET={r:'a',t:'Сәлем! 👋 Мен Үнемнің ЖИ көмекшісімін. Шығындарыңды талдап, график көрсетемін, жазба қосып, өзгертіп, өшіре аламын, валюта курсын айтамын. Не істейік?'};
+function chatsGet(){return lsGet('aq.v1.chats',[])}
+function archiveChat(){
+  const m=S.chat.msgs;if(!m.some(x=>x.r==='u'))return;
+  const first=m.find(x=>x.r==='u'),L=chatsGet();
+  L.unshift({id:Date.now(),t:String(first.t).slice(0,48),ts:m[m.length-1].ts||Date.now(),msgs:m});
+  lsSet('aq.v1.chats',L.slice(0,30));
+}
+function chatNewDo(){archiveChat();S.chat.msgs=[];S.chat.err='';S.chat.hist=false;lsSet('aq.v1.chat',[]);render();window.scrollTo(0,0)}
+function histView(){
+  const L=chatsGet();
+  const head='<div class="chathead"><button class="ibtn" data-act="chatBack" aria-label="Артқа" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>'+(L.length?'<button class="ibtn" data-act="chatDelAll" aria-label="Тарихты тазалау" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>':'')+'</div>';
+  if(!L.length)return head+'<p class="note" style="text-align:center;margin-top:40px">Тарих бос</p>';
+  return head+'<div class="hlist">'+L.map((c,i)=>'<div class="hrow"><button class="ht" data-act="chatOpen" data-i="'+i+'" type="button"><b>'+esc(c.t)+'</b><span>'+dayLabel(c.ts)+' · '+c.msgs.length+' хабар</span></button><button class="ibtn sm" data-act="chatDel" data-i="'+i+'" aria-label="Өшіру" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button></div>').join('')+'</div>';
+}
 function viewAdvice(){
   if(!aiAvail())return '<section class="card"><h2>ЖИ көмекші</h2><p class="note">Көмекшіні қосу үшін баптауда Groq кілтін енгізіңіз.</p><div class="btns" style="margin-top:10px"><button class="btn" data-act="settings">Баптау</button></div></section>';
   const C=S.chat,ms=C.msgs.length?C.msgs:[GREET];
-  return (C.msgs.length?'<div class="newchat"><button class="tbtn" data-act="chatClear" type="button">Жаңа сөйлесу</button></div>':'')+'<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+(C.busy?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
+  if(C.hist)return histView();
+  return '<div class="chathead"><button class="ibtn" data-act="chatHist" aria-label="Сөйлесу тарихы" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></button><button class="ibtn" data-act="chatNew" aria-label="Жаңа сөйлесу" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button></div>'+'<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+(C.busy?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
 }
 function render(){
   if(S.txs.some(t=>t.demo||!CATS[t.cat])){S.txs=S.txs.filter(t=>!t.demo);S.txs.forEach(t=>{if(!CATS[t.cat])t.cat='other'});if(S.mode==='local')lsSet(LS_TX,S.txs)}
@@ -856,8 +876,9 @@ function render(){
   app.innerHTML=S.tab==='home'?viewHome():S.tab==='history'?viewHistory():viewAdvice();
   if(app.classList.contains('anim'))countUp();
   rollNums();
+  if(S.tab==='advice'&&S.chat&&S.chat.rv)revealWords();
   document.body.classList.toggle('chat',S.tab==='advice');
-  {const cmp=$('#composer');if(cmp){const show=S.tab==='advice'&&aiAvail();cmp.hidden=!show;if(show)drawChips()}}
+  {const cmp=$('#composer');if(cmp){const show=S.tab==='advice'&&aiAvail();cmp.hidden=!show;}}
   if(S.tab==='advice')chatAuto();
   setTimeout(weeklyEnsure,0);
   if(keepFocus==='searchBox'){const el=$('#searchBox');if(el){el.focus();const v=el.value;el.setSelectionRange(v.length,v.length)}}
@@ -1019,7 +1040,18 @@ const RATEQ=/курс|доллар|евро|рубл|юань|валют|usd|eur
 const CHIPS=[{t:'Бүгін қанша жұмсай аламын?'},{t:'Ай соңына болжам',local:'[[forecast]]'},{t:'Санаттар',local:'[[cats]]'},{t:'Доллар курсы',local:'[[rates]]',rates:1},{t:'Ай жоспары',local:'[[plan]]'},{t:'50/30/20',local:'[[rule]]'},{t:'Айдың Wrapped',wrap:1},{t:'Қай шығынды азайтам?'},{t:'Соңғы жазбаны өшір'}];
 S.chat={msgs:lsGet('aq.v1.chat',[]),busy:false,err:'',q:'',autoNext:0};
 function drawChips(){const el=$('#qchips');if(el&&!el.dataset.d){el.innerHTML=CHIPS.map((c,i)=>'<button class="chip" data-act="sug" data-i="'+i+'" type="button">'+esc(c.t)+'</button>').join('');el.dataset.d='1'}}
-function chatPush(r,t,web,acts){const C=S.chat;C.msgs.push({r,t,web:!!web,acts:acts&&acts.length?acts:undefined,ts:Date.now()+C.msgs.length});C.msgs=C.msgs.slice(-30);lsSet('aq.v1.chat',C.msgs)}
+function chatPush(r,t,web,acts){const C=S.chat;if(r==='a'&&Math.random()<.65&&String(t).length<900)C.rv=Date.now()+C.msgs.length;C.msgs.push({r,t,web:!!web,acts:acts&&acts.length?acts:undefined,ts:Date.now()+C.msgs.length});C.msgs=C.msgs.slice(-30);lsSet('aq.v1.chat',C.msgs)}
+function revealWords(){
+  const el=$('.bub[data-rv]');if(!el)return;
+  const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;if(rm){S.chat.rv=null;return}
+  const nodes=[];const walk=n=>{n.childNodes.forEach(c=>{if(c.nodeType===3){if(c.nodeValue.trim())nodes.push(c)}else if(c.nodeType===1&&!c.closest('.blk,.act,small,.actbox'))walk(c)})};walk(el);
+  let words=0;nodes.forEach(n=>words+=n.nodeValue.split(/\s+/).filter(Boolean).length);
+  const step=Math.max(18,Math.min(70,2400/Math.max(words,1)));let i=0;
+  nodes.forEach(n=>{const f=document.createDocumentFragment();n.nodeValue.split(/(\s+)/).forEach(w=>{if(!w)return;if(/^\s+$/.test(w)){f.appendChild(document.createTextNode(w));return}const sp=document.createElement('span');sp.className='w';sp.style.animationDelay=(i++*step)+'ms';sp.textContent=w;f.appendChild(sp)});n.replaceWith(f)});
+  const tot=i*step+400;
+  const sc=setInterval(()=>window.scrollTo({top:document.body.scrollHeight}),160);
+  setTimeout(()=>{clearInterval(sc);S.chat.rv=null},tot);
+}
 function chatRender(){render();setTimeout(()=>{window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})},50)}
 /* курс */
 async function getRates(){
@@ -1452,7 +1484,12 @@ document.addEventListener('click',e=>{
     case 'wrapped':wrapOpen(S.y,S.m);break;
     case 'wrapClose':wrapClose();break;
     case 'wrapLimit':{S.settings.budget=Number(b.dataset.v)||S.settings.budget;saveSettings();wrapClose();render();toast('Лимит қойылды');break}
-    case 'chatClear':S.chat.msgs=[];S.chat.err='';lsSet('aq.v1.chat',[]);render();toast('Жаңа сөйлесу');break;
+    case 'chatClear':case 'chatNew':chatNewDo();break;
+    case 'chatHist':S.chat.hist=true;render();window.scrollTo(0,0);break;
+    case 'chatBack':S.chat.hist=false;render();break;
+    case 'chatOpen':{const L=chatsGet(),c=L[Number(b.dataset.i)];if(!c)break;L.splice(Number(b.dataset.i),1);lsSet('aq.v1.chats',L);archiveChat();S.chat.msgs=c.msgs;lsSet('aq.v1.chat',c.msgs);S.chat.hist=false;render();setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),60);break}
+    case 'chatDel':{const L=chatsGet();L.splice(Number(b.dataset.i),1);lsSet('aq.v1.chats',L);render();break}
+    case 'chatDelAll':lsSet('aq.v1.chats',[]);render();toast('Тарих тазаланды');break;
     case 'sug':runChip(Number(b.dataset.i));break;
     case 'actOk':actRun(b.dataset.m,Number(b.dataset.i),true);break;
     case 'actNo':actRun(b.dataset.m,Number(b.dataset.i),false);break;
@@ -1797,10 +1834,16 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.targ
   const TABS=['home','history','advice'];let sx=0,sy=0,st=0,ok=false;
   document.addEventListener('touchstart',e=>{
     const t=e.target;ok=e.touches.length===1&&!(t.closest&&t.closest('input,textarea,select,.cards,.qchips,#wrp,.sheet:not([hidden]),#gate'))&&!$('.sheet:not([hidden])')&&!WR;
-    if(ok){sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()}
+    lock='';if(ok){sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()}
   },{passive:true});
+  let lock='';
+  document.addEventListener('touchmove',e=>{
+    if(!ok)return;const c=e.touches[0],dx=c.clientX-sx,dy=c.clientY-sy;
+    if(!lock&&(Math.abs(dx)>10||Math.abs(dy)>10))lock=Math.abs(dx)>Math.abs(dy)*1.3?'h':'v';
+    if(lock==='v'){ok=false}else if(lock==='h'&&e.cancelable)e.preventDefault();
+  },{passive:false});
   document.addEventListener('touchend',e=>{
-    if(!ok||!S.ready)return;ok=false;const c=e.changedTouches[0],dx=c.clientX-sx,dy=c.clientY-sy;
+    lock='';if(!ok||!S.ready)return;ok=false;const c=e.changedTouches[0],dx=c.clientX-sx,dy=c.clientY-sy;
     if(Math.abs(dx)<64||Math.abs(dy)>Math.abs(dx)*0.55||Date.now()-st>700)return;
     const i=TABS.indexOf(S.tab),n=i+(dx<0?1:-1);if(i<0||n<0||n>2)return;
     S.tab=TABS[n];render();window.scrollTo(0,0);
