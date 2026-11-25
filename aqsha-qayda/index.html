@@ -222,7 +222,7 @@ textarea.field{resize:vertical;min-height:116px}
 .empty{text-align:center;padding:26px 18px}
 .empty h2{font-size:18px;margin-bottom:6px}
 .empty p{color:var(--muted);margin:0 auto 16px;max-width:36ch}
-.dock{position:fixed;left:0;right:0;bottom:0;pointer-events:none;padding:28px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));z-index:5;background:linear-gradient(to bottom,transparent,var(--bg) 42%)}
+.dock{position:fixed;left:0;right:0;bottom:0;pointer-events:none;padding:28px max(16px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));z-index:5;background:linear-gradient(to bottom,transparent,var(--bg) 42%)}
 .dock-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:10px}
 .fab{pointer-events:auto;flex:none;width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--accent-fg);box-shadow:0 8px 22px color-mix(in srgb,var(--deep) 40%,transparent)}
 .fab .ic{width:26px;height:26px}
@@ -323,6 +323,15 @@ textarea.field{resize:vertical;min-height:116px}
 .bub{max-width:88%;padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
 .bub.a{align-self:flex-start;background:var(--surface-2);border-bottom-left-radius:6px}
 .bub.u{align-self:flex-end;background:var(--accent);color:var(--accent-fg);border-bottom-right-radius:6px}
+
+body.ai .top{display:none}
+.chathead{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:center;padding:10px 0 8px;margin:0 0 6px;background:var(--bg);border-bottom:1px solid var(--line)}
+.cht{text-align:center;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.chr{display:flex;gap:8px}
+.ibtn{border:1px solid var(--line)!important;box-shadow:none!important;background:var(--surface)}
+.bub.a{background:var(--surface);border:1px solid var(--line);color:var(--fg)}
+.cmp-in{box-shadow:none;border:1px solid var(--muted)}
+html,body{touch-action:pan-y}
 .bub small{display:block;margin-top:6px;font-size:11px;color:var(--muted)}
 .typing{display:inline-flex;gap:4px;padding:15px 16px}
 .typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);opacity:.4}
@@ -866,7 +875,7 @@ function viewAdvice(){
   if(!aiAvail())return '<section class="card"><h2>ЖИ көмекші</h2><p class="note">Көмекшіні қосу үшін баптауда Groq кілтін енгізіңіз.</p><div class="btns" style="margin-top:10px"><button class="btn" data-act="settings">Баптау</button></div></section>';
   const C=S.chat,ms=C.msgs.length?C.msgs:[GREET];
   if(C.hist)return histView();
-  return '<div class="chathead"><button class="ibtn" data-act="chatHist" aria-label="Сөйлесу тарихы" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></button><button class="ibtn" data-act="chatNew" aria-label="Жаңа сөйлесу" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button></div>'+'<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+((C.busy||C.auto)?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
+  return '<div class="chathead"><button class="ibtn" data-act="chatHist" aria-label="Сөйлесу тарихы" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></button><b class="cht">Көмекші</b><span class="chr"><button class="ibtn" data-act="chatNew" aria-label="Жаңа сөйлесу" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button><button class="ibtn" data-act="settings" aria-label="Баптаулар"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span></div>'+'<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+((C.busy||C.auto)?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
 }
 function render(){
   if(S.txs.some(t=>t.demo||!CATS[t.cat])){S.txs=S.txs.filter(t=>!t.demo);S.txs.forEach(t=>{if(!CATS[t.cat])t.cat='other'});if(S.mode==='local')lsSet(LS_TX,S.txs)}
@@ -882,7 +891,7 @@ function render(){
   rollNums();
   if(S.tab==='advice'&&S.chat&&S.chat.rv)revealWords();
   document.body.classList.toggle('chat',S.tab==='advice');
-  {const cmp=$('#composer');if(cmp){const show=S.tab==='advice'&&aiAvail();cmp.hidden=!show;}}
+  document.body.classList.toggle('ai',S.tab==='advice'&&aiAvail()&&!S.chat.hist);{const cmp=$('#composer');if(cmp){const show=S.tab==='advice'&&aiAvail();cmp.hidden=!show;}}
   if(S.tab==='advice')chatAuto();
   setTimeout(weeklyEnsure,0);
   if(keepFocus==='searchBox'){const el=$('#searchBox');if(el){el.focus();const v=el.value;el.setSelectionRange(v.length,v.length)}}
@@ -1871,13 +1880,13 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.targ
   const TABS=['home','history','advice'];let sx=0,sy=0,st=0,ok=false;
   document.addEventListener('touchstart',e=>{
     const t=e.target;ok=e.touches.length===1&&!(t.closest&&t.closest('input,textarea,select,.cards,.qchips,#wrp,.sheet:not([hidden]),#gate'))&&!$('.sheet:not([hidden])')&&!WR;
-    lock='';if(ok){sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()}
+    lock='';y0=window.scrollY;if(ok){sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()}
   },{passive:true});
-  let lock='';
+  let lock='',y0=0;
   document.addEventListener('touchmove',e=>{
     if(!ok)return;const c=e.touches[0],dx=c.clientX-sx,dy=c.clientY-sy;
     if(!lock&&(Math.abs(dx)>10||Math.abs(dy)>10))lock=Math.abs(dx)>Math.abs(dy)*1.3?'h':'v';
-    if(lock==='v'){ok=false}else if(lock==='h'&&e.cancelable)e.preventDefault();
+    if(lock==='v'){ok=false}else if(lock==='h'){if(e.cancelable)e.preventDefault();if(window.scrollY!==y0)window.scrollTo(0,y0)}
   },{passive:false});
   document.addEventListener('touchend',e=>{
     lock='';if(!ok||!S.ready)return;ok=false;const c=e.changedTouches[0],dx=c.clientX-sx,dy=c.clientY-sy;
