@@ -113,6 +113,7 @@ body.kb :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border
 .wcard .sub2{color:rgba(255,255,255,.95);font-size:13px;margin:0}
 .inc-h{display:flex;justify-content:space-between;align-items:baseline;color:var(--muted);font-size:13px;font-weight:600}.inc-h b{color:var(--accent);font-size:14px}.inc-a{font-size:26px;font-weight:800;margin:4px 0 10px}
 .inc .track i{background:var(--accent);animation:incgrow 1.1s cubic-bezier(.2,.8,.2,1) both}@keyframes incgrow{from{width:0}}
+.warncard{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid color-mix(in srgb,var(--warn) 45%,transparent)}.warncard b{display:block;font-size:15px}.warncard span{font-size:13px;color:var(--muted)}
 .wpill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.2);color:#fff;align-self:flex-start}
 .wcard .chart{margin:0}
 .wcard .chart .bar{fill:#fff;opacity:.5}
@@ -545,7 +546,8 @@ function parseLine(line,rules,nowTs){
   let merchant=toks.join(' ').replace(/^[\s,.;:·\-–—|]+|[\s,.;:·\-–—|]+$/g,'').replace(/\s*[,;]\s*/g,', ').slice(0,48);
   merchant=merchant.replace(/^(?:IP|ИП|ТОО|TOO|LLP|AO|АО)\s+/i,'').replace(/["«»“”']/g,'').replace(/\s*#\s*\d+\s*$/,'').replace(/\.$/,'').trim();
   if(merchant.length>3&&merchant===merchant.toUpperCase()&&/[A-Z]/.test(merchant))merchant=merchant.toLowerCase().replace(/(^|[\s.\-])([a-zа-яәіңғүұқөһё])/g,(m,a,b)=>a+b.toUpperCase());
-  if(!merchant)merchant='Атаусыз төлем';
+  merchant=merchant.replace(/\b(?:bcc\.kz|kaspi\.kz|halyk|homebank)\b/ig,'').replace(/\d?\*+\d*/g,'').replace(/^[\s\d.,:;\-]+$/,'').trim();
+  if(!merchant)merchant=/перевод|аударым/i.test(line)?'Аударым':'Атаусыз төлем';
   merchant=merchant.charAt(0).toUpperCase()+merchant.slice(1);
   if(/^карту другого банка$/i.test(merchant))merchant='Перевод на карту другого банка';
   if(/^(карты другого банка|карты)$/i.test(merchant))merchant='Пополнение с карты';
@@ -760,7 +762,7 @@ function viewHome(){
   const catHtml=catRows.length?catRows.slice(0,4).map(([c,v])=>'<button class="row-btn" data-act="cat" data-cat="'+c+'" style="--cc:var(--c-'+c+')">'+dot(c)+'<div class="grow"><div class="t1">'+CATS[c].n+((S.settings.catLimits||{})[c]?' · лимиттің '+Math.round(v.sum/S.settings.catLimits[c]*100)+'%-ы':'')+'</div><div class="share"><i style="width:'+(v.sum/total*100).toFixed(1)+'%"></i></div></div><div style="text-align:right"><div class="amt num">'+money(v.sum)+'</div><div class="t2">'+Math.round(v.sum/total*100)+'% · '+v.n+' рет</div></div></button>').join(''):'<p class="note">Бұл айда шығын жоқ.</p>';
   let ins=insightsFor(out,total,y,m);
   const insHtml=(ins=alerts().concat(ins)).length?'<section class="card"><h2>Назар аударыңыз</h2><div class="ins">'+ins.slice(0,3).map(i=>'<div'+(i.bad?' class="warnb"':'')+'><b>'+esc(i.h)+'</b><span>'+esc(i.t)+'</span></div>').join('')+'</div></section>':'';
-  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+bankCards()+homeExtra()+ratesStrip()+planCard()+incomeCard()+wrapCard(out,y,m)
+  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+bankCards()+homeExtra()+ratesStrip()+planCard()+incomeCard()+wrapCard(out,y,m)
    +(out.length?'<section class="card"><h2>Соңғы төлемдер</h2><div class="list">'+out.slice().sort((a,b)=>b.ts-a.ts).slice(0,4).map(rowHtml).join('')+'</div><div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="tab" data-tab="history">Барлығы</button></div></section>':'')
    +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+insHtml;
 }
@@ -864,7 +866,7 @@ function viewAdvice(){
   if(!aiAvail())return '<section class="card"><h2>ЖИ көмекші</h2><p class="note">Көмекшіні қосу үшін баптауда Groq кілтін енгізіңіз.</p><div class="btns" style="margin-top:10px"><button class="btn" data-act="settings">Баптау</button></div></section>';
   const C=S.chat,ms=C.msgs.length?C.msgs:[GREET];
   if(C.hist)return histView();
-  return '<div class="chathead"><button class="ibtn" data-act="chatHist" aria-label="Сөйлесу тарихы" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></button><button class="ibtn" data-act="chatNew" aria-label="Жаңа сөйлесу" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button></div>'+'<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+(C.busy?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
+  return '<div class="chathead"><button class="ibtn" data-act="chatHist" aria-label="Сөйлесу тарихы" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></button><button class="ibtn" data-act="chatNew" aria-label="Жаңа сөйлесу" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button></div>'+'<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+((C.busy||C.auto)?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
 }
 function render(){
   if(S.txs.some(t=>t.demo||!CATS[t.cat])){S.txs=S.txs.filter(t=>!t.demo);S.txs.forEach(t=>{if(!CATS[t.cat])t.cat='other'});if(S.mode==='local')lsSet(LS_TX,S.txs)}
@@ -1151,7 +1153,7 @@ async function chatReply(q,auto){
   const raw=cleanTxt(await llmChat(sys,hist.concat([{r:'u',t:q}]),web));
   const viaWeb=/compound/.test(S.lastModel||'');
   const ta=takeActs(raw);let t=takeCalc(ta.text);
-  if(t.length>60&&!viaWeb){
+  if(t.length>170&&!viaWeb){
     const keep=[];const tt=t.replace(BLKRE,m=>{keep.push(m);return '⟦'+(keep.length-1)+'⟧'});
     try{let r=cleanTxt(await llmText(REVIEW_SYS,'Деректер:\n'+ctx+'\n\nМәтін:\n'+tt));
       if(r&&r.length>tt.length*0.5&&r.length<tt.length*1.5&&keep.every((k,i)=>r.indexOf('⟦'+i+'⟧')>=0)){r=r.replace(/⟦(\d+)⟧/g,(m,i)=>keep[Number(i)]||'');t=r}}catch(e){}
@@ -1174,12 +1176,13 @@ async function runChip(i){
   if(!c.local){runAsk(c.t);return}
   chatPush('u',c.t);if(c.rates)await getRates();chatPush('a',c.local);chatRender();
 }
+setTimeout(()=>{try{if(aiKey())groqModels(aiKey()).catch(()=>{})}catch(e){}},1200);
 async function chatAuto(){
-  const C=S.chat;if(!S.ready||C.busy||!aiAvail()||S.txs.length<8)return;
+  const C=S.chat;if(!S.ready||C.busy||C.auto||!aiAvail()||S.txs.length<8)return;
   const day=dateVal(Date.now());if(lsGet('aq.v1.chatday','')===day||Date.now()<(C.autoNext||0))return;
-  C.busy=true;lsSet('aq.v1.chatday',day);render();
+  C.auto=true;lsSet('aq.v1.chatday',day);render();
   try{const a=await chatReply(AUTO_Q,true);chatPush('a',a.t,a.web,a.acts)}catch(e){lsSet('aq.v1.chatday','');C.autoNext=Date.now()+600000}
-  C.busy=false;if(S.tab==='advice')chatRender();
+  C.auto=false;if(S.tab==='advice')chatRender();
 }
 function todayAllow(){
   const B=S.settings.budget||0;if(B<=0)return null;
@@ -1368,6 +1371,14 @@ function ratesStrip(){
   if(!r)return '';
   return '<section class="card fxrow" aria-label="Валюта бағамы"><div><span>USD</span><br><b class="num">'+fx(r.USD)+' ₸</b></div><div><span>EUR</span><br><b class="num">'+fx(r.EUR)+' ₸</b></div><div><span>RUB</span><br><b class="num">'+fx(r.RUB)+' ₸</b></div></section>';
 }
+function listenWarn(){
+  const N=window.UnemNative;
+  if(!N){
+    if(!/Android/i.test(navigator.userAgent)||lsGet('aq.v1.apkhide',0)||window.__SAMPLE)return '';
+    return '<section class="card warncard"><div><b>Төлемдерді өздігінен оқу — тек Android қосымшасында</b><span>Бұл — браузер нұсқасы, ол хабарламаны оқи алмайды.</span></div><a class="btn" href="https://github.com/Groowin/unem-android/releases/latest/download/Unem.apk">APK жүктеу</a></section>';
+  }let on=true;try{on=N.listenerEnabled()}catch(e){}
+  return on?'':'<section class="card warncard"><div><b>Хабарламаны оқу өшірулі</b><span>Төлемдер өздігінен түспейді. Баптаудан Үнемді қосыңыз.</span></div><button class="btn" data-act="notifSet" type="button">Қосу</button></section>';
+}
 function homeExtra(){
   if(!isCurrent(S.y,S.m))return '';
   let h='';
@@ -1444,7 +1455,8 @@ function applyLook(){
     if(st==='minimal'&&ak==='blue')root.style.setProperty('--cardimg','url("data:image/webp;base64,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")');
   }
   const tc=document.querySelector('meta[name="theme-color"]');
-  if(tc){const bg=getComputedStyle(root).getPropertyValue('--bg').trim();if(bg)tc.setAttribute('content',bg)}
+  if(tc){const bg=getComputedStyle(root).getPropertyValue('--bg').trim();if(bg){tc.setAttribute('content',bg);
+    try{const N=window.UnemNative;if(N&&N.setBars){const h=bg.replace('#','');const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);N.setBars(bg,(0.299*r+0.587*g+0.114*b)>150)}}catch(e){}}}
   const sw=$('#swrow');
   if(sw){
     sw.innerHTML=['auto'].concat(Object.keys(ACC)).map(k=>{const col=k==='auto'?STYLES[st].l['--deep']:ACC[k].l.d;return '<button class="sw'+(k==='auto'?' auto':'')+'" style="--swc:'+col+'" data-act="accent" data-v="'+k+'" aria-label="'+(k==='auto'?'Стиль түсі':ACC[k].n)+'" aria-pressed="'+(S.look.accent===k)+'"></button>'}).join('');
@@ -1505,6 +1517,7 @@ document.addEventListener('click',e=>{
     case 'cloudOut':fbOut();break;
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
     case 'ask':runAsk();break;
+    case 'notifSet':try{window.UnemNative.openSettings()}catch(e){}break;
     case 'wrapped':wrapOpen(S.y,S.m);break;
     case 'wrapClose':wrapClose();break;
     case 'wrapLimit':{S.settings.budget=Number(b.dataset.v)||S.settings.budget;saveSettings();wrapClose();render();toast('Лимит қойылды');break}
@@ -1799,7 +1812,7 @@ function syncNative(){
   const seen=new Set(S.txs.map(t=>t.nid).filter(Boolean));const done=[];let n=0;
   list.forEach(it=>{
     done.push(it.id);if(seen.has(it.id))return;
-    const line=((it.title||'').replace(/^\s*(kaspi\s*(gold|pay|red|bank)?|freedom\s*(bank)?|halyk|bcc|jusan)\s*$/i,'')+' '+(it.text||'')).replace(/\s+/g,' ').trim();
+    const line=((it.title||'').replace(/^\s*(kaspi(\.kz)?\s*(gold|pay|red|bank)?|freedom\s*(bank)?|halyk|bcc(\.kz)?|jusan)\s*$/i,'')+' '+(it.text||'')).replace(/\s+/g,' ').replace(/карта\s*\d?\*+(\d{3,4})\s*:?/ig,'карта *$1 ').trim();
     const p=parseLine(line,S.settings.rules,it.ts);
     if(!p){if(aiKey()&&!AIING.has(it.id)&&Date.now()>=AINEXT){done.pop();AIING.add(it.id);aiQ.push({kind:'new',it,line})}return}
     {const al=S.settings.alias&&S.settings.alias[mkey(p.merchant)];if(al)p.merchant=al}
