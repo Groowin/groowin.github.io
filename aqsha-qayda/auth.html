@@ -16,7 +16,8 @@ b.onclick=function(){
   firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(function(r){
     var t=r.credential&&r.credential.idToken;
     if(!t){m.textContent='Токен алынбады. Қайта көріңіз.';b.disabled=false;return}
-    var url='unem://auth#'+encodeURIComponent(t);
+    var st=new URLSearchParams(location.search).get('s')||'';
+    var url='unem://auth?s='+encodeURIComponent(st)+'#'+encodeURIComponent(t);
     back.href=url;back.hidden=false;b.hidden=true;
     m.textContent='Кірдіңіз. Қосымша өзі ашылмаса, төмендегі батырманы басыңыз.';
     location.href=url;

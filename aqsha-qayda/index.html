@@ -499,11 +499,11 @@ const RULES=[
   ['subs',/netflix|spotify|youtube|apple\.com|itunes|icloud|google ?(one|play|storage)|chatgpt|openai|claude|anthropic|подписк|жазылым|okko|kinopoisk|кинопоиск|ivi\b/],
   ['telecom',/beeline|билайн|kcell|activ\b|tele2|altel|мобильн|байланыс|интернет|megaline|казахтелеком|kazakhtelecom/],
   ['transport',/yandex ?go|яндекс ?go|яндекс ?такси|indrive|indriver|такси|taxi|бензин|азс|helios|sinooil|qazaq ?oil|парковк|автобус|onay|жол ақы|көлік|проезд|мойка|шиномонтаж|техосмотр|заправк/],
-  ['food',/шашлык|шаурма|донер|самса|лагман|бешбармақ|плов|пицц|бургер|суши|кофе|кафе|ресторан|обед|ланч|түскі ас|тамақ|ас ішу|hlebzavod|hleb|xleb|bakery|пекарн|хлеб|нан\b|продукт|market\b|маркет|supermarket|магазин продукт|magnum|small|galmart|arbuz|ромат|ресторан|кафе|кофе|coffee|cafe|starbucks|dodo|kfc|burger|бургер|pizza|пицц|шаурма|glovo|wolt|яндекс ?еда|yandex ?eda|еда|тамақ|нан|дүкен|продукт|базар|рынок|шай|чай|обед|ужин|завтрак|суши|лагман|бешбармақ|айран|сүт|молоко|хлеб|market|маркет|пекарн|булочн|столов|асхана/],
+  ['food',/шашлык|шаурма|донер|самса|лагман|бешбармақ|плов|пицц|бургер|суши|кофе|кафе|ресторан|обед|ланч|түскі ас|тамақ|ас ішу|hlebzavod|hleb|xleb|bakery|пекарн|хлеб|(?<![а-яәіңғүұқөһё])нан(?![а-яәіңғүұқөһё])|продукт|market\b|маркет|supermarket|магазин продукт|magnum|small|galmart|arbuz|ромат|ресторан|кафе|кофе|coffee|cafe|starbucks|dodo|kfc|burger|бургер|pizza|пицц|шаурма|glovo|wolt|яндекс ?еда|yandex ?eda|(?<![а-яәіңғүұқөһё])еда|тамақ|нан|дүкен|продукт|базар|рынок|шай|чай|обед|ужин|завтрак|суши|лагман|бешбармақ|айран|сүт|молоко|хлеб|market|маркет|пекарн|булочн|столов|асхана/],
   ['shop',/zara|lcw|waikiki|bershka|stradivarius|sportmaster|спортмастер|wildberries|ozon|aliexpress|temu|mechta|мечта|sulpak|технодом|одежда|киім|обувь|аяқ киім|lamoda|shop|kaspi магазин|техника|телефон|наушник/],
   ['health',/drug ?stores?|\bfarm\b|фарм|аптека|дәріхана|pharm|europharma|sadykhan|клиника|больница|стоматолог|дәрі|врач|анализ|медцентр|emirmed|invivo|олимп|дәрігер/],
   ['edu',/университет|универ|оқулық|книга|кітап|курс|udemy|coursera|stepik|репетитор|оқу|обучение|школа|колледж|канцтовар|канцеляр|принтер|ксерокс|xerox/],
-  ['home',/жкх|коммун|электроэнерг|свет|аренда|жалға|ипотек|ремонт|мебель|ikea|leroy|квартир|үй төлем|газ\b|су\b/],
+  ['home',/жкх|коммун|электроэнерг|свет|аренда|жалға|ипотек|ремонт|мебель|ikea|leroy|квартир|үй төлем|(?<![а-яәіңғүұқөһё])(?:газ|су)(?![а-яәіңғүұқөһё])/],
   ['fun',/кино|cinema|kinopark|chaplin|steam|playstation|psn|xbox|ойын|игра|клуб|концерт|билет|театр|караоке|боулинг|бильярд|toy|аттракцион/],
   ['transfer',/перевод|аударым|p2p|перечисление|снятие наличных|банкомат|atm|қолма-қол|наличн/]
 ];
@@ -1216,7 +1216,7 @@ function ruleBlock(){
 }
 function wrapData(y,m){
   const out=outIn(y,m).filter(t=>!OWN.has(t.id));if(out.length<3)return null;
-  const total=sumOf(out),py=m===0?y-1:y,pm=(m+11)%12,prev=sumOf(outIn(py,pm));
+  const total=sumOf(out),py=m===0?y-1:y,pm=(m+11)%12,prev=sumOf(outIn(py,pm).filter(t=>new Date(t.ts).getDate()<=(isCurrent(y,m)?now0.getDate():31)));
   const cats=Array.from(groupBy(out,t=>t.cat)).sort((a,b)=>b[1].sum-a[1].sum);
   const mer=Array.from(groupBy(out,t=>mkey(t.merchant)||'-')).sort((a,b)=>b[1].n-a[1].n||b[1].sum-a[1].sum)[0][1];
   const big=out.slice().sort((a,b)=>b.amount-a.amount)[0];
@@ -1799,18 +1799,19 @@ async function applyCorr(){
   const N=window.UnemNative;if(!N||!N.corrections||CORRING)return;
   let c=[];try{c=JSON.parse(N.corrections()||'[]')}catch(e){return}
   if(!c.length)return;
-  CORRING=true;let ok=0;
+  CORRING=true;let ok=0,pre=c.length,idx=0;
   try{
     for(const x of c){
+      idx++;
       const t=S.txs.find(y=>y.nid===x.nid||y.nid2===x.nid);
-      if(!t)continue;
-      let cat=x.cat;
-      if(x.text){t.note=String(x.text).slice(0,80);if(!cat)cat=await catFromText(x.text)}
-      if(cat&&CATS[cat]){t.cat=cat;const k=mkey(t.merchant);if(k&&cat!=='other'){S.settings.rules=Object.assign({},S.settings.rules);S.settings.rules[k]=cat}}
-      t.mt=Date.now();ok++;
+      if(!t){if(pre===c.length)pre=idx-1;continue}
+      let cat=x.cat,ch=false;
+      if(x.text){const nt=String(x.text).slice(0,80);if(t.note!==nt){t.note=nt;ch=true}if(!cat)cat=await catFromText(x.text)}
+      if(cat&&CATS[cat]){if(t.cat!==cat){t.cat=cat;ch=true}const k=mkey(t.merchant);if(k&&cat!=='other'&&S.settings.rules[k]!==cat){S.settings.rules=Object.assign({},S.settings.rules);S.settings.rules[k]=cat;ch=true}}
+      if(ch){t.mt=Date.now();ok++}
     }
     if(ok){saveSettings();lsSet(LS_TX,S.txs);fbQueue();render();pushRules()}
-    try{N.ackCorr(c.length)}catch(e){}
+    try{if(pre>0)N.ackCorr(pre)}catch(e){}
   }finally{CORRING=false}
 }
 function syncNative(){
