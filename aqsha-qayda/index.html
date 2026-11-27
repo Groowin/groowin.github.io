@@ -390,6 +390,20 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
 #lockPad{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
 #lockPad button{height:72px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:26px;font-weight:600;box-shadow:var(--shadow)}
 #lockPad button:active{background:var(--accent-soft)}
+/* плитка көрінісі + нарық */
+html[data-home=tiles] .cards{display:grid;grid-template-columns:1fr 1fr;overflow:visible;scroll-snap-type:none;margin:0;padding:4px 0 8px;gap:12px}
+html[data-home=tiles] .cards>*{width:auto;min-width:0;min-height:170px;padding:16px}
+html[data-home=tiles] .dots{display:none}
+html[data-home=tiles] .wcard .big{font-size:26px}
+.mkt-h .seg button{white-space:nowrap;padding-inline:12px}
+.mkt{padding:16px}.mkt-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.mkt-h b{font-size:16px}
+.mkt-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mk{background:var(--surface-2,var(--accent-soft));border-radius:16px;padding:12px;min-width:0}
+.mk span{color:var(--muted);font-size:12px;display:block}.mk b{font-size:16px;display:block;margin:2px 0}
+.mk em{font-style:normal;font-size:12px;font-weight:700}.mk em.up{color:var(--good)}.mk em.dn{color:var(--bad)}
+.mk svg{display:block;width:100%;height:30px;margin-top:6px}.mk svg polyline{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mk svg.up polyline{stroke:var(--good)}.mk svg.dn polyline{stroke:var(--bad)}
+.mkt .note{margin:10px 0 0;font-size:11px}
 </style>
 </head>
 <body>
@@ -499,7 +513,9 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
     <div class="card"><h2>Көрініс</h2>
       <span class="lbl">Стиль</span>
       <div class="chips" role="group" aria-label="Стиль" style="flex-wrap:wrap;margin-bottom:6px"><button class="chip" data-act="style" data-v="milk" aria-pressed="true">Сүт</button><button class="chip" data-act="style" data-v="apple" aria-pressed="false">Apple</button><button class="chip" data-act="style" data-v="minimal" aria-pressed="false">Минимал</button><button class="chip" data-act="style" data-v="sage" aria-pressed="false">Орман</button><button class="chip" data-act="style" data-v="ocean" aria-pressed="false">Мұхит</button><button class="chip" data-act="style" data-v="sunset" aria-pressed="false">Күн батуы</button><button class="chip" data-act="style" data-v="night" aria-pressed="false">Түн</button><button class="chip" data-act="style" data-v="mono" aria-pressed="false">Шағын</button></div>
-      <span class="lbl">Тақырып</span>
+      <span class="lbl">Басты бет</span>
+      <div class="seg" role="group" aria-label="Басты бет"><button data-act="homeLayout" data-v="list" aria-pressed="true">Тізім</button><button data-act="homeLayout" data-v="tiles" aria-pressed="false">Плитка</button></div>
+      <span class="lbl" style="margin-top:14px">Тақырып</span>
       <div class="seg" role="group" aria-label="Тақырып"><button data-act="mode" data-v="light" aria-pressed="true">Жарық</button><button data-act="mode" data-v="dark" aria-pressed="false">Қараңғы</button><button data-act="mode" data-v="auto" aria-pressed="false">Жүйе</button></div>
       <div id="accWrap"><span class="lbl" style="margin-top:14px">Түс</span>
       <div class="swrow" id="swrow"></div></div>
@@ -509,7 +525,7 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 44 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 45 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -808,9 +824,9 @@ function viewHome(){
   const catHtml=catRows.length?catRows.slice(0,4).map(([c,v])=>'<button class="row-btn" data-act="cat" data-cat="'+c+'" style="--cc:var(--c-'+c+')">'+dot(c)+'<div class="grow"><div class="t1">'+CATS[c].n+((S.settings.catLimits||{})[c]?' · лимиттің '+Math.round(v.sum/S.settings.catLimits[c]*100)+'%-ы':'')+'</div><div class="share"><i style="width:'+(v.sum/total*100).toFixed(1)+'%"></i></div></div><div style="text-align:right"><div class="amt num">'+money(v.sum)+'</div><div class="t2">'+Math.round(v.sum/total*100)+'% · '+v.n+' рет</div></div></button>').join(''):'<p class="note">Бұл айда шығын жоқ.</p>';
   let ins=insightsFor(out,total,y,m);
   const insHtml=(ins=alerts().concat(ins)).length?'<section class="card"><h2>Назар аударыңыз</h2><div class="ins">'+ins.slice(0,3).map(i=>'<div'+(i.bad?' class="warnb"':'')+'><b>'+esc(i.h)+'</b><span>'+esc(i.t)+'</span></div>').join('')+'</div></section>':'';
-  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+bankCards()+homeExtra()+ratesStrip()+planCard()+incomeCard()+wrapCard(out,y,m)
+  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+bankCards()+homeExtra()+planCard()+incomeCard()+wrapCard(out,y,m)
    +(out.length?'<section class="card"><h2>Соңғы төлемдер</h2><div class="list">'+out.slice().sort((a,b)=>b.ts-a.ts).slice(0,4).map(rowHtml).join('')+'</div><div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="tab" data-tab="history">Барлығы</button></div></section>':'')
-   +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+insHtml;
+   +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+insHtml+marketSection();
 }
 function rowHtml(t){
   return '<button class="row-btn" data-act="edit" data-id="'+esc(t.id)+'" style="--cc:var(--c-'+t.cat+')">'+dot(t.cat)+'<div class="grow"><div class="t1">'+esc(t.merchant)+'</div><div class="t2">'+CATS[t.cat].n+(t.bank?' · '+esc(t.bank)+(t.card?' ••'+esc(t.card):''):'')+(OWN.has(t.id)?' · Өз аударым':(t.pay==='nfc'?' · NFC':''))+'</div></div><div class="amt num '+(t.type==='in'?'in':'')+'">'+(t.type==='in'?'+':'−')+money(t.amount)+'</div></button>';
@@ -1412,6 +1428,57 @@ async function weeklyEnsure(){
   }
   lsSet(LS_WK,{k:key,text,ai,x:same?c.x:0});render();
 }
+/* ---------- Нарық: валюта, алтын, Bitcoin (currency-api, CORS ашық) ---------- */
+const MK_KEYS=['kzt','eur','rub','cny','xau','btc','eth'];
+const MK_ITEMS=[
+  {n:'USD',u:'₸',v:r=>r.kzt},{n:'EUR',u:'₸',v:r=>r.kzt/r.eur},
+  {n:'100 RUB',u:'₸',v:r=>r.kzt/r.rub*100},{n:'CNY',u:'₸',v:r=>r.kzt/r.cny},
+  {n:'Алтын, 1 г',u:'₸',v:r=>r.kzt/r.xau/31.1035},{n:'Bitcoin',u:'$',v:r=>1/r.btc,big:1}
+];
+const MK={busy:false,ok:false};
+S.mkp=lsGet('aq.v1.mkp',7)===30?30:7;
+const mkDate=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
+async function mkFetch(ver){
+  const urls=['https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@'+ver+'/v1/currencies/usd.min.json','https://'+ver+'.currency-api.pages.dev/v1/currencies/usd.min.json'];
+  for(const u of urls){
+    try{const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);const res=await fetch(u,{signal:c.signal});clearTimeout(t);if(!res.ok)continue;
+      const j=await res.json(),o={};if(!j||!j.usd)continue;for(const k of MK_KEYS){const x=Number(j.usd[k]);if(!(x>0))throw 0;o[k]=x}return o}catch(e){}
+  }
+  return null;
+}
+async function mkLoad(){
+  if(MK.busy)return;MK.busy=true;
+  try{
+    const H=lsGet('aq.v1.mkd',{}),lt=lsGet('aq.v1.mkl',null);
+    const need=[];for(const n of [30,25,20,15,10,7,6,5,4,3,2,1])if(!H[mkDate(n)])need.push(n);
+    const got=await Promise.all(need.map(async n=>[mkDate(n),await mkFetch(mkDate(n))]));
+    got.forEach(([d,o])=>{if(o)H[d]=o});
+    let L=lt;if(!L||Date.now()-L.t>2*3600e3){const o=await mkFetch('latest');if(o)L={t:Date.now(),r:o}}
+    const keep={};Object.keys(H).sort().slice(-45).forEach(d=>keep[d]=H[d]);
+    lsSet('aq.v1.mkd',keep);if(L)lsSet('aq.v1.mkl',L);
+    MK.ok=!!L;
+  }catch(e){}
+  MK.busy=false;if(S.tab==='home')render();
+}
+function mkSeries(days){
+  const H=lsGet('aq.v1.mkd',{}),L=lsGet('aq.v1.mkl',null);if(!L)return null;
+  const pts=[];for(let n=days;n>=1;n--){const o=H[mkDate(n)];if(o)pts.push(o)}pts.push(L.r);
+  return pts.length>=3?pts:null;
+}
+function marketSection(){
+  const L=lsGet('aq.v1.mkl',null);
+  if((!L||Date.now()-L.t>2*3600e3)&&!MK.busy&&!marketSection.f){marketSection.f=1;setTimeout(()=>{marketSection.f=0},60000);mkLoad()}
+  const pts=mkSeries(S.mkp);if(!pts)return ratesStrip();
+  const tiles=MK_ITEMS.map(it=>{
+    const vs=pts.map(it.v).filter(x=>isFinite(x)&&x>0);if(vs.length<3)return '';
+    const last=vs[vs.length-1],first=vs[0],ch=(last/first-1)*100,up=ch>=0;
+    const mn=Math.min(...vs),mx=Math.max(...vs),rg=(mx-mn)||1,w=100,h=30;
+    const line=vs.map((v,i)=>(i/(vs.length-1)*w).toFixed(1)+','+(h-2-(v-mn)/rg*(h-4)).toFixed(1)).join(' ');
+    const price=it.big?nf.format(Math.round(last)):fx(last);
+    return '<div class="mk"><span>'+it.n+'</span><b class="num">'+price+' '+it.u+'</b><em class="'+(up?'up':'dn')+'">'+(up?'▲ +':'▼ ')+ch.toFixed(1).replace('.',',')+'%</em><svg class="'+(up?'up':'dn')+'" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"><polyline points="'+line+'"/></svg></div>';
+  }).join('');
+  return '<section class="card mkt" aria-label="Нарық"><div class="mkt-h"><b>Нарық</b><div class="seg" role="group" aria-label="Кезең"><button data-act="mkPeriod" data-v="7" aria-pressed="'+(S.mkp===7)+'">7 күн</button><button data-act="mkPeriod" data-v="30" aria-pressed="'+(S.mkp===30)+'">30 күн</button></div></div><div class="mkt-g">'+tiles+'</div><p class="note">Тек ақпарат үшін, инвестициялық кеңес емес. Құны күндік деректен алынған, нақты нарықтан сәл өзгеше болуы мүмкін.</p></section>';
+}
 function ratesStrip(){
   const r=S.rates||lsGet('aq.v1.rates',null);
   if(!r&&!ratesStrip.f){ratesStrip.f=1;getRates().then(x=>{if(x&&S.tab==='home')render()})}
@@ -1446,7 +1513,7 @@ const ACC={
   orange:{n:'Қызғылт сары',l:{a:'#a8430a',s:'#fde6d4',f:'#ffffff',d:'#a8430a'},k:{a:'#ffa05c',s:'#3a2314',f:'#2a1204',d:'#b04a0c'}},
   graphite:{n:'Графит',l:{a:'#3a4256',s:'#e6e9f0',f:'#ffffff',d:'#3a4256'},k:{a:'#aab3c8',s:'#232938',f:'#0d1018',d:'#343c50'}}
 };
-S.look=Object.assign({mode:'light',accent:'auto',style:'milk'},lsGet(LS_LOOK,{}));
+S.look=Object.assign({mode:'light',accent:'auto',style:'milk',home:'list'},lsGet(LS_LOOK,{}));
 if(S.look.v!==3){S.look.accent='auto';S.look.mode='light';S.look.style='milk';S.look.v=3}
 if(S.look.accent!=='auto'&&!ACC[S.look.accent])S.look.accent='auto';
 const STYLES={
@@ -1492,7 +1559,7 @@ function applyLook(){
   else if(VIEWER_THEME)root.setAttribute('data-theme',VIEWER_THEME);
   else root.removeAttribute('data-theme');
   const dark=mode==='dark'||(mode==='auto'&&viewerDark());
-  root.setAttribute('data-style',st);
+  root.setAttribute('data-style',st);root.setAttribute('data-home',S.look.home==='tiles'?'tiles':'list');
   LOOK_VARS.forEach(v=>root.style.removeProperty(v));
   const set=STYLES[st][dark?'k':'l'];
   Object.keys(set).forEach(k=>root.style.setProperty(k,set[k]));
@@ -1508,6 +1575,7 @@ function applyLook(){
   const sw=$('#swrow');
   if(sw){
     sw.innerHTML=['auto'].concat(Object.keys(ACC)).map(k=>{const col=k==='auto'?STYLES[st].l['--deep']:ACC[k].l.d;return '<button class="sw'+(k==='auto'?' auto':'')+'" style="--swc:'+col+'" data-act="accent" data-v="'+k+'" aria-label="'+(k==='auto'?'Стиль түсі':ACC[k].n)+'" aria-pressed="'+(S.look.accent===k)+'"></button>'}).join('');
+    $$('#sheetSet [data-act="homeLayout"]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===(S.look.home||'list'))));
     $$('#sheetSet [data-act="mode"]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.look.mode)));
     $$('#sheetSet [data-act="style"]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===st)));
     
@@ -1589,6 +1657,8 @@ document.addEventListener('click',e=>{
     case 'actNo':actRun(b.dataset.m,Number(b.dataset.i),false);break;
     case 'wkx':{const c=wkGet();if(c){c.x=1;lsSet(LS_WK,c)}render();break}
     case 'mode':S.look.mode=b.dataset.v;lsSet(LS_LOOK,S.look);applyLook();break;
+    case 'homeLayout':S.look.home=b.dataset.v==='tiles'?'tiles':'list';lsSet(LS_LOOK,S.look);applyLook();break;
+    case 'mkPeriod':S.mkp=b.dataset.v==='30'?30:7;lsSet('aq.v1.mkp',S.mkp);render();break;
     case 'style':S.look.style=b.dataset.v;lsSet(LS_LOOK,S.look);applyLook();break;
     case 'accent':S.look.accent=b.dataset.v;lsSet(LS_LOOK,S.look);applyLook();break;
   }
