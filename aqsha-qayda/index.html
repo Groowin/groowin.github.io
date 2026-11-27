@@ -373,6 +373,16 @@ body.chat.kbd #app{padding-bottom:64px}
 .act-s{font-size:13px;color:var(--muted)}
 @media (max-width:380px){.hero .big{font-size:34px}.prow{grid-template-columns:36px minmax(0,1fr) 28px;gap:8px}.prow .pa{width:92px}}
 @media (prefers-reduced-motion:no-preference){.fab,.btn,.chip,.row-btn{transition:transform .12s ease}.fab:active,.btn:active{transform:scale(.97)}}
+/* layout v2: құжат айналмайды, тек #app айналады; dock/composer ағыс ішінде */
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{height:100dvh;display:flex;flex-direction:column;padding-block:8px 0}
+.shell{order:1;flex:1;min-height:0;width:100%}
+#app{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:16px}
+#composer{position:static;order:2;flex:none;padding:6px 0 2px;background:none;border:0}
+.dock{position:static;order:3;flex:none;padding:6px 0 calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);z-index:5}
+body.kbd #composer{padding:6px 0 8px;background:none;border:0}
+body.chat #app,body.chat.kbd #app{padding-bottom:8px}
+body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 </style>
 </head>
 <body>
@@ -864,7 +874,7 @@ function archiveChat(){
   L.unshift({id:Date.now(),t:String(first.t).slice(0,48),ts:m[m.length-1].ts||Date.now(),msgs:m});
   lsSet('aq.v1.chats',L.slice(0,30));
 }
-function chatNewDo(){archiveChat();S.chat.msgs=[];S.chat.err='';S.chat.hist=false;lsSet('aq.v1.chat',[]);render();window.scrollTo(0,0)}
+function chatNewDo(){archiveChat();S.chat.msgs=[];S.chat.err='';S.chat.hist=false;lsSet('aq.v1.chat',[]);render();scr(0)}
 function histView(){
   const L=chatsGet();
   const head='<div class="chathead"><button class="ibtn" data-act="chatBack" aria-label="Артқа" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>'+(L.length?'<button class="ibtn" data-act="chatDelAll" aria-label="Тарихты тазалау" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>':'')+'</div>';
@@ -873,7 +883,7 @@ function histView(){
 }
 function viewAdvice(){
   if(!aiAvail())return '<section class="card"><h2>ЖИ көмекші</h2><p class="note">Көмекшіні қосу үшін баптауда Groq кілтін енгізіңіз.</p><div class="btns" style="margin-top:10px"><button class="btn" data-act="settings">Баптау</button></div></section>';
-  const C=S.chat,ms=C.msgs.length?C.msgs:[GREET];
+  const C=S.chat,ms=C.msgs;
   if(C.hist)return histView();
   return '<div class="chathead"><button class="ibtn" data-act="chatHist" aria-label="Сөйлесу тарихы" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></button><b class="cht">Көмекші</b><span class="chr"><button class="ibtn" data-act="chatNew" aria-label="Жаңа сөйлесу" type="button"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button><button class="ibtn" data-act="settings" aria-label="Баптаулар"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span></div>'+'<div class="msgs" id="msgs">'+ms.map(msgHtml).join('')+((C.busy||C.auto)?'<div class="bub a typing" aria-label="Жазып жатыр"><i></i><i></i><i></i></div>':'')+'</div>'+(C.err?'<p class="note" style="color:var(--bad)">'+esc(C.err)+'</p>':'');
 }
@@ -892,7 +902,6 @@ function render(){
   if(S.tab==='advice'&&S.chat&&S.chat.rv)revealWords();
   document.body.classList.toggle('chat',S.tab==='advice');
   document.body.classList.toggle('ai',S.tab==='advice'&&aiAvail()&&!S.chat.hist);{const cmp=$('#composer');if(cmp){const show=S.tab==='advice'&&aiAvail();cmp.hidden=!show;}}
-  if(S.tab==='advice')chatAuto();
   setTimeout(weeklyEnsure,0);
   if(keepFocus==='searchBox'){const el=$('#searchBox');if(el){el.focus();const v=el.value;el.setSelectionRange(v.length,v.length)}}
   
@@ -1063,10 +1072,11 @@ function revealWords(){
   const step=Math.max(18,Math.min(70,2400/Math.max(words,1)));let i=0;
   nodes.forEach(n=>{const f=document.createDocumentFragment();n.nodeValue.split(/(\s+)/).forEach(w=>{if(!w)return;if(/^\s+$/.test(w)){f.appendChild(document.createTextNode(w));return}const sp=document.createElement('span');sp.className='w';sp.style.animationDelay=(i++*step)+'ms';sp.textContent=w;f.appendChild(sp)});n.replaceWith(f)});
   const tot=i*step+400;
-  const sc=setInterval(()=>window.scrollTo({top:document.body.scrollHeight}),160);
+  const sc=setInterval(()=>scr(),160);
   setTimeout(()=>{clearInterval(sc);S.chat.rv=null},tot);
 }
-function chatRender(){render();setTimeout(()=>{window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})},50)}
+function scr(top,sm){const a=document.getElementById('app');if(a)a.scrollTo({top:top==null?a.scrollHeight:top,behavior:sm?'smooth':'auto'})}
+function chatRender(){render();setTimeout(()=>scr(null,true),50)}
 /* курс */
 async function getRates(){
   if(S.rates&&Date.now()-S.rates.t<3600e3)return S.rates;
@@ -1486,13 +1496,13 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;
   const a=b.dataset.act;
   switch(a){
-    case 'tab':S.tab=b.dataset.tab;render();setHash(S.tab);window.scrollTo(0,0);break;
+    case 'tab':S.tab=b.dataset.tab;render();setHash(S.tab);scr(0);break;
     case 'mo':{let m=S.m+Number(b.dataset.d),y=S.y;if(m<0){m=11;y--}if(m>11){m=0;y++}S.m=m;S.y=y;render();break}
     case 'add':{S.addType='out';setAddType('out');openSheet('#sheetAdd');S.preview=[];S.fails=[];drawPreview();setTimeout(()=>{$('#addText').focus()},50);break}
     case 'close':closeSheets();break;
     case 'settings':openSettings();break;
     case 'edit':openEdit(b.dataset.id);break;
-    case 'cat':S.filter=b.dataset.cat;S.tab='history';render();setHash('history');window.scrollTo(0,0);break;
+    case 'cat':S.filter=b.dataset.cat;S.tab='history';render();setHash('history');scr(0);break;
     case 'filter':S.filter=b.dataset.cat;render();break;
     case 'saveAdd':saveAdd();break;
     case 'pdel':S.preview.splice(Number(b.dataset.i),1);drawPreview();break;
@@ -1531,7 +1541,7 @@ document.addEventListener('click',e=>{
     case 'wrapClose':wrapClose();break;
     case 'wrapLimit':{S.settings.budget=Number(b.dataset.v)||S.settings.budget;saveSettings();wrapClose();render();toast('Лимит қойылды');break}
     case 'chatClear':case 'chatNew':chatNewDo();break;
-    case 'chatHist':S.chat.hist=true;render();window.scrollTo(0,0);break;
+    case 'chatHist':S.chat.hist=true;render();scr(0);break;
     case 'chatBack':S.chat.hist=false;render();break;
     case 'chatOpen':{const L=chatsGet(),c=L[Number(b.dataset.i)];if(!c)break;L.splice(Number(b.dataset.i),1);lsSet('aq.v1.chats',L);archiveChat();S.chat.msgs=c.msgs;lsSet('aq.v1.chat',c.msgs);S.chat.hist=false;render();setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),60);break}
     case 'chatDel':{const L=chatsGet();L.splice(Number(b.dataset.i),1);lsSet('aq.v1.chats',L);render();break}
@@ -1881,19 +1891,19 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.targ
   const TABS=['home','history','advice'];let sx=0,sy=0,st=0,ok=false;
   document.addEventListener('touchstart',e=>{
     const t=e.target;ok=e.touches.length===1&&!(t.closest&&t.closest('input,textarea,select,.cards,.qchips,#wrp,.sheet:not([hidden]),#gate'))&&!$('.sheet:not([hidden])')&&!WR;
-    lock='';y0=window.scrollY;if(ok){sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()}
+    lock='';y0=($('#app')||{}).scrollTop||0;if(ok){sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()}
   },{passive:true});
   let lock='',y0=0;
   document.addEventListener('touchmove',e=>{
     if(!ok)return;const c=e.touches[0],dx=c.clientX-sx,dy=c.clientY-sy;
     if(!lock&&(Math.abs(dx)>10||Math.abs(dy)>10))lock=Math.abs(dx)>Math.abs(dy)*1.3?'h':'v';
-    if(lock==='v'){ok=false}else if(lock==='h'){if(e.cancelable)e.preventDefault();if(window.scrollY!==y0)window.scrollTo(0,y0)}
+    if(lock==='v'){ok=false}else if(lock==='h'){if(e.cancelable)e.preventDefault();{const a=$('#app');if(a&&a.scrollTop!==y0)a.scrollTop=y0}}
   },{passive:false});
   document.addEventListener('touchend',e=>{
     lock='';if(!ok||!S.ready)return;ok=false;const c=e.changedTouches[0],dx=c.clientX-sx,dy=c.clientY-sy;
     if(Math.abs(dx)<64||Math.abs(dy)>Math.abs(dx)*0.55||Date.now()-st>700)return;
     const i=TABS.indexOf(S.tab),n=i+(dx<0?1:-1);if(i<0||n<0||n>2)return;
-    S.tab=TABS[n];render();window.scrollTo(0,0);
+    S.tab=TABS[n];render();scr(0);
     const a=$('#app');a.classList.remove('sw-l','sw-r');void a.offsetWidth;a.classList.add(dx<0?'sw-l':'sw-r');
     try{navigator.vibrate&&navigator.vibrate(8)}catch(x){}
   },{passive:true});
@@ -1902,7 +1912,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNativ
 setInterval(()=>{if(!document.hidden)fbSync()},60000);
 setInterval(()=>{if(S.ready)syncNative()},4000);
 let MAXH=window.innerHeight;
-function kbdCheck(){const vh=window.visualViewport?window.visualViewport.height:window.innerHeight;MAXH=Math.max(MAXH,window.innerHeight);const on=Math.min(vh,window.innerHeight)<MAXH*0.8;document.body.classList.toggle('kbd',on);if(on&&S.tab==='advice')setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),60)}
+function kbdCheck(){const vh=window.visualViewport?window.visualViewport.height:window.innerHeight;MAXH=Math.max(MAXH,window.innerHeight);const on=Math.min(vh,window.innerHeight)<MAXH*0.8;if(on===document.body.classList.contains('kbd'))return;document.body.classList.toggle('kbd',on);if(S.tab==='advice')requestAnimationFrame(()=>scr())}
 window.addEventListener('resize',kbdCheck);if(window.visualViewport)window.visualViewport.addEventListener('resize',kbdCheck);
 document.addEventListener('pointerdown',e=>{if(e.target&&e.target.closest&&e.target.closest('.send'))e.preventDefault()});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='qaIn'){e.preventDefault();runAsk();return}if(e.key==='Tab')document.body.classList.add('kb')});document.addEventListener('pointerdown',()=>document.body.classList.remove('kb'));
