@@ -525,7 +525,7 @@ html[data-home=tiles] .wcard .big{font-size:26px}
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 45 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 46 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -906,7 +906,7 @@ function countUp(){
 }
 function msgHtml(m){
   if(m.r!=='a')return '<div class="bub u"><p>'+esc(m.t)+'</p></div>';
-  const wide=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan|income)\]\]/.test(m.t);
+  const wide=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan|income|sim:|goalplan:)/.test(m.t);
   return '<div class="bub a'+(wide?' wide':'')+'"'+(S.chat.rv&&S.chat.rv===m.ts?' data-rv="1"':'')+'>'+richHtml(m.t)+(m.acts||[]).map((x,i)=>actHtml(m,x,i)).join('')+(m.web?'<small>Интернеттен</small>':'')+'</div>';
 }
 const GREET={r:'a',t:'Сәлем! 👋 Мен Үнемнің ЖИ көмекшісімін. Шығындарыңды талдап, график көрсетемін, жазба қосып, өзгертіп, өшіре аламын, валюта курсын айтамын. Не істейік?'};
@@ -1096,11 +1096,12 @@ function qaContext(){
   {const al=alerts();if(al.length)s+='Қазіргі ескертулер: '+al.map(x=>x.h+' — '+x.t).join('; ')+'\n'}
   const rc=recurring();if(rc.length)s+='Тұрақты төлемдер: '+rc.map(r=>r.name+' '+r.amount+' ₸, '+perLabel(r.per)+', келесісі '+inDays(r.next)).join('; ')+'\n';
   {const a=todayAllow();if(a)s+='Бүгінгі күндік норма (лимиттен): '+Math.round(a.allow)+' ₸, бүгін жұмсалды '+Math.round(a.sp)+' ₸, қалды '+Math.round(a.left)+' ₸.\n'}
+  {const pts=mkSeries(7);if(pts){const g=x=>x.kzt/x.xau/31.1035,b=x=>1/x.btc,f=pts[0],l=pts[pts.length-1];s+='Нарық (күндік дерек, 7 күн): алтын 1 г ≈ '+Math.round(g(l))+' ₸ ('+(g(l)>=g(f)?'+':'')+((g(l)/g(f)-1)*100).toFixed(1)+'%), Bitcoin ≈ $'+Math.round(b(l))+' ('+(b(l)>=b(f)?'+':'')+((b(l)/b(f)-1)*100).toFixed(1)+'%).\n'}}
   if(S.rates&&Date.now()-S.rates.t<7200e3)s+='Курс (теңге): 1 USD = '+fx(S.rates.USD)+'; 1 EUR = '+fx(S.rates.EUR)+'; 1 RUB = '+fx(S.rates.RUB)+'; 1 CNY = '+fx(S.rates.CNY)+'.\n';
   s+='Соңғы жазбалар (id | күні | орын | сома | санат | түрі):\n'+S.txs.slice().sort((a,b)=>b.ts-a.ts).slice(0,40).map(t=>t.id+' | '+dateVal(t.ts)+' | '+t.merchant+' | '+Math.round(t.amount)+' | '+CATS[t.cat].n+'('+t.cat+') | '+(t.type==='in'?'кіріс':'шығыс')).join('\n');
   return s;
 }
-const CHAT_SYS='Сен — «Үнем» қосымшасының ЖИ көмекшісісің. Үнем — ақшаны үнемдеуге арналған қосымша: банк хабарламаларынан шығындарды өзі жазып отырады. Қосымшаның негізін қалаған — Аскеров Алмас (кім жасады деп сұраса, осылай жауап бер).\nМәнер: адамдай, жылы, табиғи сөйлес, қолданушыға «сен» де. Сәлемдессе — сәлем бер, жағдайын сұра; қарапайым әңгімеге де қысқа жауап бер, одан кейін қажет болса ақша тақырыбына жеңіл бұр. Таза қазақ тілінде, қысқа сөйлеммен жаз; орыс сөзін қазақ сөзінің орнына қолданба (деректегі атаулардан басқа). Ойдан сөз құрастырма. Эмодзиді орынды (1–2) қолдан, маңызды сан мен сөзді **қалың**, екпінді *курсив* етіп жаза аласың, қысқа тізімге «- » қолдан. Тақырып (#) қолданба. Әдетте 3–6 сөйлем.\nҚосымша бөлімдері (тек осыларды ата, басқа бөлім ойлап таппа): Басты (шығын, лимит, карталар), Тарих (іздеу, түзету), осы чат, Баптау (карталар, айлық лимит, көрініс, ЖИ кілті).\nКөрнекі блоктар: нақты деректен қосымша өзі сызады, сен сан жазбайсың, тек белгіні жеке жолға қой: [[forecast]] ай соңына болжам; [[rule]] 50/30/20 талдауы (кіріс бар болса); [[income]] келесі түсім болжамы; [[plan]] осы айдың жоспары (өткен айлардағы әдетке негізделген болжам); [[cats]] санаттар бөлінісі; [[months]] айларды салыстыру; [[days]] күндік график; [[recurring]] тұрақты төлемдер; [[rates]] валюта курсы. Қолданушы график, көрсет, салыстыр десе, тиісті блокты қой.\nЕсептеу: күрделі арифметиканы өзің істеме, [[calc:1500*4+200]] деп жаз, қосымша есептеп береді.\nӘрекеттер: қолданушы жазба қосуды, өзгертуді немесе өшіруді сұраса, жауап соңына [[do:{...}]] жаз, қолданушы растайды. Үлгі: [[do:{"op":"add","type":"out","amount":3500,"merchant":"Magnum","cat":"food","date":"2026-11-24"}]] [[do:{"op":"edit","id":"t123","set":{"cat":"food","amount":2000}}]] [[do:{"op":"delete","id":"t123"}]]. id-ді тек деректегі «Соңғы жазбалар» тізімінен ал, жоқ болса нақтылап сұра. cat мәндері: food, transport, subs, telecom, shop, health, edu, home, fun, transfer, other, income. Бюджет ережелері (қолданушының жағдайына сай біреуін ғана нақты сандармен ұсын, бәрін тізбелеме): 50/30/20 (қажеттілік/қалау/жинақ); 70/20/10 (кіріс аз болса: шығын/жинақ/қарызды өтеу немесе көмек); «алдымен өзіңе төле» (түскен күні 10–20% жинаққа аудару); 24 сағат ережесі (қымбат сатып алуды бір күн күту); аптасына бір шығынсыз күн; конверт әдісі (санатқа лимит қою).\nҚосымша әрекеттер: лимит [[do:{"op":"limit","cat":"food","amount":80000}]] (amount 0 — лимитті алу); жинақ мақсаты [[do:{"op":"goal","name":"Телефон","amount":300000,"date":"2027-02-01"}]]; қолданушы өз әдеті, мақсаты, табысы туралы тұрақты нәрсе айтса, оны [[do:{"op":"note","text":"қысқа факт"}]] деп сақта. Бірнеше әрекет болса, әрқайсысын жеке [[do:...]] жаз. Әрекетті орындадым деп айтпа, «растасаң қосамын» деп айт.\nТек берілген деректерге сүйен, сан ойлап таппа. Валюта курсы деректе берілсе ғана ата. Жауап деректе жоқ болса, соны ашық айт.';
+const CHAT_SYS='Сен — «Үнем» қосымшасының ЖИ көмекшісісің. Үнем — ақшаны үнемдеуге арналған қосымша: банк хабарламаларынан шығындарды өзі жазып отырады. Қосымшаның негізін қалаған — Аскеров Алмас (кім жасады деп сұраса, осылай жауап бер).\nМәнер: адамдай, жылы, табиғи сөйлес, қолданушыға «сен» де. Сәлемдессе — сәлем бер, жағдайын сұра; қарапайым әңгімеге де қысқа жауап бер, одан кейін қажет болса ақша тақырыбына жеңіл бұр. Таза қазақ тілінде, қысқа сөйлеммен жаз; орыс сөзін қазақ сөзінің орнына қолданба (деректегі атаулардан басқа). Ойдан сөз құрастырма. Эмодзиді орынды (1–2) қолдан, маңызды сан мен сөзді **қалың**, екпінді *курсив* етіп жаза аласың, қысқа тізімге «- » қолдан. Тақырып (#) қолданба. Әдетте 3–6 сөйлем.\nҚосымша бөлімдері (тек осыларды ата, басқа бөлім ойлап таппа): Басты (шығын, лимит, карталар), Тарих (іздеу, түзету), осы чат, Баптау (карталар, айлық лимит, көрініс, ЖИ кілті).\nКөрнекі блоктар: нақты деректен қосымша өзі сызады, сен сан жазбайсың, тек белгіні жеке жолға қой: [[forecast]] ай соңына болжам; [[rule]] 50/30/20 талдауы (кіріс бар болса); [[income]] келесі түсім болжамы; [[plan]] осы айдың жоспары (өткен айлардағы әдетке негізделген болжам); [[cats]] санаттар бөлінісі; [[months]] айларды салыстыру; [[days]] күндік график; [[recurring]] тұрақты төлемдер; [[rates]] валюта курсы. Қолданушы график, көрсет, салыстыр десе, тиісті блокты қой.\nЕсептеу: күрделі арифметиканы өзің істеме, [[calc:1500*4+200]] деп жаз, қосымша есептеп береді.\nЕсеп құралдары (сандарды өзің ЕШҚАШАН ойдан айтпа, нақты кезеңге сан керек болса осыларды қолдан, қосымша есептеп мәтінге қояды): [[q:spend cat=food month=2026-10]] шығын сомасы; [[q:income month=2026-10]] кіріс; [[q:count cat=food last=30]] жазба саны; [[q:avgday last=30]] күніне орташа; [[q:top cat=food last=90 n=3]] ең көп жұмсалған орындар; [[q:max last=30]] ең ірі төлем; [[q:cmp a=2026-10 b=2026-11 cat=food]] екі айды салыстыру. Параметрлер: cat, merchant, month=ЖЖЖЖ-АА, from=ЖЖЖЖ-АА-КК, to=ЖЖЖЖ-АА-КК, last=күн саны, type=in/out. Сценарий блоктары, жеке жолға: [[sim:cat=food,cut=20]] (санатты 20% қысқартсаң, 6 және 12 айда қанша үнем; cat жазбасаң барлық шығын), [[goalplan:amount=300000,months=6]] немесе [[goalplan:amount=300000,monthly=40000]] (мақсатқа жету есебі). «Қанша кетті», «салыстыр», «қысқартсам не болады», «қанша айда жинаймын» сұрақтарында осыларды қой, сан жазбай.\nИнвестиция мен нарық: нақты акция, валюта немесе криптовалютаны сатып ал/сатпа деп айтпа, болашақ бағаны болжама; тек түсіндір, тәуекелді ескерт, бұл қаржылық кеңес емес екенін бір сөйлеммен ата. Қолданушының жинағын алдымен қор (3–6 айлық шығын) және қарыз жабуға бағытта.\nӘрекеттер: қолданушы жазба қосуды, өзгертуді немесе өшіруді сұраса, жауап соңына [[do:{...}]] жаз, қолданушы растайды. Үлгі: [[do:{"op":"add","type":"out","amount":3500,"merchant":"Magnum","cat":"food","date":"2026-11-24"}]] [[do:{"op":"edit","id":"t123","set":{"cat":"food","amount":2000}}]] [[do:{"op":"delete","id":"t123"}]]. id-ді тек деректегі «Соңғы жазбалар» тізімінен ал, жоқ болса нақтылап сұра. cat мәндері: food, transport, subs, telecom, shop, health, edu, home, fun, transfer, other, income. Бюджет ережелері (қолданушының жағдайына сай біреуін ғана нақты сандармен ұсын, бәрін тізбелеме): 50/30/20 (қажеттілік/қалау/жинақ); 70/20/10 (кіріс аз болса: шығын/жинақ/қарызды өтеу немесе көмек); «алдымен өзіңе төле» (түскен күні 10–20% жинаққа аудару); 24 сағат ережесі (қымбат сатып алуды бір күн күту); аптасына бір шығынсыз күн; конверт әдісі (санатқа лимит қою).\nҚосымша әрекеттер: лимит [[do:{"op":"limit","cat":"food","amount":80000}]] (amount 0 — лимитті алу); жинақ мақсаты [[do:{"op":"goal","name":"Телефон","amount":300000,"date":"2027-02-01"}]]; қолданушы өз әдеті, мақсаты, табысы туралы тұрақты нәрсе айтса, оны [[do:{"op":"note","text":"қысқа факт"}]] деп сақта. Бірнеше әрекет болса, әрқайсысын жеке [[do:...]] жаз. Әрекетті орындадым деп айтпа, «растасаң қосамын» деп айт.\nТек берілген деректерге сүйен, сан ойлап таппа. Валюта курсы деректе берілсе ғана ата. Жауап деректе жоқ болса, соны ашық айт.';
 const REVIEW_SYS='Сен қазақ тілінің редакторы және есепшісің. Төмендегі мәтінді тексер: емле мен грамматиканы, табиғи емес немесе ойдан шыққан сөздерді түзет; сандарды деректермен салыстырып, қате болса түзет. Мағынасын өзгертпе, жаңа ақпарат қоспа, ұзартпа. Эмодзиді, **қалың**, *курсив* белгілерін және ⟦0⟧ сияқты белгілерді сол күйінде қалдыр. Тек түзетілген мәтінді қайтар, түсініктеме жазба.';
 const AUTO_Q='Деректерге қарап, қолданушыға бүгінгі кеңесті жаз: ең маңызды байқауды нақты сомамен айт, соңында бір нақты қадам ұсын. Керек болса бір көрнекі блок қой. 4 сөйлемнен аспасын. Деректер аз немесе бәрі жақсы болса, мақтап жібермей, ақылға қонымды қысқа айт.';
 const WEBQ=/интернет|баға|бағасы|тұрады|акция|жеңілдік|арзанырақ|арзан балама|балама|тариф|іздеп/i;
@@ -1146,8 +1147,8 @@ function blockHtml(k){
   if(k==='rates'){const r=S.rates;if(!r)return '<div class="blk"><span class="note">Курсты жүктей алмадым.</span></div>';return '<div class="blk"><div class="blk-h">Курс · теңге</div>'+[['USD','Доллар'],['EUR','Еуро'],['RUB','Рубль'],['CNY','Юань']].map(c=>'<div class="rrow"><span>1 '+c[0]+' <span class="note">'+c[1]+'</span></span><b class="num">'+fx(r[c[0]])+' ₸</b></div>').join('')+'<div class="note" style="margin-top:6px">Нарықтық курс, банк курсынан аздап өзгеше болуы мүмкін</div></div>'}
   return '';
 }
-const BLKRE=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan|income)\]\]/g;
-function richHtml(t){let out='',last=0,m;BLKRE.lastIndex=0;while((m=BLKRE.exec(t))){out+=mdText(t.slice(last,m.index))+blockHtml(m[1]);last=m.index+m[0].length}return out+mdText(t.slice(last))}
+const BLKRE=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan|income)\]\]|\[\[(sim|goalplan):([^\]]*)\]\]/g;
+function richHtml(t){let out='',last=0,m;BLKRE.lastIndex=0;while((m=BLKRE.exec(t))){out+=mdText(t.slice(last,m.index))+(m[2]==='sim'?simBlock(m[3]):m[2]==='goalplan'?goalplanBlock(m[3]):blockHtml(m[1]));last=m.index+m[0].length}return out+mdText(t.slice(last))}
 /* әрекеттер */
 const ISO=/^\d{4}-\d{2}-\d{2}$/;
 function isoTs(s,keep){const p=s.split('-').map(Number),d=new Date(keep||Date.now());const x=new Date(p[0],p[1]-1,p[2],keep?d.getHours():12,keep?d.getMinutes():0,0);return isNaN(x)?null:x.getTime()}
@@ -1173,7 +1174,73 @@ function normAct(o){
   return null;
 }
 function takeActs(raw){const acts=[];const text=raw.replace(/\[\[do:([\s\S]*?)\]\]/g,(m,j)=>{try{const a=normAct(JSON.parse(j));if(a)acts.push(a)}catch(e){}return ''});return{text:text.replace(/\n{3,}/g,'\n\n').trim(),acts:acts.slice(0,4)}}
-function takeCalc(t){return t.replace(/\[\[calc:([^\]]*)\]\]/g,(m,e)=>{e=e.replace(/[×xх]/g,'*').replace(/\s/g,'').replace(/,/g,'.');if(!/^[\d+\-*/().]+$/.test(e)||e.length>80)return '';try{const v=Function('"use strict";return ('+e+')')();return isFinite(v)?fx(v):''}catch(x){return ''}})}
+/* ---------- ЖИ құралдары: сандарды код есептейді ---------- */
+const kzm=v=>nf.format(Math.round(v))+' ₸';
+function qParse(str){const m=String(str).trim().match(/^(\w+)\s*(.*)$/);if(!m)return null;const o={k:m[1].toLowerCase()};m[2].replace(/(\w+)=("[^"]*"|\S+)/g,(x,k,v)=>{o[k.toLowerCase()]=v.replace(/^"|"$/g,'');return x});return o}
+function qRange(o){
+  let a=-Infinity,b=Infinity;
+  if(/^\d{4}-\d{2}$/.test(o.month||'')){const [y,mm]=o.month.split('-').map(Number);a=new Date(y,mm-1,1).getTime();b=new Date(y,mm,1).getTime()-1}
+  if(ISO.test(o.from||'')){const x=isoTs(o.from);if(x)a=startOfDay(x)}
+  if(ISO.test(o.to||'')){const x=isoTs(o.to);if(x)b=startOfDay(x)+DAY-1}
+  if(Number(o.last)>0){a=startOfDay(Date.now())-(Math.min(Number(o.last),730)-1)*DAY;b=Date.now()}
+  return [a,b];
+}
+function qList(o,type){
+  const [a,b]=qRange(o),mk=o.merchant?mkey(o.merchant):'';
+  return S.txs.filter(t=>t.type===type&&!OWN.has(t.id)&&t.ts>=a&&t.ts<=b&&(!o.cat||t.cat===o.cat)&&(!mk||mkey(t.merchant).indexOf(mk)>=0));
+}
+function qRun(str){
+  const o=qParse(str);if(!o)return '(есептей алмадым)';
+  const type=o.type==='in'?'in':'out',L=qList(o,o.k==='income'?'in':type);
+  switch(o.k){
+    case 'spend':case 'income':return kzm(sumOf(L));
+    case 'count':return String(L.length);
+    case 'avgday':{const [a,b]=qRange(o);if(!isFinite(a))return '(кезеңді көрсету керек)';const e=Math.min(b,Date.now()),d=Math.max(1,Math.ceil((e-a)/DAY));return kzm(sumOf(L)/d)+' / күн'}
+    case 'top':{const n=Math.min(8,Math.max(1,Number(o.n)||3));const g=groupBy(L,t=>mkey(t.merchant)||'-');return Array.from(g.values()).sort((x,y)=>y.sum-x.sum).slice(0,n).map(v=>v.items[0].merchant+' ('+kzm(v.sum)+', '+v.n+' рет)').join('; ')||'(жазба жоқ)'}
+    case 'max':{if(!L.length)return '(жазба жоқ)';const t=L.slice().sort((x,y)=>y.amount-x.amount)[0];return t.merchant+', '+kzm(t.amount)+' ('+dateVal(t.ts)+')'}
+    case 'cmp':{if(!/^\d{4}-\d{2}$/.test(o.a||'')||!/^\d{4}-\d{2}$/.test(o.b||''))return '(екі айды көрсету керек)';
+      const f=mo=>sumOf(qList(Object.assign({},o,{month:mo,from:'',to:'',last:''}),type)),A=f(o.a),B=f(o.b);
+      return kzm(A)+' → '+kzm(B)+(A>0?' ('+(B>=A?'+':'')+Math.round((B/A-1)*100)+'%)':'')}
+  }
+  return '(есептей алмадым)';
+}
+const QMARK=/⟪([^⟫]*)⟫/g;
+function takeQ(t){return t.replace(/\[\[q:([^\]]*)\]\]/g,(m,e)=>{try{return '⟪'+qRun(e)+'⟫'}catch(x){return '⟪(есептей алмадым)⟫'}})}
+/* соңғы толық айлардың орташа шығыны/кірісі */
+function avgFull(cat){
+  const T=new Date(),y=T.getFullYear(),m=T.getMonth(),out=[],inc=[];
+  for(let i=1;i<=3;i++){const d=new Date(y,m-i,1),yy=d.getFullYear(),mm=d.getMonth();
+    const o=sumOf(outIn(yy,mm).filter(t=>!cat||t.cat===cat)),n=sumOf(S.txs.filter(t=>t.type==='in'&&!OWN.has(t.id)&&inMonth(t.ts,yy,mm)));
+    if(o>0)out.push(o);if(n>0)inc.push(n)}
+  let spend=out.length?out.reduce((a,b)=>a+b,0)/out.length:0,src=out.length+' ай';
+  if(!out.length){const dn=T.getDate(),dim=new Date(y,m+1,0).getDate(),cur=sumOf(outIn(y,m).filter(t=>!cat||t.cat===cat));spend=dn>=7?cur/dn*dim:0;src='осы ай бойынша болжам'}
+  return {spend,income:inc.length?inc.reduce((a,b)=>a+b,0)/inc.length:0,src};
+}
+function kvp(str){const o={};String(str).replace(/(\w+)=("[^"]*"|[^,\s]+)/g,(x,k,v)=>{o[k.toLowerCase()]=v.replace(/^"|"$/g,'');return x});return o}
+function simBlock(arg){
+  const o=kvp(arg),cat=CATS[o.cat]&&o.cat!=='income'?o.cat:'',cut=Math.min(90,Math.max(1,Number(o.cut)||10));
+  const A=avgFull(cat);if(!(A.spend>0))return '<div class="blk"><span class="note">Есептеу үшін шығын деректері әлі аз.</span></div>';
+  const sv=A.spend*cut/100;
+  const row=(a,b)=>'<div class="rrow"><span>'+a+'</span><b class="num">'+b+'</b></div>';
+  return '<div class="blk"><div class="blk-h">Үнемдеу есебі · '+(cat?CATS[cat].n:'барлық шығын')+' −'+cut+'%</div>'
+   +row('Қазіргі орташа, айына',kzm(A.spend))+row('Қысқартқаннан кейін',kzm(A.spend-sv))+row('Айына үнем',kzm(sv))+row('6 айда',kzm(sv*6))+row('12 айда',kzm(sv*12))
+   +'<span class="note">Негізі: соңғы '+A.src+' орташасы.</span></div>';
+}
+function goalplanBlock(arg){
+  const o=kvp(arg),amount=Math.round(Number(o.amount)),months=Math.round(Number(o.months)),monthly=Math.round(Number(o.monthly));
+  if(!(amount>0))return '<div class="blk"><span class="note">Мақсат сомасы көрсетілмеген.</span></div>';
+  const A=avgFull(''),cap=A.income>0?A.income-A.spend:0;
+  const row=(a,b)=>'<div class="rrow"><span>'+a+'</span><b class="num">'+b+'</b></div>';
+  let h='<div class="blk"><div class="blk-h">Мақсат жоспары · '+kzm(amount)+'</div>';
+  if(months>0){const need=amount/months;h+=row(months+' айға',kzm(need)+' / ай')+row('Күніне',kzm(need/30))}
+  else if(monthly>0){const mm=Math.ceil(amount/monthly);h+=row('Айына '+kzm(monthly),mm+' ай')}
+  if(cap>0){h+=row('Қазіргі еркін қалдық (кіріс − шығын)',kzm(cap)+' / ай');
+    const need=months>0?amount/months:monthly>0?monthly:0;
+    if(need>0)h+='<span class="note">'+(cap>=need?'Қазіргі қалдық жетеді ✓':'Жетпейді: айына шамамен '+kzm(need-cap)+' қысқарту керек')+'. Негізі: соңғы '+A.src+'.</span>'}
+  else h+='<span class="note">Кіріс деректері жоқ, сондықтан еркін қалдықты есептей алмадым.</span>';
+  return h+'</div>';
+}
+function takeCalc(t){return t.replace(/\[\[calc:([^\]]*)\]\]/g,(m,e)=>{e=e.replace(/[×xх]/g,'*').replace(/\s/g,'').replace(/,/g,'.');if(!/^[\d+\-*/().]+$/.test(e)||e.length>80)return '';try{const v=Function('"use strict";return ('+e+')')();return isFinite(v)?'⟪'+fx(v)+'⟫':''}catch(x){return ''}})}
 function actHtml(m,a,i){
   const t=a.id?S.txs.find(x=>x.id===a.id):null,sgn=x=>(x&&x.type==='in'?'+':'−');
   let title,desc;
@@ -1216,12 +1283,13 @@ async function chatReply(q,auto){
   S.lastModel='';
   const raw=cleanTxt(await llmChat(sys,hist.concat([{r:'u',t:q}]),web));
   const viaWeb=/compound/.test(S.lastModel||'');
-  const ta=takeActs(raw);let t=takeCalc(ta.text);
+  const ta=takeActs(raw);let t=takeQ(takeCalc(ta.text));
   if(t.length>170&&!viaWeb){
-    const keep=[];const tt=t.replace(BLKRE,m=>{keep.push(m);return '⟦'+(keep.length-1)+'⟧'});
+    const keep=[];const tt=t.replace(BLKRE,m=>{keep.push(m);return '⟦'+(keep.length-1)+'⟧'}).replace(QMARK,m=>{keep.push(m);return '⟦'+(keep.length-1)+'⟧'});
     try{let r=cleanTxt(await llmText(REVIEW_SYS,'Деректер:\n'+ctx+'\n\nМәтін:\n'+tt));
       if(r&&r.length>tt.length*0.5&&r.length<tt.length*1.5&&keep.every((k,i)=>r.indexOf('⟦'+i+'⟧')>=0)){r=r.replace(/⟦(\d+)⟧/g,(m,i)=>keep[Number(i)]||'');t=r}}catch(e){}
   }
+  t=t.replace(QMARK,'$1');
   return{t:t||(ta.acts.length?'Мынаны жасайын ба?':'Жауап шықпады, қайталап көріңіз.'),web:viaWeb,acts:ta.acts};
 }
 async function runAsk(text){
