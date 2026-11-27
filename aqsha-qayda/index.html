@@ -417,7 +417,7 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
   <h2>Үнем</h2>
   <p id="lockMsg">PIN енгізіңіз</p>
   <div id="lockDots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-  <div id="lockPad"><button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><span></span><button type="button" data-k="0">0</button><button type="button" data-k="b" aria-label="Өшіру">⌫</button></div>
+  <div id="lockPad"><button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="f" id="lockBio" aria-label="Саусақ ізі" style="visibility:hidden">👆</button><button type="button" data-k="0">0</button><button type="button" data-k="b" aria-label="Өшіру">⌫</button></div>
 </div>
 <script>try{if(localStorage.getItem('aq.v1.pin'))document.getElementById('lock').hidden=false}catch(e){}</script>
 <div class="shell">
@@ -486,7 +486,7 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
     <div class="card"><h2>Карталар</h2><div id="cardList"></div>
       <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
     <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
-    <div class="card" id="pinCard"><h2>PIN-код</h2><p class="note" id="pinNote" style="margin:0 0 10px"></p><div class="addcard" style="margin-top:0"><input class="field" id="pinIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 сан" aria-label="PIN" style="flex:1 1 110px"><button class="btn" data-act="pinSet" type="button">Орнату</button><button class="btn ghost" data-act="pinOff" type="button">Өшіру</button></div></div>
+    <div class="card" id="pinCard"><h2>PIN-код</h2><p class="note" id="pinNote" style="margin:0 0 10px"></p><div class="addcard" style="margin-top:0"><input class="field" id="pinIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 сан" aria-label="PIN" style="flex:1 1 110px"><button class="btn" data-act="pinSet" type="button">Орнату</button><button class="btn ghost" data-act="pinOff" type="button">Өшіру</button></div><div class="btns" style="margin-top:10px"><button class="btn ghost" id="bioBtn" data-act="bioToggle" type="button" hidden></button></div></div>
     <div class="card"><h2>Санат лимиті</h2>
       <div class="addcard" style="margin-top:0"><select class="field" id="lCat" aria-label="Санат" style="flex:1 1 140px"><option value="food">Тамақ</option><option value="transport">Көлік</option><option value="subs">Жазылымдар</option><option value="telecom">Байланыс</option><option value="shop">Сатып алу</option><option value="health">Денсаулық</option><option value="edu">Білім</option><option value="home">Үй</option><option value="fun">Көңіл-көтеру</option><option value="other">Басқа</option></select><input class="field" id="lAmt" inputmode="numeric" placeholder="₸ / айына" aria-label="Лимит, ₸" style="flex:1 1 110px"><button class="btn" data-act="saveLimit" type="button">Қосу</button></div>
       <div id="limList" class="hlist"></div>
@@ -509,7 +509,7 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 43 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 44 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -1569,7 +1569,8 @@ document.addEventListener('click',e=>{
     case 'delGoal':{const st=Object.assign({},S.settings);delete st.goal;S.settings=st;saveSettings().then(()=>{$('#gName').value='';$('#gAmt').value='';$('#gDate').value='';toast('Мақсат өшірілді')});break}
     case 'wipeAll':{if(!b.dataset.arm){b.dataset.arm='1';b.textContent='Растау: өшіру';toast('Қайта басыңыз — барлығы өшеді');setTimeout(()=>{delete b.dataset.arm;b.textContent='Барлық деректі өшіру'},4000);break}(async()=>{const ids=S.txs.map(t=>t.id);if(S.mode==='cloud'){for(const id of ids)await removeTx(id)}S.txs=[];S.settings={budget:0,rules:{},cards:[]};if(S.mode!=='cloud')lsSet(LS_TX,[]);await saveSettings();openSettings();toast('Деректер өшірілді')})();break}
     case 'pinSet':{const v=String($('#pinIn').value||'');if(!/^\d{4}$/.test(v)){toast('4 сан енгізіңіз');break}(async()=>{const sa=Array.from(crypto.getRandomValues(new Uint8Array(8))).map(x=>x.toString(16)).join('');lsSet('aq.v1.pin',{s:sa,h:await pinHash(v,sa)});pinUi();toast('PIN орнатылды')})();break}
-    case 'pinOff':{const p=pinGet();if(!p){toast('PIN қойылмаған');break}(async()=>{const v=String($('#pinIn').value||'');if(await pinHash(v,p.s)===p.h){try{localStorage.removeItem('aq.v1.pin')}catch(x){}pinUi();toast('PIN өшірілді')}else toast('Ағымдағы PIN-ді енгізіп, «Өшіру» басыңыз')})();break}
+    case 'pinOff':{const p=pinGet();if(!p){toast('PIN қойылмаған');break}(async()=>{const v=String($('#pinIn').value||'');if(await pinHash(v,p.s)===p.h){try{localStorage.removeItem('aq.v1.pin');localStorage.removeItem('aq.v1.bio')}catch(x){}pinUi();toast('PIN өшірілді')}else toast('Ағымдағы PIN-ді енгізіп, «Өшіру» басыңыз')})();break}
+    case 'bioToggle':{try{localStorage.setItem('aq.v1.bio',bioOn()?'0':'1')}catch(x){}pinUi();break}
     case 'notifToggle':{const N=window.UnemNative;try{N.setNotify(!N.notifyOn())}catch(x){}nativeUi();break}
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
     case 'ask':runAsk();break;
@@ -1617,17 +1618,24 @@ const pinOk=()=>!!(window.crypto&&crypto.subtle&&window.TextEncoder);
 async function pinHash(pin,salt){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pin));return Array.from(new Uint8Array(d)).map(x=>x.toString(16).padStart(2,'0')).join('')}
 const pinGet=()=>{const p=lsGet('aq.v1.pin',null);return p&&p.s&&p.h?p:null};
 function pinPaint(){$$('#lockDots i').forEach((e,i)=>e.classList.toggle('on',i<PIN.buf.length))}
-function lockShow(){if(!pinGet())return;PIN.buf='';pinPaint();$('#lockMsg').textContent='PIN енгізіңіз';$('#lock').hidden=false}
+function bioAvail(){const N=window.UnemNative;try{return !!(N&&typeof N.biometricAvailable==='function'&&N.biometricAvailable())}catch(e){return false}}
+const bioOn=()=>{let v=false;try{v=localStorage.getItem('aq.v1.bio')==='1'}catch(e){}return v&&bioAvail()};
+function bioTry(){if(bioOn()&&!$('#lock').hidden){try{window.UnemNative.biometric()}catch(e){}}}
+function lockOpen(){PIN.fails=0;PIN.buf='';pinPaint();$('#lock').hidden=true}
+window.__bio=ok=>{if(ok&&!$('#lock').hidden)lockOpen()};
+function lockShow(){if(!pinGet())return;PIN.buf='';pinPaint();$('#lockMsg').textContent='PIN енгізіңіз';$('#lockBio').style.visibility=bioOn()?'visible':'hidden';$('#lock').hidden=false;bioTry()}
 async function pinKey(k){
   if(Date.now()<PIN.until){$('#lockMsg').textContent='Күте тұрыңыз…';return}
+  if(k==='f'){bioTry();return}
   if(k==='b'){PIN.buf=PIN.buf.slice(0,-1);pinPaint();return}
   if(PIN.buf.length>=4)return;PIN.buf+=k;pinPaint();if(PIN.buf.length<4)return;
   const p=pinGet(),h=p?await pinHash(PIN.buf,p.s):'';
-  if(!p||h===p.h){PIN.fails=0;PIN.buf='';pinPaint();$('#lock').hidden=true;return}
+  if(!p||h===p.h){lockOpen();return}
   PIN.fails++;PIN.buf='';pinPaint();$('#lockMsg').textContent='Қате PIN';
   if(PIN.fails>=5){PIN.until=Date.now()+30000;PIN.fails=0;$('#lockMsg').textContent='30 секундтан кейін қайталаңыз'}
 }
-function pinUi(){const c=$('#pinCard');if(!c)return;if(!pinOk()){c.hidden=true;return}$('#pinNote').textContent=pinGet()?'Қосулы: қосымша ашылғанда PIN сұралады':'Өшірулі. Қосымшаны бөтен адам ашпауы үшін қойыңыз';$('#pinIn').value=''}
+function pinUi(){const c=$('#pinCard');if(!c)return;if(!pinOk()){c.hidden=true;return}$('#pinNote').textContent=pinGet()?'Қосулы: қосымша ашылғанда PIN сұралады':'Өшірулі. Қосымшаны бөтен адам ашпауы үшін қойыңыз';$('#pinIn').value='';const bb=$('#bioBtn');if(bb){bb.hidden=!(pinGet()&&bioAvail());bb.textContent=bioOn()?'Саусақ ізі: қосулы (өшіру)':'Саусақ ізімен ашуды қосу'}}
+if(!$('#lock').hidden){$('#lockBio').style.visibility=bioOn()?'visible':'hidden';setTimeout(bioTry,500)}
 document.addEventListener('click',e=>{const k=e.target&&e.target.closest&&e.target.closest('#lockPad button');if(k)pinKey(k.dataset.k)});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)PIN.hid=Date.now();else if(pinGet()&&PIN.hid&&Date.now()-PIN.hid>30000)lockShow()});
 
@@ -1738,14 +1746,20 @@ async function fbSync(manual){
     if(cs){
       const cards=(ls.cards||[]).slice();(cs.cards||[]).forEach(c=>{if(c&&!cards.some(x=>x.id===c.id))cards.push(c)});
       const lNew=(ls.mt||0)>=(cs.mt||0);
-      const merged={budget:lNew?(ls.budget||0):(cs.budget||0),rules:Object.assign({},cs.rules||{},ls.rules||{}),cards,mt:Math.max(ls.mt||0,cs.mt||0)};
-      const before=JSON.stringify({budget:ls.budget||0,rules:ls.rules||{},cards:ls.cards||[],mt:ls.mt||0});
+      const win=lNew?ls:cs,merged={budget:win.budget||0,rules:Object.assign({},cs.rules||{},ls.rules||{}),cards,goal:win.goal,catLimits:win.catLimits||{},mt:Math.max(ls.mt||0,cs.mt||0)};
+      const before=JSON.stringify({budget:ls.budget||0,rules:ls.rules||{},cards:ls.cards||[],goal:ls.goal,catLimits:ls.catLimits||{},mt:ls.mt||0});
       if(JSON.stringify(merged)!==before){S.settings=Object.assign({},ls,merged);changed=true}
     }
-    const sStr=JSON.stringify({budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[],mt:S.settings.mt||0});
+    const sStr=JSON.stringify({budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[],goal:S.settings.goal,catLimits:S.settings.catLimits||{},mt:S.settings.mt||0});
     if(sStr!==val.settings)up['settings']=sStr;
     const me=FB.devices[DEVID];if(!me||Date.now()-(me.t||0)>10*60000||me.n!==devName()){up['devices/'+DEVID]={n:devName(),t:Date.now()};FB.devices[DEVID]=up['devices/'+DEVID]}
-    if(Object.keys(up).length)await ref.update(up);
+    const real=Object.keys(up).some(k=>!k.startsWith('devices/'));
+    if(Object.keys(up).length){
+      if(real&&!FB.noVer){const v=Date.now();try{await ref.update(Object.assign({ver:v},up));FB.ver=v}catch(e){FB.noVer=true;await ref.update(up)}}
+      else await ref.update(up);
+    }
+    if(!FB.noVer&&val.ver&&!up.ver)FB.ver=val.ver;
+    FB.full=Date.now();
     drawDevs();
     lsSet(LS_DEL,lDel);
     if(changed){S.txs=Array.from(loc.values());lsSet(LS_TX,S.txs);lsSet(LS_SET,S.settings);render()}
@@ -1967,7 +1981,13 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.targ
   },{passive:true});
 })();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncNative();nativeUi();fbSync()}});
-setInterval(()=>{if(!document.hidden)fbSync()},60000);
+/* Жеңіл тексеру: бұлттағы кішкентай «ver» белгісі өзгермесе, барлық деректі жүктемейміз */
+async function fbPoll(){
+  if(!FB.user||!fbEnabled()||FB.busy)return;
+  if(FB.noVer||!FB.ver||Date.now()-(FB.full||0)>10*60000){fbSync();return}
+  try{const v=(await FB.db.ref('unem/'+FB.user.uid+'/ver').once('value')).val();if(v!==FB.ver)fbSync()}catch(e){}
+}
+setInterval(()=>{if(!document.hidden)fbPoll()},60000);
 setInterval(()=>{if(S.ready)syncNative()},4000);
 let MAXH=window.innerHeight;
 function kbdCheck(){const vh=window.visualViewport?window.visualViewport.height:window.innerHeight;MAXH=Math.max(MAXH,window.innerHeight);const on=Math.min(vh,window.innerHeight)<MAXH*0.8;if(on===document.body.classList.contains('kbd'))return;document.body.classList.toggle('kbd',on);if(S.tab==='advice')requestAnimationFrame(()=>scr())}
