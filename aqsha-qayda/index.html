@@ -471,6 +471,15 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
     <div class="card"><h2>Карталар</h2><div id="cardList"></div>
       <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
     <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
+    <div class="card"><h2>Санат лимиті</h2>
+      <div class="addcard" style="margin-top:0"><select class="field" id="lCat" aria-label="Санат" style="flex:1 1 140px"><option value="food">Тамақ</option><option value="transport">Көлік</option><option value="subs">Жазылымдар</option><option value="telecom">Байланыс</option><option value="shop">Сатып алу</option><option value="health">Денсаулық</option><option value="edu">Білім</option><option value="home">Үй</option><option value="fun">Көңіл-көтеру</option><option value="other">Басқа</option></select><input class="field" id="lAmt" inputmode="numeric" placeholder="₸ / айына" aria-label="Лимит, ₸" style="flex:1 1 110px"><button class="btn" data-act="saveLimit" type="button">Қосу</button></div>
+      <div id="limList" class="hlist"></div>
+    </div>
+    <div class="card"><h2>Жинақ мақсаты</h2>
+      <input class="field" id="gName" placeholder="Мысалы: телефон" aria-label="Мақсат атауы" maxlength="40">
+      <div class="addcard"><input class="field" id="gAmt" inputmode="numeric" placeholder="Сома, ₸" aria-label="Мақсат сомасы" style="flex:1 1 110px"><input class="field" id="gDate" type="date" aria-label="Мерзімі" style="flex:1 1 140px"></div>
+      <div class="btns" style="margin-top:10px"><button class="btn" data-act="saveGoal" type="button">Сақтау</button><button class="btn ghost" data-act="delGoal" type="button">Өшіру</button></div>
+    </div>
     <div class="card"><h2>Көрініс</h2>
       <span class="lbl">Стиль</span>
       <div class="chips" role="group" aria-label="Стиль" style="flex-wrap:wrap;margin-bottom:6px"><button class="chip" data-act="style" data-v="milk" aria-pressed="true">Сүт</button><button class="chip" data-act="style" data-v="apple" aria-pressed="false">Apple</button><button class="chip" data-act="style" data-v="minimal" aria-pressed="false">Минимал</button><button class="chip" data-act="style" data-v="sage" aria-pressed="false">Орман</button><button class="chip" data-act="style" data-v="ocean" aria-pressed="false">Мұхит</button><button class="chip" data-act="style" data-v="sunset" aria-pressed="false">Күн батуы</button><button class="chip" data-act="style" data-v="night" aria-pressed="false">Түн</button><button class="chip" data-act="style" data-v="mono" aria-pressed="false">Шағын</button></div>
@@ -480,9 +489,11 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
       <div class="swrow" id="swrow"></div></div>
     </div>
     <div class="card"><h2>Деректер</h2>
-      <div class="btns"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button></div>
+      <div class="btns"><button class="btn ghost" data-act="exportBk" type="button">Көшірме алу</button><button class="btn ghost" data-act="importBk" type="button">Қалпына келтіру</button></div>
+      <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
+      <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 42 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -641,7 +652,7 @@ async function removeTx(id){
   S.txs=S.txs.filter(x=>x.id!==id);lsSet(LS_TX,S.txs);fbTomb(id);render();return true;
 }
 async function saveSettings(){
-  if(S.mode==='cloud'){try{await S.coll.doc('settings').set({kind:'settings',budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[]})}catch(e){toast('Баптау сақталмады')}}
+  if(S.mode==='cloud'){try{await S.coll.doc('settings').set({kind:'settings',budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[],goal:S.settings.goal||null,catLimits:S.settings.catLimits||{}})}catch(e){toast('Баптау сақталмады')}}
   else{S.settings=Object.assign({},S.settings,{mt:Date.now()});lsSet(LS_SET,S.settings);fbQueue()}
   render();
 }
@@ -991,9 +1002,11 @@ async function saveEdit(){
     closeSheets();
   }
 }
+function drawLimits(){const L=S.settings.catLimits||{},ks=Object.keys(L).filter(c=>CATS[c]&&L[c]>0),el=$('#limList');if(!el)return;el.innerHTML=ks.length?ks.map(c=>'<div class="hrow"><span class="ht" style="padding:10px 12px">'+esc(CATS[c].n)+' · '+money(L[c])+'</span><button class="ibtn sm" data-act="delLimit" data-cat="'+c+'" aria-label="Лимитті өшіру" type="button">✕</button></div>').join(''):'<p class="note" style="margin:8px 0 0">Лимит қойылмаған</p>'}
 function openSettings(){
   applyLook();
   $('#sBudget').value=S.settings.budget||'';
+  {const g=S.settings.goal||{};$('#gName').value=g.name||'';$('#gAmt').value=g.amount||'';$('#gDate').value=g.date||'';drawLimits()}
   drawCards();nativeUi();fbUi();if(fbEnabled()&&!FB.app)fbLoad();openSheet('#sheetSet');
 }
 
@@ -1413,8 +1426,8 @@ const ACC={
   blue:{n:'Көк',l:{a:'#2c59e6',s:'#e4eafd',f:'#ffffff',d:'#2c59e6'},k:{a:'#86a2ff',s:'#1c2748',f:'#0b1020',d:'#2f4fc4'}},
   green:{n:'Жасыл',l:{a:'#0f7a55',s:'#dcf2e8',f:'#ffffff',d:'#0f7a55'},k:{a:'#4cc79a',s:'#0f2d24',f:'#06140f',d:'#0d6b4a'}},
   violet:{n:'Күлгін',l:{a:'#6d3fd9',s:'#ece6fc',f:'#ffffff',d:'#6d3fd9'},k:{a:'#b296fa',s:'#2a2047',f:'#100a24',d:'#5a34b8'}},
-  rose:{n:'Қызғылт',l:{a:'#c2306b',s:'#fbe3ec',f:'#ffffff',d:'#c2306b'},k:{a:'#f07fa8',s:'#3a1b2a',f:'#2a0a17',d:'#a82860'}},
-  orange:{n:'Қызғылт сары',l:{a:'#c2500f',s:'#fde6d4',f:'#ffffff',d:'#c2500f'},k:{a:'#ffa05c',s:'#3a2314',f:'#2a1204',d:'#b04a0c'}},
+  rose:{n:'Қызғылт',l:{a:'#b52a62',s:'#fbe3ec',f:'#ffffff',d:'#c2306b'},k:{a:'#f07fa8',s:'#3a1b2a',f:'#2a0a17',d:'#a82860'}},
+  orange:{n:'Қызғылт сары',l:{a:'#a8430a',s:'#fde6d4',f:'#ffffff',d:'#a8430a'},k:{a:'#ffa05c',s:'#3a2314',f:'#2a1204',d:'#b04a0c'}},
   graphite:{n:'Графит',l:{a:'#3a4256',s:'#e6e9f0',f:'#ffffff',d:'#3a4256'},k:{a:'#aab3c8',s:'#232938',f:'#0d1018',d:'#343c50'}}
 };
 S.look=Object.assign({mode:'light',accent:'auto',style:'milk'},lsGet(LS_LOOK,{}));
@@ -1430,8 +1443,8 @@ const STYLES={
     k:{'--bg':'#0f1516','--surface':'#172021','--surface-2':'#1f2b2c','--fg':'#e8f0ef','--muted':'#9bacaa','--line':'#283636','--accent':'#6cc4d6','--accent-soft':'#17323a','--accent-fg':'#04181d','--deep':'#0b6477','--deep2':'#06303a'}
   },
   apple:{
-    l:{'--bg':'#f2f2f7','--surface':'#ffffff','--surface-2':'#e9e9ee','--fg':'#000000','--muted':'#6c6c70','--line':'#dcdce0','--accent':'#007aff','--accent-soft':'#e1eeff','--accent-fg':'#ffffff','--deep':'#0a84ff','--deep2':'#0040dd','--font-ui':"-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif",'--font-num':"-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',system-ui,sans-serif"},
-    k:{'--bg':'#000000','--surface':'#1c1c1e','--surface-2':'#2c2c2e','--fg':'#ffffff','--muted':'#98989f','--line':'#38383a','--accent':'#0a84ff','--accent-soft':'#0b2a4d','--accent-fg':'#ffffff','--deep':'#0a84ff','--deep2':'#003a8c','--font-ui':"-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif",'--font-num':"-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',system-ui,sans-serif"}
+    l:{'--bg':'#f2f2f7','--surface':'#ffffff','--surface-2':'#e9e9ee','--fg':'#000000','--muted':'#636366','--line':'#dcdce0','--accent':'#0062d1','--accent-soft':'#e1eeff','--accent-fg':'#ffffff','--deep':'#0a62d6','--deep2':'#0040dd','--font-ui':"-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif",'--font-num':"-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',system-ui,sans-serif"},
+    k:{'--bg':'#000000','--surface':'#1c1c1e','--surface-2':'#2c2c2e','--fg':'#ffffff','--muted':'#98989f','--line':'#38383a','--accent':'#4aa3ff','--accent-soft':'#0b2a4d','--accent-fg':'#00152e','--deep':'#0a62d6','--deep2':'#003a8c','--font-ui':"-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',system-ui,sans-serif",'--font-num':"-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',system-ui,sans-serif"}
   },
   sage:{
     l:{'--bg':'#eef1e8','--surface':'#fbfcf7','--surface-2':'#e0e6d6','--fg':'#1c2419','--muted':'#576152','--line':'#d3dac6','--accent':'#2f6b3f','--accent-soft':'#dcebd8','--accent-fg':'#ffffff','--deep':'#2f7a46','--deep2':'#173f26'},
@@ -1442,7 +1455,7 @@ const STYLES={
     k:{'--bg':'#0b121a','--surface':'#131d28','--surface-2':'#1b2836','--fg':'#e6eef7','--muted':'#93a6bb','--line':'#243345','--accent':'#78b4ee','--accent-soft':'#162b43','--accent-fg':'#06121f','--deep':'#235c97','--deep2':'#0d2542'}
   },
   night:{
-    l:{'--bg':'#eceef2','--surface':'#f8f9fb','--surface-2':'#dfe2e9','--fg':'#10131a','--muted':'#5d6475','--line':'#d3d7e0','--accent':'#0f766e','--accent-soft':'#d6eeeb','--accent-fg':'#ffffff','--deep':'#14b8a6','--deep2':'#0b2d3a'},
+    l:{'--bg':'#eceef2','--surface':'#f8f9fb','--surface-2':'#dfe2e9','--fg':'#10131a','--muted':'#5d6475','--line':'#d3d7e0','--accent':'#0f766e','--accent-soft':'#d6eeeb','--accent-fg':'#ffffff','--deep':'#0f766e','--deep2':'#0b2d3a'},
     k:{'--bg':'#000000','--surface':'#0d0f14','--surface-2':'#171a21','--fg':'#f2f4f8','--muted':'#8b93a5','--line':'#1d212b','--accent':'#5eead4','--accent-soft':'#0b2c2a','--accent-fg':'#02221e','--deep':'#0f766e','--deep2':'#050b14'}
   },
   mono:{
@@ -1450,7 +1463,7 @@ const STYLES={
     k:{'--bg':'#000000','--surface':'#0a0a0a','--surface-2':'#161616','--fg':'#ffffff','--muted':'#9a9a9a','--line':'#242424','--accent':'#ffffff','--accent-soft':'#1c1c1c','--accent-fg':'#000000','--deep':'#2a2a2a','--deep2':'#000000'}
   },
   sunset:{
-    l:{'--bg':'#fff3ec','--surface':'#fffaf6','--surface-2':'#fde4d6','--fg':'#3a1f2b','--muted':'#8a6672','--line':'#f4d6c8','--accent':'#c8442f','--accent-soft':'#fde0d6','--accent-fg':'#ffffff','--deep':'#be3f2a','--deep2':'#5b2a86'},
+    l:{'--bg':'#fff3ec','--surface':'#fffaf6','--surface-2':'#fde4d6','--fg':'#3a1f2b','--muted':'#7a5562','--line':'#f4d6c8','--accent':'#b43a26','--accent-soft':'#fde0d6','--accent-fg':'#ffffff','--deep':'#be3f2a','--deep2':'#5b2a86'},
     k:{'--bg':'#170f22','--surface':'#221832','--surface-2':'#2e2142','--fg':'#fbeee6','--muted':'#b9a2b8','--line':'#382a4d','--accent':'#ff8a5c','--accent-soft':'#3b2336','--accent-fg':'#2a0f06','--deep':'#b83a2c','--deep2':'#4a2278'}
   }
 };
@@ -1534,6 +1547,11 @@ document.addEventListener('click',e=>{
     case 'cloudIn':fbSignIn();break;
     case 'cloudSync':fbSync(true);break;
     case 'cloudOut':fbOut();break;
+    case 'saveLimit':{const c=$('#lCat').value,v=Math.round(parseFloat(String($('#lAmt').value).replace(/\s/g,'').replace(',','.')));if(!CATS[c]||!(v>0)||v>1e10){toast('Сананы енгізіңіз');break}const L=Object.assign({},S.settings.catLimits||{});L[c]=v;S.settings=Object.assign({},S.settings,{catLimits:L});$('#lAmt').value='';saveSettings().then(()=>{drawLimits();toast('Лимит сақталды')});break}
+    case 'delLimit':{const L=Object.assign({},S.settings.catLimits||{});delete L[b.dataset.cat];S.settings=Object.assign({},S.settings,{catLimits:L});saveSettings().then(drawLimits);break}
+    case 'saveGoal':{const a=Math.round(parseFloat(String($('#gAmt').value).replace(/\s/g,'').replace(',','.'))),d=$('#gDate').value;if(!(a>0)||a>1e10){toast('Сананы енгізіңіз');break}S.settings=Object.assign({},S.settings,{goal:{name:String($('#gName').value||'Мақсат').trim().slice(0,40)||'Мақсат',amount:a,date:ISO.test(d)?d:'',from:dateVal(Date.now())}});saveSettings().then(()=>toast('Мақсат сақталды'));break}
+    case 'delGoal':{const st=Object.assign({},S.settings);delete st.goal;S.settings=st;saveSettings().then(()=>{$('#gName').value='';$('#gAmt').value='';$('#gDate').value='';toast('Мақсат өшірілді')});break}
+    case 'wipeAll':{if(!b.dataset.arm){b.dataset.arm='1';b.textContent='Растау: өшіру';toast('Қайта басыңыз — барлығы өшеді');setTimeout(()=>{delete b.dataset.arm;b.textContent='Барлық деректі өшіру'},4000);break}(async()=>{const ids=S.txs.map(t=>t.id);if(S.mode==='cloud'){for(const id of ids)await removeTx(id)}S.txs=[];S.settings={budget:0,rules:{},cards:[]};if(S.mode!=='cloud')lsSet(LS_TX,[]);await saveSettings();openSettings();toast('Деректер өшірілді')})();break}
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
     case 'ask':runAsk();break;
     case 'notifSet':try{window.UnemNative.openSettings()}catch(e){}break;
@@ -1585,7 +1603,7 @@ function subscribeCloud(){
   S.coll.onSnapshot(snap=>{
     const txs=[];let st=null;
     snap.docs.forEach(d=>{const x=d.data();if(!x)return;if(d.id==='settings')st=x;else if(x.kind==='tx')txs.push(Object.assign({},x,{id:d.id}))});
-    S.txs=txs;if(st)S.settings={budget:Number(st.budget)||0,rules:st.rules||{},cards:st.cards||[]};
+    S.txs=txs;if(st)S.settings={budget:Number(st.budget)||0,rules:st.rules||{},cards:st.cards||[],goal:st.goal||undefined,catLimits:st.catLimits||{}};
     S.ready=true;first=false;render();
   },err=>{if(first||!S.ready){startLocal()}else{toast('Байланыс үзілді. Жазбалар жаңармай тұр.')}});
 }
