@@ -383,6 +383,13 @@ body{height:100dvh;display:flex;flex-direction:column;padding-block:8px 0}
 body.kbd #composer{padding:6px 0 8px;background:none;border:0}
 body.chat #app,body.chat.kbd #app{padding-bottom:8px}
 body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+#lock{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--bg);padding:24px}
+#lock[hidden]{display:none}
+#lock h2{margin:0;font-size:20px}#lockMsg{color:var(--muted);min-height:20px;margin:0;font-size:14px}
+#lockDots{display:flex;gap:14px}#lockDots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent);display:block}#lockDots i.on{background:var(--accent)}
+#lockPad{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
+#lockPad button{height:72px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:26px;font-weight:600;box-shadow:var(--shadow)}
+#lockPad button:active{background:var(--accent-soft)}
 </style>
 </head>
 <body>
@@ -406,6 +413,13 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
     <button class="glink" id="permLater" type="button">Кейін</button>
   </div>
 </div>
+<div id="lock" hidden>
+  <h2>Үнем</h2>
+  <p id="lockMsg">PIN енгізіңіз</p>
+  <div id="lockDots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div id="lockPad"><button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><span></span><button type="button" data-k="0">0</button><button type="button" data-k="b" aria-label="Өшіру">⌫</button></div>
+</div>
+<script>try{if(localStorage.getItem('aq.v1.pin'))document.getElementById('lock').hidden=false}catch(e){}</script>
 <div class="shell">
   <header class="top">
     <div><h1>Үнем</h1></div>
@@ -465,12 +479,14 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
       <button class="btn ghost sm" id="cloudOutBtn" data-act="cloudOut" type="button" hidden>Шығу</button>
     </div>
     <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div><div class="srow" style="margin-top:12px"><div class="grow"><div class="t1">Фонда жұмыс</div></div><button class="btn ghost sm" id="batBtn" type="button">Баптау</button></div></div>
+    <div class="card" id="notifCard" hidden><div class="srow"><div class="grow"><div class="t1">«Үнем» хабарламасы</div><div class="t2" id="notifNote">Төлем болғанда санат таңдау батырмалары</div></div><button class="btn ghost sm" id="notifBtn" data-act="notifToggle" type="button">Өшіру</button></div></div>
     <div class="card" id="logCard" hidden><div class="srow"><div class="grow"><div class="t1">Хабарламалар</div><div class="t2">Соңғы ұсталғандар</div></div><button class="btn ghost sm" id="logBtn" data-act="logToggle" type="button">Көру</button></div><div id="logList" hidden></div></div>
     <div class="card" id="devCard" hidden><h2>Құрылғылар</h2><div id="devList"></div></div>
     <div class="card" id="aiCard" hidden><h2>ЖИ</h2><div class="addcard"><input class="field" id="aiKey" type="password" autocomplete="off" placeholder="Groq кілті" aria-label="Groq API кілті"><button class="btn" data-act="saveAiKey" type="button">Сақтау</button></div></div>
     <div class="card"><h2>Карталар</h2><div id="cardList"></div>
       <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
     <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
+    <div class="card" id="pinCard"><h2>PIN-код</h2><p class="note" id="pinNote" style="margin:0 0 10px"></p><div class="addcard" style="margin-top:0"><input class="field" id="pinIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 сан" aria-label="PIN" style="flex:1 1 110px"><button class="btn" data-act="pinSet" type="button">Орнату</button><button class="btn ghost" data-act="pinOff" type="button">Өшіру</button></div></div>
     <div class="card"><h2>Санат лимиті</h2>
       <div class="addcard" style="margin-top:0"><select class="field" id="lCat" aria-label="Санат" style="flex:1 1 140px"><option value="food">Тамақ</option><option value="transport">Көлік</option><option value="subs">Жазылымдар</option><option value="telecom">Байланыс</option><option value="shop">Сатып алу</option><option value="health">Денсаулық</option><option value="edu">Білім</option><option value="home">Үй</option><option value="fun">Көңіл-көтеру</option><option value="other">Басқа</option></select><input class="field" id="lAmt" inputmode="numeric" placeholder="₸ / айына" aria-label="Лимит, ₸" style="flex:1 1 110px"><button class="btn" data-act="saveLimit" type="button">Қосу</button></div>
       <div id="limList" class="hlist"></div>
@@ -493,7 +509,7 @@ body.chat{padding:8px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(sa
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 42 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 43 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -1007,7 +1023,7 @@ function openSettings(){
   applyLook();
   $('#sBudget').value=S.settings.budget||'';
   {const g=S.settings.goal||{};$('#gName').value=g.name||'';$('#gAmt').value=g.amount||'';$('#gDate').value=g.date||'';drawLimits()}
-  drawCards();nativeUi();fbUi();if(fbEnabled()&&!FB.app)fbLoad();openSheet('#sheetSet');
+  pinUi();drawCards();nativeUi();fbUi();if(fbEnabled()&&!FB.app)fbLoad();openSheet('#sheetSet');
 }
 
 /* ---------- AI ---------- */
@@ -1552,6 +1568,9 @@ document.addEventListener('click',e=>{
     case 'saveGoal':{const a=Math.round(parseFloat(String($('#gAmt').value).replace(/\s/g,'').replace(',','.'))),d=$('#gDate').value;if(!(a>0)||a>1e10){toast('Сананы енгізіңіз');break}S.settings=Object.assign({},S.settings,{goal:{name:String($('#gName').value||'Мақсат').trim().slice(0,40)||'Мақсат',amount:a,date:ISO.test(d)?d:'',from:dateVal(Date.now())}});saveSettings().then(()=>toast('Мақсат сақталды'));break}
     case 'delGoal':{const st=Object.assign({},S.settings);delete st.goal;S.settings=st;saveSettings().then(()=>{$('#gName').value='';$('#gAmt').value='';$('#gDate').value='';toast('Мақсат өшірілді')});break}
     case 'wipeAll':{if(!b.dataset.arm){b.dataset.arm='1';b.textContent='Растау: өшіру';toast('Қайта басыңыз — барлығы өшеді');setTimeout(()=>{delete b.dataset.arm;b.textContent='Барлық деректі өшіру'},4000);break}(async()=>{const ids=S.txs.map(t=>t.id);if(S.mode==='cloud'){for(const id of ids)await removeTx(id)}S.txs=[];S.settings={budget:0,rules:{},cards:[]};if(S.mode!=='cloud')lsSet(LS_TX,[]);await saveSettings();openSettings();toast('Деректер өшірілді')})();break}
+    case 'pinSet':{const v=String($('#pinIn').value||'');if(!/^\d{4}$/.test(v)){toast('4 сан енгізіңіз');break}(async()=>{const sa=Array.from(crypto.getRandomValues(new Uint8Array(8))).map(x=>x.toString(16)).join('');lsSet('aq.v1.pin',{s:sa,h:await pinHash(v,sa)});pinUi();toast('PIN орнатылды')})();break}
+    case 'pinOff':{const p=pinGet();if(!p){toast('PIN қойылмаған');break}(async()=>{const v=String($('#pinIn').value||'');if(await pinHash(v,p.s)===p.h){try{localStorage.removeItem('aq.v1.pin')}catch(x){}pinUi();toast('PIN өшірілді')}else toast('Ағымдағы PIN-ді енгізіп, «Өшіру» басыңыз')})();break}
+    case 'notifToggle':{const N=window.UnemNative;try{N.setNotify(!N.notifyOn())}catch(x){}nativeUi();break}
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
     case 'ask':runAsk();break;
     case 'notifSet':try{window.UnemNative.openSettings()}catch(e){}break;
@@ -1591,6 +1610,26 @@ document.addEventListener('change',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheets()});
 window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if(['home','history','advice'].indexOf(h)>=0&&h!==S.tab){S.tab=h;render()}});
 {const h=location.hash.replace('#','');if(['home','history','advice'].indexOf(h)>=0)S.tab=h}
+
+/* ---------- PIN ---------- */
+const PIN={buf:'',fails:0,until:0,hid:0};
+const pinOk=()=>!!(window.crypto&&crypto.subtle&&window.TextEncoder);
+async function pinHash(pin,salt){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pin));return Array.from(new Uint8Array(d)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+const pinGet=()=>{const p=lsGet('aq.v1.pin',null);return p&&p.s&&p.h?p:null};
+function pinPaint(){$$('#lockDots i').forEach((e,i)=>e.classList.toggle('on',i<PIN.buf.length))}
+function lockShow(){if(!pinGet())return;PIN.buf='';pinPaint();$('#lockMsg').textContent='PIN енгізіңіз';$('#lock').hidden=false}
+async function pinKey(k){
+  if(Date.now()<PIN.until){$('#lockMsg').textContent='Күте тұрыңыз…';return}
+  if(k==='b'){PIN.buf=PIN.buf.slice(0,-1);pinPaint();return}
+  if(PIN.buf.length>=4)return;PIN.buf+=k;pinPaint();if(PIN.buf.length<4)return;
+  const p=pinGet(),h=p?await pinHash(PIN.buf,p.s):'';
+  if(!p||h===p.h){PIN.fails=0;PIN.buf='';pinPaint();$('#lock').hidden=true;return}
+  PIN.fails++;PIN.buf='';pinPaint();$('#lockMsg').textContent='Қате PIN';
+  if(PIN.fails>=5){PIN.until=Date.now()+30000;PIN.fails=0;$('#lockMsg').textContent='30 секундтан кейін қайталаңыз'}
+}
+function pinUi(){const c=$('#pinCard');if(!c)return;if(!pinOk()){c.hidden=true;return}$('#pinNote').textContent=pinGet()?'Қосулы: қосымша ашылғанда PIN сұралады':'Өшірулі. Қосымшаны бөтен адам ашпауы үшін қойыңыз';$('#pinIn').value=''}
+document.addEventListener('click',e=>{const k=e.target&&e.target.closest&&e.target.closest('#lockPad button');if(k)pinKey(k.dataset.k)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)PIN.hid=Date.now();else if(pinGet()&&PIN.hid&&Date.now()-PIN.hid>30000)lockShow()});
 
 /* ---------- boot ---------- */
 function startLocal(){
@@ -1903,6 +1942,7 @@ function nativeUi(){
   c.hidden=false;$('#logCard').hidden=false;let on=false;try{on=N.listenerEnabled()}catch(e){}
   $('#nativeNote').textContent=on?'Қосулы':'Өшірулі';
   $('#nativeBtn').textContent=on?'Баптау':'Қосу';
+  {const nc=$('#notifCard');if(nc&&typeof N.notifyOn==='function'){nc.hidden=false;let n=true;try{n=N.notifyOn()}catch(e){}$('#notifBtn').textContent=n?'Өшіру':'Қосу';$('#notifNote').textContent=n?'Қосулы: төлем болғанда санат батырмалары шығады':'Өшірулі: жазбалар бәрібір өздігінен сақталады'}}
 }
 document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#permGo,#permLater');if(t){const st=$('#perm').dataset.step;if(st==='battery'){try{localStorage.setItem('aq.permBat','1')}catch(x){}}if(t.id==='permGo'){try{st==='battery'?window.UnemNative.askBattery():window.UnemNative.openSettings()}catch(x){}}else{try{sessionStorage.setItem('aq.permLater.'+st,'1')}catch(x){}}permUi();return}if(e.target&&e.target.id==='batBtn'){try{window.UnemNative.askBattery()}catch(x){}return}if(e.target&&e.target.id==='nativeBtn'){try{window.UnemNative.openSettings()}catch(x){}}});
 (function(){
