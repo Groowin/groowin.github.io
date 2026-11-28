@@ -409,6 +409,12 @@ html[data-home=tiles] .wcard .big{font-size:26px}
 .tobot{position:absolute;right:4px;bottom:10px;width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);z-index:4;display:grid;place-items:center;color:var(--accent);padding:0}
 .tobot[hidden]{display:none}
 
+.mcards{display:flex;gap:8px;overflow-x:auto;padding:4px 4px 12px;margin:0 -4px;scrollbar-width:none}.mcards::-webkit-scrollbar{display:none}
+.mcard{flex:0 0 auto;min-width:128px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;padding:9px 12px;border-radius:14px;color:#fff;background:linear-gradient(140deg,var(--bk1),var(--bk2));transition:opacity .15s,transform .15s}
+.mcards.f .mcard:not([aria-pressed="true"]):not(.add){opacity:.5}
+.mcard[aria-pressed="true"]{opacity:1;box-shadow:0 0 0 2.5px var(--accent);transform:translateY(-1px)}
+.mcard .n{font-size:12px;font-weight:700;opacity:.9}.mcard .v{font-size:16px;font-weight:800}.mcard .s{font-size:11px;opacity:.8}
+.mcard.add{background:var(--surface);color:var(--accent);opacity:1;box-shadow:inset 0 0 0 1.5px var(--line);font-weight:700;font-size:13px;justify-content:center}
 /* ---- Жаңалықтар ---- */
 .nhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 10px}
 .nhead h2{margin:0;font-size:22px}
@@ -461,7 +467,7 @@ html[data-home=tiles] .wcard .big{font-size:26px}
 <div class="shell">
   <header class="top">
     <div><h1>Үнем</h1></div>
-    <button class="icon-btn" data-act="settings" aria-label="Баптаулар"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <div class="hbtns" style="display:flex;gap:8px"><button class="icon-btn" data-act="plan" aria-label="Жоспар"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></svg></button><button class="icon-btn" data-act="settings" aria-label="Баптаулар"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
   </header>
   <main id="app"><div class="skel" aria-busy="true"></div></main>
   <button id="toBottom" class="tobot" hidden aria-label="Төменге түсу" type="button"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
@@ -472,8 +478,8 @@ html[data-home=tiles] .wcard .big{font-size:26px}
     <nav class="tabs" aria-label="Бөлімдер">
       <button data-act="tab" data-tab="home" aria-label="Басты"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7M6 10v10h12V10"/></svg></button>
       <button data-act="tab" data-tab="history" aria-label="Тарих"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></button>
-      <button data-act="tab" data-tab="advice" aria-label="ЖИ көмекші"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16z"/></svg></button>
       <button class="plus" data-act="add" aria-label="Жазба қосу"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button data-act="tab" data-tab="advice" aria-label="ЖИ көмекші"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16z"/></svg></button>
       <button data-act="tab" data-tab="news" aria-label="Жаңалықтар"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a2 2 0 0 1 2 2v13H7a2 2 0 0 1-2-2V4zM18 9h2v8a2 2 0 0 1-2 2M8 8h7M8 12h7M8 16h4"/></svg></button>
     </nav>
   </div>
@@ -508,25 +514,21 @@ html[data-home=tiles] .wcard .big{font-size:26px}
   </div>
 </div>
 
-<div class="sheet" id="sheetSet" hidden>
+<div class="sheet" id="sheetPlan" hidden>
   <div class="scrim" data-act="close"></div>
-  <div class="panel" role="dialog" aria-label="Баптаулар">
-    <div class="phead"><h2>Баптаулар</h2><button class="icon-btn" data-act="close" aria-label="Жабу"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <div class="card acct" id="acctCard">
-      <div class="av" id="acctAv" aria-hidden="true">Ү</div>
-      <div class="grow"><div class="t1" id="acctName">Қонақ</div><div class="t2" id="acctSub">Осы телефонда</div></div>
-      <button class="btn sm" id="cloudBtn" data-act="cloudIn" type="button">Кіру</button>
-      <button class="btn ghost sm" id="cloudOutBtn" data-act="cloudOut" type="button" hidden>Шығу</button>
-    </div>
-    <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div><div class="srow" style="margin-top:12px"><div class="grow"><div class="t1">Фонда жұмыс</div></div><button class="btn ghost sm" id="batBtn" type="button">Баптау</button></div></div>
-    <div class="card" id="notifCard" hidden><div class="srow"><div class="grow"><div class="t1">«Үнем» хабарламасы</div><div class="t2" id="notifNote">Төлем болғанда санат таңдау батырмалары</div></div><button class="btn ghost sm" id="notifBtn" data-act="notifToggle" type="button">Өшіру</button></div></div>
-    <div class="card" id="logCard" hidden><div class="srow"><div class="grow"><div class="t1">Хабарламалар</div><div class="t2">Соңғы ұсталғандар</div></div><button class="btn ghost sm" id="logBtn" data-act="logToggle" type="button">Көру</button></div><div id="logList" hidden></div></div>
-    <div class="card" id="devCard" hidden><h2>Құрылғылар</h2><div id="devList"></div></div>
-    <div class="card" id="aiCard" hidden><h2>ЖИ</h2><div class="addcard"><input class="field" id="aiKey" type="password" autocomplete="off" placeholder="Groq кілті" aria-label="Groq API кілті"><button class="btn" data-act="saveAiKey" type="button">Сақтау</button></div></div>
-    <div class="card"><h2>Карталар</h2><div id="cardList"></div>
-      <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
+  <div class="panel" role="dialog" aria-label="Жоспар">
+    <div class="phead"><h2>Жоспар</h2><button class="icon-btn" data-act="close" aria-label="Жабу"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
-    <div class="card" id="pinCard"><h2>PIN-код</h2><p class="note" id="pinNote" style="margin:0 0 10px"></p><div class="addcard" style="margin-top:0"><input class="field" id="pinIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 сан" aria-label="PIN" style="flex:1 1 110px"><button class="btn" data-act="pinSet" type="button">Орнату</button><button class="btn ghost" data-act="pinOff" type="button">Өшіру</button></div><div class="btns" style="margin-top:10px"><button class="btn ghost" id="bioBtn" data-act="bioToggle" type="button" hidden></button></div></div>
+    <div class="card"><h2>Санат лимиті</h2>
+      <div class="addcard" style="margin-top:0"><select class="field" id="lCat" aria-label="Санат" style="flex:1 1 140px"><option value="food">Тамақ</option><option value="transport">Көлік</option><option value="subs">Жазылымдар</option><option value="telecom">Байланыс</option><option value="shop">Сатып алу</option><option value="health">Денсаулық</option><option value="edu">Білім</option><option value="home">Үй</option><option value="fun">Көңіл-көтеру</option><option value="other">Басқа</option></select><input class="field" id="lAmt" inputmode="numeric" placeholder="₸ / айына" aria-label="Лимит, ₸" style="flex:1 1 110px"><button class="btn" data-act="saveLimit" type="button">Қосу</button></div>
+      <div id="limList" class="hlist"></div>
+    </div>
+    <div class="card"><h2>Жинақ мақсаты</h2>
+      <input class="field" id="gName" placeholder="Мысалы: телефон" aria-label="Мақсат атауы" maxlength="40">
+      <div class="addcard"><input class="field" id="gAmt" inputmode="numeric" placeholder="Сома, ₸" aria-label="Мақсат сомасы" style="flex:1 1 110px"><input class="field" id="gDate" type="date" aria-label="Мерзімі" style="flex:1 1 140px"></div>
+      <input class="field" id="sPct" inputmode="numeric" placeholder="Түсімнен жинау үлесі, % (0 — өшіру)" aria-label="Түсімнен жинау үлесі, %" style="margin-top:10px"><p class="note" id="savedNote" style="margin:8px 0 0"></p>
+      <div class="btns" style="margin-top:10px"><button class="btn" data-act="saveGoal" type="button">Сақтау</button><button class="btn ghost" data-act="delGoal" type="button">Өшіру</button></div>
+    </div>
     <div class="card"><h2>Қарыз және рассрочка</h2>
       <input class="field" id="lnName" placeholder="Атауы: Kaspi Red, телефон…" aria-label="Қарыз атауы" maxlength="40">
       <div class="addcard"><input class="field" id="lnLeft" inputmode="numeric" placeholder="Қалған сома, ₸" aria-label="Қалған сома" style="flex:1 1 110px"><input class="field" id="lnMon" inputmode="numeric" placeholder="Айлық төлем, ₸" aria-label="Айлық төлем" style="flex:1 1 110px"><input class="field" id="lnDay" inputmode="numeric" placeholder="Күні (1–31)" aria-label="Төлем күні" style="flex:1 1 90px"></div>
@@ -546,16 +548,26 @@ html[data-home=tiles] .wcard .big{font-size:26px}
       <div class="addcard"><input class="field" id="wsPrice" inputmode="numeric" placeholder="Бағасы, ₸" aria-label="Бағасы" style="flex:1 1 120px"><button class="btn" data-act="wishAdd" type="button">Қосу</button></div>
       <div id="wsList" class="hlist"></div>
     </div>
-    <div class="card"><h2>Санат лимиті</h2>
-      <div class="addcard" style="margin-top:0"><select class="field" id="lCat" aria-label="Санат" style="flex:1 1 140px"><option value="food">Тамақ</option><option value="transport">Көлік</option><option value="subs">Жазылымдар</option><option value="telecom">Байланыс</option><option value="shop">Сатып алу</option><option value="health">Денсаулық</option><option value="edu">Білім</option><option value="home">Үй</option><option value="fun">Көңіл-көтеру</option><option value="other">Басқа</option></select><input class="field" id="lAmt" inputmode="numeric" placeholder="₸ / айына" aria-label="Лимит, ₸" style="flex:1 1 110px"><button class="btn" data-act="saveLimit" type="button">Қосу</button></div>
-      <div id="limList" class="hlist"></div>
+  </div>
+</div>
+<div class="sheet" id="sheetSet" hidden>
+  <div class="scrim" data-act="close"></div>
+  <div class="panel" role="dialog" aria-label="Баптаулар">
+    <div class="phead"><h2>Баптаулар</h2><button class="icon-btn" data-act="close" aria-label="Жабу"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="card acct" id="acctCard">
+      <div class="av" id="acctAv" aria-hidden="true">Ү</div>
+      <div class="grow"><div class="t1" id="acctName">Қонақ</div><div class="t2" id="acctSub">Осы телефонда</div></div>
+      <button class="btn sm" id="cloudBtn" data-act="cloudIn" type="button">Кіру</button>
+      <button class="btn ghost sm" id="cloudOutBtn" data-act="cloudOut" type="button" hidden>Шығу</button>
     </div>
-    <div class="card"><h2>Жинақ мақсаты</h2>
-      <input class="field" id="gName" placeholder="Мысалы: телефон" aria-label="Мақсат атауы" maxlength="40">
-      <div class="addcard"><input class="field" id="gAmt" inputmode="numeric" placeholder="Сома, ₸" aria-label="Мақсат сомасы" style="flex:1 1 110px"><input class="field" id="gDate" type="date" aria-label="Мерзімі" style="flex:1 1 140px"></div>
-      <input class="field" id="sPct" inputmode="numeric" placeholder="Түсімнен жинау үлесі, % (0 — өшіру)" aria-label="Түсімнен жинау үлесі, %" style="margin-top:10px"><p class="note" id="savedNote" style="margin:8px 0 0"></p>
-      <div class="btns" style="margin-top:10px"><button class="btn" data-act="saveGoal" type="button">Сақтау</button><button class="btn ghost" data-act="delGoal" type="button">Өшіру</button></div>
-    </div>
+    <div class="card" id="nativeCard" hidden><div class="srow"><div class="grow"><div class="t1">Автоматты оқу</div><div class="t2" id="nativeNote"></div></div><button class="btn ghost sm" id="nativeBtn" type="button">Рұқсат</button></div><div class="srow" style="margin-top:12px"><div class="grow"><div class="t1">Фонда жұмыс</div></div><button class="btn ghost sm" id="batBtn" type="button">Баптау</button></div></div>
+    <div class="card" id="notifCard" hidden><div class="srow"><div class="grow"><div class="t1">«Үнем» хабарламасы</div><div class="t2" id="notifNote">Төлем болғанда санат таңдау батырмалары</div></div><button class="btn ghost sm" id="notifBtn" data-act="notifToggle" type="button">Өшіру</button></div></div>
+    <div class="card" id="logCard" hidden><div class="srow"><div class="grow"><div class="t1">Хабарламалар</div><div class="t2">Соңғы ұсталғандар</div></div><button class="btn ghost sm" id="logBtn" data-act="logToggle" type="button">Көру</button></div><div id="logList" hidden></div></div>
+    <div class="card" id="devCard" hidden><h2>Құрылғылар</h2><div id="devList"></div></div>
+    <div class="card" id="aiCard" hidden><h2>ЖИ</h2><div class="addcard"><input class="field" id="aiKey" type="password" autocomplete="off" placeholder="Groq кілті" aria-label="Groq API кілті"><button class="btn" data-act="saveAiKey" type="button">Сақтау</button></div></div>
+    <div class="card"><h2>Карталар</h2><div id="cardList"></div>
+      <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
+    <div class="card" id="pinCard"><h2>PIN-код</h2><p class="note" id="pinNote" style="margin:0 0 10px"></p><div class="addcard" style="margin-top:0"><input class="field" id="pinIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 сан" aria-label="PIN" style="flex:1 1 110px"><button class="btn" data-act="pinSet" type="button">Орнату</button><button class="btn ghost" data-act="pinOff" type="button">Өшіру</button></div><div class="btns" style="margin-top:10px"><button class="btn ghost" id="bioBtn" data-act="bioToggle" type="button" hidden></button></div></div>
     <div class="card"><h2>Көрініс</h2>
       <span class="lbl">Стиль</span>
       <div class="chips" role="group" aria-label="Стиль" style="flex-wrap:wrap;margin-bottom:6px"><button class="chip" data-act="style" data-v="milk" aria-pressed="true">Сүт</button><button class="chip" data-act="style" data-v="apple" aria-pressed="false">Apple</button><button class="chip" data-act="style" data-v="minimal" aria-pressed="false">Минимал</button><button class="chip" data-act="style" data-v="sage" aria-pressed="false">Орман</button><button class="chip" data-act="style" data-v="ocean" aria-pressed="false">Мұхит</button><button class="chip" data-act="style" data-v="sunset" aria-pressed="false">Күн батуы</button><button class="chip" data-act="style" data-v="night" aria-pressed="false">Түн</button><button class="chip" data-act="style" data-v="mono" aria-pressed="false">Шағын</button></div>
@@ -569,7 +581,7 @@ html[data-home=tiles] .wcard .big{font-size:26px}
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 50 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 51 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -845,7 +857,7 @@ function viewHome(){
     const p=total/B;
     c2='<article class="wcard"><p class="eyebrow"><span>Айлық лимит</span>'+ic('M12 3a9 9 0 1 0 9 9M12 3v9h9')+'</p><div class="wring">'+ringSvg(p)+'<div><div class="num" style="font-size:24px;font-weight:800;overflow-wrap:anywhere">'+money(Math.abs(B-total))+'</div><p class="sub2">'+(p>1?'лимиттен асты':'қалды')+'</p></div></div><p class="sub2">Лимит '+money(B)+todayLine()+'</p></article>';
   }else{
-    c2='<article class="wcard"><p class="eyebrow"><span>Айлық лимит</span>'+ic('M12 3a9 9 0 1 0 9 9M12 3v9h9')+'</p><div><div class="big" style="font-size:24px">Лимит қойыңыз</div><p class="sub2" style="margin-top:6px">Қанша жұмсағаныңыз бен қанша қалғаны осы жерде көрінеді.</p></div><button class="wbtn" data-act="settings">Лимит қою</button></article>';
+    c2='<article class="wcard"><p class="eyebrow"><span>Айлық лимит</span>'+ic('M12 3a9 9 0 1 0 9 9M12 3v9h9')+'</p><div><div class="big" style="font-size:24px">Лимит қойыңыз</div><p class="sub2" style="margin-top:6px">Қанша жұмсағаныңыз бен қанша қалғаны осы жерде көрінеді.</p></div><button class="wbtn" data-act="plan">Лимит қою</button></article>';
   }
   const t0=startOfDay(Date.now());
   let c3;
@@ -868,7 +880,7 @@ function viewHome(){
   const catHtml=catRows.length?catRows.slice(0,4).map(([c,v])=>'<button class="row-btn" data-act="cat" data-cat="'+c+'" style="--cc:var(--c-'+c+')">'+dot(c)+'<div class="grow"><div class="t1">'+CATS[c].n+((S.settings.catLimits||{})[c]?' · лимиттің '+Math.round(v.sum/S.settings.catLimits[c]*100)+'%-ы':'')+'</div><div class="share"><i style="width:'+(v.sum/total*100).toFixed(1)+'%"></i></div></div><div style="text-align:right"><div class="amt num">'+money(v.sum)+'</div><div class="t2">'+Math.round(v.sum/total*100)+'% · '+v.n+' рет</div></div></button>').join(''):'<p class="note">Бұл айда шығын жоқ.</p>';
   let ins=insightsFor(out,total,y,m);
   const insHtml=(ins=alerts().concat(ins)).length?'<section class="card"><h2>Назар аударыңыз</h2><div class="ins">'+ins.slice(0,3).map(i=>'<div'+(i.bad?' class="warnb"':'')+'><b>'+esc(i.h)+'</b><span>'+esc(i.t)+'</span></div>').join('')+'</div></section>':'';
-  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+reviewCard()+sugCard()+normCard()+loansCard()+methodCard()+wishCard()+bankCards()+homeExtra()+planCard()+incomeCard()+wrapCard(out,y,m)
+  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+reviewCard()+sugCard()+normCard()+loansCard()+methodCard()+wishCard()+homeExtra()+planCard()+incomeCard()+wrapCard(out,y,m)
    +(out.length?'<section class="card"><h2>Соңғы төлемдер</h2><div class="list">'+out.slice().sort((a,b)=>b.ts-a.ts).slice(0,4).map(rowHtml).join('')+'</div><div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="tab" data-tab="history">Барлығы</button></div></section>':'')
    +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+subsCard()+insHtml+marketSection();
 }
@@ -878,6 +890,7 @@ function rowHtml(t){
 function historyList(){
   let l=S.txs.filter(t=>inMonth(t.ts,S.y,S.m));
   if(S.filter!=='all')l=l.filter(t=>t.cat===S.filter);
+  if(S.cardF!=='all'){const cc=(S.settings.cards||[])[+S.cardF];l=cc?l.filter(t=>cardFor(t)===cc):l}
   const q=S.q.trim().toLowerCase();if(q)l=l.filter(t=>t.merchant.toLowerCase().indexOf(q)>=0);
   l.sort((a,b)=>b.ts-a.ts);
   if(!l.length)return '<p class="note" style="text-align:center;padding:24px 0">Жазба табылмады.</p>';
@@ -885,10 +898,18 @@ function historyList(){
   let h='';g.forEach((arr,k)=>{const sp=sumOf(arr.filter(t=>t.type==='out'&&!OWN.has(t.id)));h+='<div class="daygroup"><span>'+dayLabel(k)+'</span><span class="num">'+(sp?money(sp):'')+'</span></div><div class="card" style="padding:4px 16px"><div class="list">'+arr.map(rowHtml).join('')+'</div></div>'});
   return h;
 }
+function cardTiles(){
+  const cs=S.settings.cards||[];
+  if(!cs.length)return '<div class="mcards"><button class="mcard add" data-act="settings" type="button">+ Карта қосу</button></div>';
+  const out=outIn(S.y,S.m).filter(t=>t.cat!=='transfer');
+  return '<div class="mcards'+(S.cardF!=='all'?' f':'')+'">'+cs.map((c,i)=>{
+    const B=BANKS[c.bank]||BANKS.Other,sp=sumOf(out.filter(t=>cardFor(t)===c)),on=S.cardF===String(i);
+    return '<button class="mcard" data-act="cardF" data-i="'+i+'" aria-pressed="'+on+'" type="button" style="--bk1:'+B.a+';--bk2:'+B.b+'"><span class="n">'+esc(c.name||B.n)+(c.last4?' ••'+esc(c.last4):'')+'</span><span class="v num">'+money(sp)+'</span><span class="s">айда кетті</span></button>'}).join('')+'</div>';
+}
 function viewHistory(){
   const present=new Set(S.txs.filter(t=>inMonth(t.ts,S.y,S.m)).map(t=>t.cat));
   const chips='<button class="chip" data-act="filter" data-cat="all" aria-pressed="'+(S.filter==='all')+'">Барлығы</button>'+CAT_KEYS.filter(c=>present.has(c)||S.filter===c).map(c=>'<button class="chip" data-act="filter" data-cat="'+c+'" aria-pressed="'+(S.filter===c)+'">'+CATS[c].n+'</button>').join('');
-  return '<section class="card" style="padding:12px 14px">'+monthBar()+'</section><input class="field" id="searchBox" type="search" placeholder="Іздеу: Magnum, такси…" value="'+esc(S.q)+'" aria-label="Іздеу"><div class="chips">'+chips+'</div><div id="hlist">'+historyList()+'</div>';
+  return '<section class="card" style="padding:12px 14px">'+monthBar()+'</section>'+cardTiles()+'<input class="field" id="searchBox" type="search" placeholder="Іздеу: Magnum, такси…" value="'+esc(S.q)+'" aria-label="Іздеу"><div class="chips">'+chips+'</div><div id="hlist">'+historyList()+'</div>';
 }
 
 function forecast(){
@@ -1082,11 +1103,14 @@ async function saveEdit(){
   }
 }
 function drawLimits(){const L=S.settings.catLimits||{},ks=Object.keys(L).filter(c=>CATS[c]&&L[c]>0),el=$('#limList');if(!el)return;el.innerHTML=ks.length?ks.map(c=>'<div class="hrow"><span class="ht" style="padding:10px 12px">'+esc(CATS[c].n)+' · '+money(L[c])+'</span><button class="ibtn sm" data-act="delLimit" data-cat="'+c+'" aria-label="Лимитті өшіру" type="button">✕</button></div>').join(''):'<p class="note" style="margin:8px 0 0">Лимит қойылмаған</p>'}
-function openSettings(){
-  applyLook();
+function openPlan(){
   $('#sBudget').value=S.settings.budget||'';
   {const g=S.settings.goal||{};$('#gName').value=g.name||'';$('#gAmt').value=g.amount||'';$('#gDate').value=g.date||'';$('#sPct').value=S.settings.savePct==null?10:S.settings.savePct;$('#savedNote').textContent=(S.settings.saved>0?'Жиналды: '+money(S.settings.saved):'Әзірге жинаққа бөлінген жоқ');drawLimits();drawLoans()}
-  drawMethod();drawWish();$('#hrRate').value=S.settings.hourly||'';pinUi();drawCards();nativeUi();fbUi();if(fbEnabled()&&!FB.app)fbLoad();openSheet('#sheetSet');
+  drawMethod();drawWish();$('#hrRate').value=S.settings.hourly||'';openSheet('#sheetPlan');
+}
+function openSettings(){
+  applyLook();
+  pinUi();drawCards();nativeUi();fbUi();if(fbEnabled()&&!FB.app)fbLoad();openSheet('#sheetSet');
 }
 
 /* ---------- AI ---------- */
@@ -1150,7 +1174,7 @@ function qaContext(){
   s+='Соңғы жазбалар (id | күні | орын | сома | санат | түрі):\n'+S.txs.slice().sort((a,b)=>b.ts-a.ts).slice(0,40).map(t=>t.id+' | '+dateVal(t.ts)+' | '+t.merchant+' | '+Math.round(t.amount)+' | '+CATS[t.cat].n+'('+t.cat+') | '+(t.type==='in'?'кіріс':'шығыс')).join('\n');
   return s;
 }
-const CHAT_SYS='Сен — «Үнем» қосымшасының ЖИ көмекшісісің. Үнем — ақшаны үнемдеуге арналған қосымша: банк хабарламаларынан шығындарды өзі жазып отырады. Қосымшаның негізін қалаған — Аскеров Алмас (кім жасады деп сұраса, осылай жауап бер).\nМәнер: адамдай, жылы, табиғи сөйлес, қолданушыға «сен» де. Сәлемдессе — сәлем бер, жағдайын сұра; қарапайым әңгімеге де қысқа жауап бер, одан кейін қажет болса ақша тақырыбына жеңіл бұр. Таза қазақ тілінде, қысқа сөйлеммен жаз; орыс сөзін қазақ сөзінің орнына қолданба (деректегі атаулардан басқа). Ойдан сөз құрастырма. Эмодзиді орынды (1–2) қолдан, маңызды сан мен сөзді **қалың**, екпінді *курсив* етіп жаза аласың, қысқа тізімге «- » қолдан. Тақырып (#) қолданба. Әдетте 3–6 сөйлем.\nҚосымша бөлімдері (тек осыларды ата, басқа бөлім ойлап таппа): Басты (шығын, карталар, ескертулер, түсім болжамы, жазылымдар, «Нарық»: USD, EUR, RUB, CNY, алтын, Bitcoin графигімен), Тарих (іздеу, түзету), осы чат, Баптау (карталар, айлық лимит, санат лимиті, жинақ мақсаты, көрініс, PIN-код және саусақ ізі, көшірме алу мен қалпына келтіру, деректі өшіру, ЖИ кілті, Android-те банк хабарламаларын автоматты оқу және «Үнем» хабарламасын қосу/өшіру). Қосымша мүмкіндіктері: банк push-ын өзі оқып жазба қосады (Kaspi, Freedom, Halyk, Jusan, BCC, Google Wallet); түсім келгенде жинаққа бөлуді ұсынады; тұрақты төлемдер мен жазылымдарды табады; ескерту береді; чат арқылы жазба қосу, өзгерту, өшіру, лимит пен мақсат қою. Басты бетте «Әдіс» карточкасы бар (50/30/20, конверт, алдымен өзіңе төле, нөлдік бюджет, 80/20 — Баптауда таңдалады), шығынсыз күндер санағышы, 48 сағаттық күту тізімі (алғың келген затты жазып, күтіп, керек емес болса үнемдеу), сағаттық табыс бойынша зат бағасын еңбек сағатына аударады. Төменгі 5-ші батырма — «Жаңалықтар» (Қазақстан мен әлем: базалық мөлшерлеме, теңге, инфляция, жанармай, тариф, доллар, алтын, мұнай, Bitcoin). Қолданушы қосымшаны қалай қолдану керегін сұраса, осы тізімге сүйен.\nКөрнекі блоктар: нақты деректен қосымша өзі сызады, сен сан жазбайсың, тек белгіні жеке жолға қой: [[forecast]] ай соңына болжам; [[rule]] 50/30/20 талдауы (кіріс бар болса); [[income]] келесі түсім болжамы; [[plan]] осы айдың жоспары (өткен айлардағы әдетке негізделген болжам); [[cats]] санаттар бөлінісі; [[months]] айларды салыстыру; [[days]] күндік график; [[recurring]] тұрақты төлемдер; [[rates]] валюта курсы. Қолданушы график, көрсет, салыстыр десе, тиісті блокты қой.\nЕсептеу: күрделі арифметиканы өзің істеме, [[calc:1500*4+200]] деп жаз, қосымша есептеп береді.\nЕсеп құралдары (сандарды өзің ЕШҚАШАН ойдан айтпа, нақты кезеңге сан керек болса осыларды қолдан, қосымша есептеп мәтінге қояды): [[q:spend cat=food month=2026-10]] шығын сомасы; [[q:income month=2026-10]] кіріс; [[q:count cat=food last=30]] жазба саны; [[q:avgday last=30]] күніне орташа; [[q:top cat=food last=90 n=3]] ең көп жұмсалған орындар; [[q:max last=30]] ең ірі төлем; [[q:cmp a=2026-10 b=2026-11 cat=food]] екі айды салыстыру. Параметрлер: cat, merchant, month=ЖЖЖЖ-АА, from=ЖЖЖЖ-АА-КК, to=ЖЖЖЖ-АА-КК, last=күн саны, type=in/out. Сценарий блоктары, жеке жолға: [[sim:cat=food,cut=20]] (санатты 20% қысқартсаң, 6 және 12 айда қанша үнем; cat жазбасаң барлық шығын), [[goalplan:amount=300000,months=6]] немесе [[goalplan:amount=300000,monthly=40000]] (мақсатқа жету есебі). «Қанша кетті», «салыстыр», «қысқартсам не болады», «қанша айда жинаймын» сұрақтарында осыларды қой, сан жазбай.\nҚосымша блоктар (жеке жолға): [[norm]] бүгінгі норма, [[loans]] қарыз бен рассрочка. Сатып алу туралы сұраса («X ₸ тұратын затты алсам ба»): бағасын білмесең бір рет сұра; сосын қысқа жауап бер: (1) айлық лимит пен қалған сома, (2) қарыз/рассрочка және мақсатқа әсері, (3) шешім: алуға болады / күт 24 сағат / басқа жол (жинап ал); бір қысқа сөйлем ұсыныс. Қарыз туралы: алдымен мөлшерлемесі жоғарысын жап, рассрочканы мерзімінен кешіктірме, жаңа рассрочка қосудан алдын ескерт. Аз ақша жинауға шыдамсыз болса, түсімнен автоматты бөліп қоюды ұсын.\nИнвестиция мен нарық: нақты акция, валюта немесе криптовалютаны сатып ал/сатпа деп айтпа, болашақ бағаны болжама; тек түсіндір, тәуекелді ескерт, бұл қаржылық кеңес емес екенін бір сөйлеммен ата. Қолданушының жинағын алдымен қор (3–6 айлық шығын) және қарыз жабуға бағытта.\nӘрекеттер: қолданушы жазба қосуды, өзгертуді немесе өшіруді сұраса, жауап соңына [[do:{...}]] жаз, қолданушы растайды. Үлгі: [[do:{"op":"add","type":"out","amount":3500,"merchant":"Magnum","cat":"food","date":"2026-11-24"}]] [[do:{"op":"edit","id":"t123","set":{"cat":"food","amount":2000}}]] [[do:{"op":"delete","id":"t123"}]]. id-ді тек деректегі «Соңғы жазбалар» тізімінен ал, жоқ болса нақтылап сұра. cat мәндері: food, transport, subs, telecom, shop, health, edu, home, fun, transfer, other, income. Бюджет ережелері (қолданушының жағдайына сай біреуін ғана нақты сандармен ұсын, бәрін тізбелеме): 50/30/20 (қажеттілік/қалау/жинақ); 70/20/10 (кіріс аз болса: шығын/жинақ/қарызды өтеу немесе көмек); «алдымен өзіңе төле» (түскен күні 10–20% жинаққа аудару); 24 сағат ережесі (қымбат сатып алуды бір күн күту); аптасына бір шығынсыз күн; конверт әдісі (санатқа лимит қою).\nҚосымша әрекеттер: лимит [[do:{"op":"limit","cat":"food","amount":80000}]] (amount 0 — лимитті алу); жинақ мақсаты [[do:{"op":"goal","name":"Телефон","amount":300000,"date":"2027-02-01"}]]; қолданушы өз әдеті, мақсаты, табысы туралы тұрақты нәрсе айтса, оны [[do:{"op":"note","text":"қысқа факт"}]] деп сақта. Бірнеше әрекет болса, әрқайсысын жеке [[do:...]] жаз. Әрекетті орындадым деп айтпа, «растасаң қосамын» деп айт.\nТек берілген деректерге сүйен, сан ойлап таппа. Валюта курсы деректе берілсе ғана ата. Жауап деректе жоқ болса, соны ашық айт.';
+const CHAT_SYS='Сен — «Үнем» қосымшасының ЖИ көмекшісісің. Үнем — ақшаны үнемдеуге арналған қосымша: банк хабарламаларынан шығындарды өзі жазып отырады. Қосымшаның негізін қалаған — Аскеров Алмас (кім жасады деп сұраса, осылай жауап бер).\nМәнер: адамдай, жылы, табиғи сөйлес, қолданушыға «сен» де. Сәлемдессе — сәлем бер, жағдайын сұра; қарапайым әңгімеге де қысқа жауап бер, одан кейін қажет болса ақша тақырыбына жеңіл бұр. Таза қазақ тілінде, қысқа сөйлеммен жаз; орыс сөзін қазақ сөзінің орнына қолданба (деректегі атаулардан басқа). Ойдан сөз құрастырма. Эмодзиді орынды (1–2) қолдан, маңызды сан мен сөзді **қалың**, екпінді *курсив* етіп жаза аласың, қысқа тізімге «- » қолдан. Тақырып (#) қолданба. Әдетте 3–6 сөйлем.\nҚосымша бөлімдері (тек осыларды ата, басқа бөлім ойлап таппа): Басты (шығын, карталар, ескертулер, түсім болжамы, жазылымдар, «Нарық»: USD, EUR, RUB, CNY, алтын, Bitcoin графигімен), Тарих (іздеу, түзету), осы чат, Баптау (карталар, көрініс, PIN-код және саусақ ізі, көшірме алу мен қалпына келтіру, деректі өшіру, ЖИ кілті, Android-те банк хабарламаларын оқу және «Үнем» хабарламасын қосу/өшіру); жоғарғы «Жоспар» батырмасы (🎯): айлық лимит, санат лимиті, жинақ мақсаты, қарыз/рассрочка, бюджет әдісі, күту тізімі. Қосымша мүмкіндіктері: банк push-ын өзі оқып жазба қосады (Kaspi, Freedom, Halyk, Jusan, BCC, Google Wallet); түсім келгенде жинаққа бөлуді ұсынады; тұрақты төлемдер мен жазылымдарды табады; ескерту береді; чат арқылы жазба қосу, өзгерту, өшіру, лимит пен мақсат қою. Басты бетте «Әдіс» карточкасы бар (50/30/20, конверт, алдымен өзіңе төле, нөлдік бюджет, 80/20 — жоғарғы «Жоспар» батырмасынан таңдалады), шығынсыз күндер санағышы, 48 сағаттық күту тізімі (алғың келген затты жазып, күтіп, керек емес болса үнемдеу), сағаттық табыс бойынша зат бағасын еңбек сағатына аударады. Төменгі 5-ші батырма — «Жаңалықтар» (Қазақстан мен әлем: базалық мөлшерлеме, теңге, инфляция, жанармай, тариф, доллар, алтын, мұнай, Bitcoin). Қолданушы қосымшаны қалай қолдану керегін сұраса, осы тізімге сүйен.\nКөрнекі блоктар: нақты деректен қосымша өзі сызады, сен сан жазбайсың, тек белгіні жеке жолға қой: [[forecast]] ай соңына болжам; [[rule]] 50/30/20 талдауы (кіріс бар болса); [[income]] келесі түсім болжамы; [[plan]] осы айдың жоспары (өткен айлардағы әдетке негізделген болжам); [[cats]] санаттар бөлінісі; [[months]] айларды салыстыру; [[days]] күндік график; [[recurring]] тұрақты төлемдер; [[rates]] валюта курсы. Қолданушы график, көрсет, салыстыр десе, тиісті блокты қой.\nЕсептеу: күрделі арифметиканы өзің істеме, [[calc:1500*4+200]] деп жаз, қосымша есептеп береді.\nЕсеп құралдары (сандарды өзің ЕШҚАШАН ойдан айтпа, нақты кезеңге сан керек болса осыларды қолдан, қосымша есептеп мәтінге қояды): [[q:spend cat=food month=2026-10]] шығын сомасы; [[q:income month=2026-10]] кіріс; [[q:count cat=food last=30]] жазба саны; [[q:avgday last=30]] күніне орташа; [[q:top cat=food last=90 n=3]] ең көп жұмсалған орындар; [[q:max last=30]] ең ірі төлем; [[q:cmp a=2026-10 b=2026-11 cat=food]] екі айды салыстыру. Параметрлер: cat, merchant, month=ЖЖЖЖ-АА, from=ЖЖЖЖ-АА-КК, to=ЖЖЖЖ-АА-КК, last=күн саны, type=in/out. Сценарий блоктары, жеке жолға: [[sim:cat=food,cut=20]] (санатты 20% қысқартсаң, 6 және 12 айда қанша үнем; cat жазбасаң барлық шығын), [[goalplan:amount=300000,months=6]] немесе [[goalplan:amount=300000,monthly=40000]] (мақсатқа жету есебі). «Қанша кетті», «салыстыр», «қысқартсам не болады», «қанша айда жинаймын» сұрақтарында осыларды қой, сан жазбай.\nҚосымша блоктар (жеке жолға): [[norm]] бүгінгі норма, [[loans]] қарыз бен рассрочка. Сатып алу туралы сұраса («X ₸ тұратын затты алсам ба»): бағасын білмесең бір рет сұра; сосын қысқа жауап бер: (1) айлық лимит пен қалған сома, (2) қарыз/рассрочка және мақсатқа әсері, (3) шешім: алуға болады / күт 24 сағат / басқа жол (жинап ал); бір қысқа сөйлем ұсыныс. Қарыз туралы: алдымен мөлшерлемесі жоғарысын жап, рассрочканы мерзімінен кешіктірме, жаңа рассрочка қосудан алдын ескерт. Аз ақша жинауға шыдамсыз болса, түсімнен автоматты бөліп қоюды ұсын.\nИнвестиция мен нарық: нақты акция, валюта немесе криптовалютаны сатып ал/сатпа деп айтпа, болашақ бағаны болжама; тек түсіндір, тәуекелді ескерт, бұл қаржылық кеңес емес екенін бір сөйлеммен ата. Қолданушының жинағын алдымен қор (3–6 айлық шығын) және қарыз жабуға бағытта.\nӘрекеттер: қолданушы жазба қосуды, өзгертуді немесе өшіруді сұраса, жауап соңына [[do:{...}]] жаз, қолданушы растайды. Үлгі: [[do:{"op":"add","type":"out","amount":3500,"merchant":"Magnum","cat":"food","date":"2026-11-24"}]] [[do:{"op":"edit","id":"t123","set":{"cat":"food","amount":2000}}]] [[do:{"op":"delete","id":"t123"}]]. id-ді тек деректегі «Соңғы жазбалар» тізімінен ал, жоқ болса нақтылап сұра. cat мәндері: food, transport, subs, telecom, shop, health, edu, home, fun, transfer, other, income. Бюджет ережелері (қолданушының жағдайына сай біреуін ғана нақты сандармен ұсын, бәрін тізбелеме): 50/30/20 (қажеттілік/қалау/жинақ); 70/20/10 (кіріс аз болса: шығын/жинақ/қарызды өтеу немесе көмек); «алдымен өзіңе төле» (түскен күні 10–20% жинаққа аудару); 24 сағат ережесі (қымбат сатып алуды бір күн күту); аптасына бір шығынсыз күн; конверт әдісі (санатқа лимит қою).\nҚосымша әрекеттер: лимит [[do:{"op":"limit","cat":"food","amount":80000}]] (amount 0 — лимитті алу); жинақ мақсаты [[do:{"op":"goal","name":"Телефон","amount":300000,"date":"2027-02-01"}]]; қолданушы өз әдеті, мақсаты, табысы туралы тұрақты нәрсе айтса, оны [[do:{"op":"note","text":"қысқа факт"}]] деп сақта. Бірнеше әрекет болса, әрқайсысын жеке [[do:...]] жаз. Әрекетті орындадым деп айтпа, «растасаң қосамын» деп айт.\nТек берілген деректерге сүйен, сан ойлап таппа. Валюта курсы деректе берілсе ғана ата. Жауап деректе жоқ болса, соны ашық айт.';
 const REVIEW_SYS='Сен қазақ тілінің редакторы және есепшісің. Төмендегі мәтінді тексер: емле мен грамматиканы, табиғи емес немесе ойдан шыққан сөздерді түзет; сандарды деректермен салыстырып, қате болса түзет. Мағынасын өзгертпе, жаңа ақпарат қоспа, ұзартпа. Эмодзиді, **қалың**, *курсив* белгілерін және ⟦0⟧ сияқты белгілерді сол күйінде қалдыр. Тек түзетілген мәтінді қайтар, түсініктеме жазба.';
 const AUTO_Q='Деректерге қарап, қолданушыға бүгінгі кеңесті жаз: ең маңызды байқауды нақты сомамен айт, соңында бір нақты қадам ұсын. Керек болса бір көрнекі блок қой. 4 сөйлемнен аспасын. Деректер аз немесе бәрі жақсы болса, мақтап жібермей, ақылға қонымды қысқа айт.';
 const WEBQ=/интернет|баға|бағасы|тұрады|акция|жеңілдік|арзанырақ|арзан балама|балама|тариф|іздеп/i;
@@ -1187,7 +1211,7 @@ function blockHtml(k){
   const T=new Date(),y=T.getFullYear(),m=T.getMonth();
   if(k==='income'){const I=incomeForecast();return I?'<div class="blk inc">'+incomeInner(I)+'</div>':'<div class="blk"><span class="note">Түсім болжамы үшін кемінде екі айдағы кіріс керек.</span></div>'}
   if(k==='plan')return planBlock();
-  if(k==='loans'||k==='norm'){const h=k==='loans'?loansCard():normCard();return h?h.replace('<section class="card">','<div class="blk">').replace('</section>','</div>'):'<div class="blk"><span class="note">'+(k==='loans'?'Қарыз қосылмаған. Баптау → Қарыз және рассрочка.':'Норма үшін баптауда айлық лимитті қойыңыз.')+'</span></div>'}
+  if(k==='loans'||k==='norm'){const h=k==='loans'?loansCard():normCard();return h?h.replace('<section class="card">','<div class="blk">').replace('</section>','</div>'):'<div class="blk"><span class="note">'+(k==='loans'?'Қарыз қосылмаған. Жоспар (🎯) → Қарыз және рассрочка.':'Норма үшін баптауда айлық лимитті қойыңыз.')+'</span></div>'}
   if(k==='rule')return ruleBlock();
   if(k==='forecast'){const x=forecastHtml.call(null,true);return x?'<div class="blk">'+x.replace(/^<section class="card">/,'').replace(/<\/section>$/,'')+'</div>':'<div class="blk"><span class="note">Болжам үшін дерек әлі аз.</span></div>'}
   if(k==='cats'){const out=outIn(y,m),tot=sumOf(out);if(!tot)return '<div class="blk"><span class="note">Бұл айда шығын жоқ.</span></div>';const rows=Array.from(groupBy(out,t=>t.cat)).sort((a,b)=>b[1].sum-a[1].sum).slice(0,7);return '<div class="blk"><div class="blk-h">'+MONTHS[m]+' · санаттар</div>'+rows.map(r=>'<div class="crow"><span class="cdot" style="background:var(--c-'+r[0]+')"></span><span>'+CATS[r[0]].n+'</span><span class="num cv">'+money(r[1].sum)+'</span><div class="cb"><i style="width:'+Math.max(3,Math.round(r[1].sum/tot*100))+'%;background:var(--c-'+r[0]+')"></i></div></div>').join('')+'</div>'}
@@ -1628,7 +1652,7 @@ const NEWS_T=[
   {k:'btc',r:'w',n:'Bitcoin',q:'биткоин курс'}
 ];
 const NWS={busy:false,err:false,why:{}};
-S.newsR=lsGet('aq.v1.nr','kz')==='w'?'w':'kz';S.newsT='all';
+S.cardF='all';S.newsR=lsGet('aq.v1.nr','kz')==='w'?'w':'kz';S.newsT='all';
 const newsUrl=q=>'https://news.google.com/rss/search?q='+encodeURIComponent(q+' when:7d')+'&hl=ru&gl=KZ&ceid=KZ:ru';
 function newsParse(xml){
   const d=new DOMParser().parseFromString(xml,'text/xml'),out=[];
@@ -1678,7 +1702,7 @@ function viewNews(){
   const C=lsGet('aq.v1.news',{t:0,d:{}}),R=S.newsR,ks=NEWS_T.filter(x=>x.r===R);
   let items=[];ks.forEach(x=>{if(S.newsT!=='all'&&S.newsT!==x.k)return;(C.d[x.k]||[]).forEach(a=>items.push(Object.assign({tg:x.n},a)))});
   const seen=new Set();items=items.filter(a=>{const k=a.t.slice(0,48).toLowerCase();if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>b.ts-a.ts).slice(0,40);
-  const why=lsGet('aq.v1.nwhy',{}),wk=R+new Date().toISOString().slice(0,10),wtxt=why[wk];
+  const why=lsGet('aq.v1.nwhy2',{}),wk=R+new Date().toISOString().slice(0,10),wtxt=why[wk];
   const ref='<button class="icon-btn" data-act="newsRefresh" aria-label="Жаңарту" type="button">'+ic('M20 12a8 8 0 1 1-2.5-5.8M20 4v4h-4')+'</button>';
   let h='<div class="nhead"><h2>Жаңалықтар</h2>'+ref+'</div><div class="seg"><button data-act="newsR" data-v="kz" aria-pressed="'+(R==='kz')+'" type="button">Қазақстан</button><button data-act="newsR" data-v="w" aria-pressed="'+(R==='w')+'" type="button">Әлем</button></div>';
   h+=newsStats();
@@ -1696,9 +1720,9 @@ async function newsWhy(){
   ks.forEach(x=>(C.d[x.k]||[]).slice(0,3).forEach(a=>heads.push('['+x.n+'] '+a.t)));if(heads.length<3)return;
   NWS.why[R]=1;render();
   try{
-    const p='Төмендегі жаңалық тақырыптарына қарап, қарапайым адамға (ақшасын санайтын мұғалімге) қазақша 3 қысқа сөйлеммен түсіндір: не болып жатыр және оның қалтаға әсері қандай болуы мүмкін. Тек тақырыптардағы деректі қолдан, цифр ойдан қоспа, кеңесті мұқият айт. Тізім, белгі жоқ, қарапайым мәтін.\n\n'+heads.join('\n');
-    const t=await groqChat(k,m=>({model:m,temperature:0.2,messages:[{role:'user',content:p}]}));
-    const wk=R+new Date().toISOString().slice(0,10);const nw={};nw[wk]=String(t).replace(/[*#_`]/g,'').trim().slice(0,700);lsSet('aq.v1.nwhy',nw);
+    const p='Төмендегі жаңалық тақырыптарына қарап, қарапайым адамға (ақшасын санайтын мұғалімге) қазақша 3 қысқа сөйлеммен түсіндір: не болып жатыр және оның қалтаға әсері қандай болуы мүмкін. Тек тақырыптардағы деректі қолдан, цифр ойдан қоспа, кеңесті мұқият айт. Тізім, белгі жоқ, қарапайым мәтін. Әр сөйлемді толық аяқта.\n\n'+heads.join('\n');
+    const t=await groqChat(k,m=>({model:m,temperature:0.2,max_tokens:600,messages:[{role:'user',content:p}]}));
+    const wk=R+new Date().toISOString().slice(0,10);const nw={};nw[wk]=String(t).replace(/[*#_`]/g,'').trim().slice(0,1600);lsSet('aq.v1.nwhy2',nw);
   }catch(e){toast('ЖИ жауап бермеді, кейінірек қайталаңыз')}
   NWS.why[R]=0;if(S.tab==='news')render();
 }
@@ -1910,9 +1934,11 @@ document.addEventListener('click',e=>{
     case 'add':{S.addType='out';setAddType('out');openSheet('#sheetAdd');S.preview=[];S.fails=[];drawPreview();setTimeout(()=>{$('#addText').focus()},50);break}
     case 'close':closeSheets();break;
     case 'settings':openSettings();break;
+    case 'plan':openPlan();break;
     case 'edit':openEdit(b.dataset.id);break;
     case 'cat':S.filter=b.dataset.cat;S.tab='history';render();setHash('history');scr(0);break;
     case 'filter':S.filter=b.dataset.cat;render();break;
+    case 'cardF':S.cardF=S.cardF===b.dataset.i?'all':b.dataset.i;render();break;
     case 'saveAdd':saveAdd();break;
     case 'pdel':S.preview.splice(Number(b.dataset.i),1);drawPreview();break;
     case 'logToggle':{const l=$('#logList');l.hidden=!l.hidden;$('#logBtn').textContent=l.hidden?'Көру':'Жасыру';if(!l.hidden)drawLog();break}
@@ -2373,7 +2399,7 @@ document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.targ
 (function(){
   const TABS=['home','history','advice','news'];let sx=0,sy=0,st=0,ok=false;
   document.addEventListener('touchstart',e=>{
-    const t=e.target;ok=e.touches.length===1&&!(t.closest&&t.closest('input,textarea,select,.cards,.qchips,#wrp,.sheet:not([hidden]),#gate'))&&!$('.sheet:not([hidden])')&&!WR;
+    const t=e.target;ok=e.touches.length===1&&!(t.closest&&t.closest('input,textarea,select,.cards,.qchips,.nchips,.mcards,#wrp,.sheet:not([hidden]),#gate'))&&!$('.sheet:not([hidden])')&&!WR;
     lock='';y0=($('#app')||{}).scrollTop||0;if(ok){sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()}
   },{passive:true});
   let lock='',y0=0;
