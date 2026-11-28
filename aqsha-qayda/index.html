@@ -582,7 +582,7 @@ html[data-home=tiles] .wcard .big{font-size:26px}
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 54 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 55 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -902,7 +902,7 @@ function viewHome(){
   const catHtml=catRows.length?catRows.slice(0,4).map(([c,v])=>'<button class="row-btn" data-act="cat" data-cat="'+c+'" style="--cc:var(--c-'+c+')">'+dot(c)+'<div class="grow"><div class="t1">'+CATS[c].n+((S.settings.catLimits||{})[c]?' · лимиттің '+Math.round(v.sum/S.settings.catLimits[c]*100)+'%-ы':'')+'</div><div class="share"><i style="width:'+(v.sum/total*100).toFixed(1)+'%"></i></div></div><div style="text-align:right"><div class="amt num">'+money(v.sum)+'</div><div class="t2">'+Math.round(v.sum/total*100)+'% · '+v.n+' рет</div></div></button>').join(''):'<p class="note">Бұл айда шығын жоқ.</p>';
   let ins=insightsFor(out,total,y,m);
   const insHtml=(ins=alerts().concat(ins)).length?'<section class="card"><h2>Назар аударыңыз</h2><div class="ins">'+ins.slice(0,3).map(i=>'<div'+(i.bad?' class="warnb"':'')+'><b>'+esc(i.h)+'</b><span>'+esc(i.t)+'</span></div>').join('')+'</div></section>':'';
-  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+reviewCard()+sugCard()+normCard()+loansCard()+methodCard()+wishCard()+homeExtra()+planCard()+incomeCard()+wrapCard(out,y,m)
+  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+updCard()+reviewCard()+sugCard()+normCard()+loansCard()+methodCard()+wishCard()+homeExtra()+planCard()+incomeCard()+wrapCard(out,y,m)
    +(out.length?'<section class="card"><h2>Соңғы төлемдер</h2><div class="list">'+out.slice().sort((a,b)=>b.ts-a.ts).slice(0,4).map(rowHtml).join('')+'</div><div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="tab" data-tab="history">Барлығы</button></div></section>':'')
    +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+subsCard()+insHtml+marketSection();
 }
@@ -1664,6 +1664,27 @@ function normCard(){
 }
 
 
+
+/* ---------- Қолданба ішінде жаңарту (Android) ---------- */
+const UPD={n:0,url:''};
+function updLoad(){const U=lsGet('aq.v1.upd',null);if(U&&U.n){UPD.n=U.n;UPD.url=U.url||''}}
+async function updCheck(){
+  const N=window.UnemNative;if(!N||typeof N.versionCode!=='function')return;
+  let mine=0;try{mine=Number(N.versionCode())||0}catch(e){}if(!mine)return;
+  const U=lsGet('aq.v1.upd',{t:0});
+  if(Date.now()-(U.t||0)<6*3600e3){UPD.n=U.n>mine?U.n:0;UPD.url=U.url||'';return}
+  try{
+    const r=await fetch('https://api.github.com/repos/Groowin/unem-android/releases/tags/latest',{headers:{Accept:'application/vnd.github+json'}});
+    if(!r.ok)return;const j=await r.json(),m=/build\s+(\d+)/.exec(j.body||'');if(!m)return;
+    const n=Number(m[1]),a=(j.assets||[])[0],url=a&&a.browser_download_url||'https://github.com/Groowin/unem-android/releases/download/latest/Unem.apk';
+    lsSet('aq.v1.upd',{t:Date.now(),n,url,mine,dis:U.dis||0});UPD.n=n>mine?n:0;UPD.url=url;if(S.tab==='home')render();
+  }catch(e){}
+}
+function updCard(){
+  const U=lsGet('aq.v1.upd',null);if(!UPD.n||!U||(U.dis||0)>=UPD.n)return '';
+  return '<section class="card" style="background:var(--accent-soft)"><h2>Жаңа нұсқа бар</h2><p class="note" style="margin:4px 0 10px">Жаңартсаңыз, жаңа мүмкіндіктер келеді. Деректеріңіз сақталады: жүктеп, үстінен орната салыңыз.</p><div class="btns"><a class="btn" href="'+esc(UPD.url)+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Жаңарту</a><button class="btn ghost" data-act="updHide" type="button">Кейін</button></div></section>';
+}
+
 /* ---------- Жаңалықтар ---------- */
 const NEWS_T=[
   {k:'rate',r:'kz',n:'Базалық мөлшерлеме',q:'базовая ставка Нацбанк Казахстан'},
@@ -2011,6 +2032,7 @@ document.addEventListener('click',e=>{
     case 'loanDel':{S.settings=Object.assign({},S.settings,{loans:(S.settings.loans||[]).filter(l=>l.id!==b.dataset.id)});saveSettings().then(()=>{drawLoans();render()});break}
     case 'loanPay':{const L=(S.settings.loans||[]).map(l=>l.id===b.dataset.id?Object.assign({},l,{left:Math.max(0,l.left-l.monthly),paid:ymOf(Date.now())}):l);S.settings=Object.assign({},S.settings,{loans:L});saveSettings();render();toast('Төлем белгіленді');break}
     case 'reviewShare':{const txt=window.__review||'';let ok=false;try{if(window.UnemNative&&window.UnemNative.share){window.UnemNative.share(txt);ok=true}}catch(e){}if(!ok&&navigator.share){navigator.share({text:txt}).catch(()=>{});ok=true}if(!ok){try{navigator.clipboard.writeText(txt);toast('Көшірілді')}catch(e){}}break}
+    case 'updHide':{const U=lsGet('aq.v1.upd',{});U.dis=UPD.n;lsSet('aq.v1.upd',U);render();break}
     case 'newsR':S.newsR=b.dataset.v==='w'?'w':'kz';S.newsT='all';lsSet('aq.v1.nr',S.newsR);render();break
     case 'newsT':S.newsT=b.dataset.v;render();break
     case 'newsRefresh':newsLoad(true);break
@@ -2102,7 +2124,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)PIN.hid=Dat
 /* ---------- boot ---------- */
 function startLocal(){
   S.mode='local';gateUi();S.txs=lsGet(LS_TX,[]);
-  S.settings=Object.assign({budget:0,rules:{},cards:[]},lsGet(LS_SET,{}));S.ready=true;render();syncNative();
+  S.settings=Object.assign({budget:0,rules:{},cards:[]},lsGet(LS_SET,{}));S.ready=true;updLoad();render();syncNative();setTimeout(updCheck,2500);
   if(!window.claude&&lsGet(LS_FB,{}).on)fbLoad();
 }
 function subscribeCloud(){
