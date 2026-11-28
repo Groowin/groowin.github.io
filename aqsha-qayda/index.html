@@ -195,6 +195,7 @@ body.kb :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border
 .wbtn{align-self:flex-start;margin-top:8px;border:0;border-radius:999px;background:#fff;color:#111;font:inherit;font-weight:700;padding:12px 22px;cursor:pointer}
 @keyframes wup{from{opacity:0;transform:translateY(26px)}}@keyframes wfill{to{width:100%}}
 .wpill{padding:6px 11px;border-radius:999px;background:var(--surface-2);font-size:13px;font-weight:600}
+.wcard .wpill{background:rgba(255,255,255,.22);color:#fff;padding:4px 10px;font-size:12.5px}
 .chathead{position:sticky;top:0;z-index:6;display:flex;justify-content:space-between;align-items:center;padding:8px 2px;margin:0 0 4px;background:linear-gradient(var(--bg) 78%,transparent)}
 .ibtn{width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:var(--surface);color:var(--fg);box-shadow:var(--shadow);cursor:pointer}.ibtn .ic{width:20px;height:20px}.ibtn.sm{width:34px;height:34px;box-shadow:none;background:transparent;color:var(--muted)}
 .hlist{display:flex;flex-direction:column;gap:6px;margin-top:6px}.hrow{display:flex;align-items:center;background:var(--surface);border-radius:18px;padding:4px 6px 4px 4px}.hrow .ht{flex:1;min-width:0;text-align:left;border:0;background:none;font:inherit;color:inherit;padding:10px 12px;cursor:pointer}.hrow .ht b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hrow .ht span{font-size:12px;color:var(--muted)}
@@ -505,6 +506,12 @@ html[data-home=tiles] .wcard .big{font-size:26px}
       <div class="addcard"><select class="field" id="cBank" aria-label="Банк"><option value="Kaspi">Kaspi</option><option value="Freedom">Freedom</option><option value="BCC">BCC</option><option value="Halyk">Halyk</option><option value="Other">Басқа</option></select><input class="field" id="cLast" inputmode="numeric" maxlength="4" placeholder="Соңғы 4 цифр" aria-label="Соңғы 4 цифр"><button class="btn" data-act="addCard" type="button">Қосу</button></div></div>
     <div class="card"><h2>Айлық лимит</h2><div class="addcard"><input class="field" id="sBudget" inputmode="numeric" placeholder="₸, өшіру үшін 0" aria-label="Айлық лимит, ₸"><button class="btn" data-act="saveBudget" type="button">Сақтау</button></div></div>
     <div class="card" id="pinCard"><h2>PIN-код</h2><p class="note" id="pinNote" style="margin:0 0 10px"></p><div class="addcard" style="margin-top:0"><input class="field" id="pinIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="4 сан" aria-label="PIN" style="flex:1 1 110px"><button class="btn" data-act="pinSet" type="button">Орнату</button><button class="btn ghost" data-act="pinOff" type="button">Өшіру</button></div><div class="btns" style="margin-top:10px"><button class="btn ghost" id="bioBtn" data-act="bioToggle" type="button" hidden></button></div></div>
+    <div class="card"><h2>Қарыз және рассрочка</h2>
+      <input class="field" id="lnName" placeholder="Атауы: Kaspi Red, телефон…" aria-label="Қарыз атауы" maxlength="40">
+      <div class="addcard"><input class="field" id="lnLeft" inputmode="numeric" placeholder="Қалған сома, ₸" aria-label="Қалған сома" style="flex:1 1 110px"><input class="field" id="lnMon" inputmode="numeric" placeholder="Айлық төлем, ₸" aria-label="Айлық төлем" style="flex:1 1 110px"><input class="field" id="lnDay" inputmode="numeric" placeholder="Күні (1–31)" aria-label="Төлем күні" style="flex:1 1 90px"></div>
+      <div class="btns" style="margin-top:10px"><button class="btn" data-act="loanAdd" type="button">Қосу</button></div>
+      <div id="lnList" class="hlist"></div>
+    </div>
     <div class="card"><h2>Санат лимиті</h2>
       <div class="addcard" style="margin-top:0"><select class="field" id="lCat" aria-label="Санат" style="flex:1 1 140px"><option value="food">Тамақ</option><option value="transport">Көлік</option><option value="subs">Жазылымдар</option><option value="telecom">Байланыс</option><option value="shop">Сатып алу</option><option value="health">Денсаулық</option><option value="edu">Білім</option><option value="home">Үй</option><option value="fun">Көңіл-көтеру</option><option value="other">Басқа</option></select><input class="field" id="lAmt" inputmode="numeric" placeholder="₸ / айына" aria-label="Лимит, ₸" style="flex:1 1 110px"><button class="btn" data-act="saveLimit" type="button">Қосу</button></div>
       <div id="limList" class="hlist"></div>
@@ -528,7 +535,7 @@ html[data-home=tiles] .wcard .big{font-size:26px}
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 47 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 48 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -687,7 +694,7 @@ async function removeTx(id){
   S.txs=S.txs.filter(x=>x.id!==id);lsSet(LS_TX,S.txs);fbTomb(id);render();return true;
 }
 async function saveSettings(){
-  if(S.mode==='cloud'){try{await S.coll.doc('settings').set({kind:'settings',budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[],goal:S.settings.goal||null,saved:S.settings.saved||0,savePct:S.settings.savePct==null?10:S.settings.savePct,sugDone:S.settings.sugDone||[],catLimits:S.settings.catLimits||{}})}catch(e){toast('Баптау сақталмады')}}
+  if(S.mode==='cloud'){try{await S.coll.doc('settings').set({kind:'settings',budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[],goal:S.settings.goal||null,loans:S.settings.loans||[],saved:S.settings.saved||0,savePct:S.settings.savePct==null?10:S.settings.savePct,sugDone:S.settings.sugDone||[],catLimits:S.settings.catLimits||{}})}catch(e){toast('Баптау сақталмады')}}
   else{S.settings=Object.assign({},S.settings,{mt:Date.now()});lsSet(LS_SET,S.settings);fbQueue()}
   render();
 }
@@ -827,7 +834,7 @@ function viewHome(){
   const catHtml=catRows.length?catRows.slice(0,4).map(([c,v])=>'<button class="row-btn" data-act="cat" data-cat="'+c+'" style="--cc:var(--c-'+c+')">'+dot(c)+'<div class="grow"><div class="t1">'+CATS[c].n+((S.settings.catLimits||{})[c]?' · лимиттің '+Math.round(v.sum/S.settings.catLimits[c]*100)+'%-ы':'')+'</div><div class="share"><i style="width:'+(v.sum/total*100).toFixed(1)+'%"></i></div></div><div style="text-align:right"><div class="amt num">'+money(v.sum)+'</div><div class="t2">'+Math.round(v.sum/total*100)+'% · '+v.n+' рет</div></div></button>').join(''):'<p class="note">Бұл айда шығын жоқ.</p>';
   let ins=insightsFor(out,total,y,m);
   const insHtml=(ins=alerts().concat(ins)).length?'<section class="card"><h2>Назар аударыңыз</h2><div class="ins">'+ins.slice(0,3).map(i=>'<div'+(i.bad?' class="warnb"':'')+'><b>'+esc(i.h)+'</b><span>'+esc(i.t)+'</span></div>').join('')+'</div></section>':'';
-  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+sugCard()+bankCards()+homeExtra()+planCard()+incomeCard()+wrapCard(out,y,m)
+  return monthBar()+'<div class="cards" id="cards">'+c1+c2+c3+c4+'</div><div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>'+listenWarn()+reviewCard()+sugCard()+normCard()+loansCard()+bankCards()+homeExtra()+planCard()+incomeCard()+wrapCard(out,y,m)
    +(out.length?'<section class="card"><h2>Соңғы төлемдер</h2><div class="list">'+out.slice().sort((a,b)=>b.ts-a.ts).slice(0,4).map(rowHtml).join('')+'</div><div class="btns" style="margin-top:8px"><button class="btn ghost" data-act="tab" data-tab="history">Барлығы</button></div></section>':'')
    +'<section class="card"><h2>Санаттар</h2><div class="list">'+catHtml+'</div></section>'+subsCard()+insHtml+marketSection();
 }
@@ -909,7 +916,7 @@ function countUp(){
 }
 function msgHtml(m){
   if(m.r!=='a')return '<div class="bub u"><p>'+esc(m.t)+'</p></div>';
-  const wide=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan|income|sim:|goalplan:)/.test(m.t);
+  const wide=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan|income|loans|norm|sim:|goalplan:)/.test(m.t);
   return '<div class="bub a'+(wide?' wide':'')+'"'+(S.chat.rv&&S.chat.rv===m.ts?' data-rv="1"':'')+'>'+richHtml(m.t)+(m.acts||[]).map((x,i)=>actHtml(m,x,i)).join('')+(m.web?'<small>Интернеттен</small>':'')+'</div>';
 }
 const GREET={r:'a',t:'Сәлем! 👋 Мен Үнемнің ЖИ көмекшісімін. Шығындарыңды талдап, график көрсетемін, жазба қосып, өзгертіп, өшіре аламын, валюта курсын айтамын. Не істейік?'};
@@ -1044,7 +1051,7 @@ function drawLimits(){const L=S.settings.catLimits||{},ks=Object.keys(L).filter(
 function openSettings(){
   applyLook();
   $('#sBudget').value=S.settings.budget||'';
-  {const g=S.settings.goal||{};$('#gName').value=g.name||'';$('#gAmt').value=g.amount||'';$('#gDate').value=g.date||'';$('#sPct').value=S.settings.savePct==null?10:S.settings.savePct;$('#savedNote').textContent=(S.settings.saved>0?'Жиналды: '+money(S.settings.saved):'Әзірге жинаққа бөлінген жоқ');drawLimits()}
+  {const g=S.settings.goal||{};$('#gName').value=g.name||'';$('#gAmt').value=g.amount||'';$('#gDate').value=g.date||'';$('#sPct').value=S.settings.savePct==null?10:S.settings.savePct;$('#savedNote').textContent=(S.settings.saved>0?'Жиналды: '+money(S.settings.saved):'Әзірге жинаққа бөлінген жоқ');drawLimits();drawLoans()}
   pinUi();drawCards();nativeUi();fbUi();if(fbEnabled()&&!FB.app)fbLoad();openSheet('#sheetSet');
 }
 
@@ -1097,6 +1104,7 @@ function qaContext(){
   {const P=planData();if(P)s+='Әдетке негізделген болжам (соңғы '+P.months+' ай бойынша): осы ай ≈ '+Math.round(P.exp)+' ₸; санаттар: '+P.rows.slice(0,5).map(r=>CATS[r.c].n+' ≈ '+Math.round(r.exp)+(r.over?' (жылдам кетіп барады)':'')).join(', ')+'.\n'}
   {const rd=ruleData(y,m);if(rd)s+='Осы айдың кірісі '+Math.round(rd.inc)+' ₸; 50/30/20 бойынша: қажеттілік '+Math.round(rd.np)+'%, қалау '+Math.round(rd.wp)+'%, жинақ '+Math.round(rd.sp)+'%.\n'}
   {const L=S.settings.catLimits||{},ks=Object.keys(L);if(ks.length)s+='Санат лимиттері (айына): '+ks.map(c=>CATS[c].n+' '+L[c]+' ₸, жұмсалды '+Math.round(sumOf(outIn(y,m).filter(t=>t.cat===c)))+' ₸').join('; ')+'\n'}
+  {const L=loansList();if(L.length)s+='Қарыз/рассрочка: '+L.map(l=>l.name+' — қалды '+l.left+' ₸, айына '+l.monthly+' ₸, төлем күні '+l.day).join('; ')+'.\n';const sb=recurring().filter(x=>x.cat==='subs');if(sb.length)s+='Жазылымдар: '+sb.map(x=>x.name+' '+x.amount+' ₸').join(', ')+'.\n';if(S.settings.saved>0)s+='Жинаққа бөлінген: '+S.settings.saved+' ₸.\n'}
   {const g=goalInfo();if(g)s+='Жинақ мақсаты: «'+g.name+'» '+g.amount+' ₸'+(g.date?', мерзімі '+g.date:'')+'; жиналды '+Math.round(g.saved)+' ₸, қалды '+Math.round(g.left)+' ₸; күніне ~'+Math.round(g.perDay)+' ₸ қою керек.\n'}
   {const n=S.settings.notes||[];if(n.length)s+='Қолданушы туралы жазып алынғандар: '+n.join('; ')+'\n'}
   {const al=alerts();if(al.length)s+='Қазіргі ескертулер: '+al.map(x=>x.h+' — '+x.t).join('; ')+'\n'}
@@ -1107,12 +1115,12 @@ function qaContext(){
   s+='Соңғы жазбалар (id | күні | орын | сома | санат | түрі):\n'+S.txs.slice().sort((a,b)=>b.ts-a.ts).slice(0,40).map(t=>t.id+' | '+dateVal(t.ts)+' | '+t.merchant+' | '+Math.round(t.amount)+' | '+CATS[t.cat].n+'('+t.cat+') | '+(t.type==='in'?'кіріс':'шығыс')).join('\n');
   return s;
 }
-const CHAT_SYS='Сен — «Үнем» қосымшасының ЖИ көмекшісісің. Үнем — ақшаны үнемдеуге арналған қосымша: банк хабарламаларынан шығындарды өзі жазып отырады. Қосымшаның негізін қалаған — Аскеров Алмас (кім жасады деп сұраса, осылай жауап бер).\nМәнер: адамдай, жылы, табиғи сөйлес, қолданушыға «сен» де. Сәлемдессе — сәлем бер, жағдайын сұра; қарапайым әңгімеге де қысқа жауап бер, одан кейін қажет болса ақша тақырыбына жеңіл бұр. Таза қазақ тілінде, қысқа сөйлеммен жаз; орыс сөзін қазақ сөзінің орнына қолданба (деректегі атаулардан басқа). Ойдан сөз құрастырма. Эмодзиді орынды (1–2) қолдан, маңызды сан мен сөзді **қалың**, екпінді *курсив* етіп жаза аласың, қысқа тізімге «- » қолдан. Тақырып (#) қолданба. Әдетте 3–6 сөйлем.\nҚосымша бөлімдері (тек осыларды ата, басқа бөлім ойлап таппа): Басты (шығын, карталар, ескертулер, түсім болжамы, жазылымдар, «Нарық»: USD, EUR, RUB, CNY, алтын, Bitcoin графигімен), Тарих (іздеу, түзету), осы чат, Баптау (карталар, айлық лимит, санат лимиті, жинақ мақсаты, көрініс, PIN-код және саусақ ізі, көшірме алу мен қалпына келтіру, деректі өшіру, ЖИ кілті, Android-те банк хабарламаларын автоматты оқу және «Үнем» хабарламасын қосу/өшіру). Қосымша мүмкіндіктері: банк push-ын өзі оқып жазба қосады (Kaspi, Freedom, Halyk, Jusan, BCC, Google Wallet); түсім келгенде жинаққа бөлуді ұсынады; тұрақты төлемдер мен жазылымдарды табады; ескерту береді; чат арқылы жазба қосу, өзгерту, өшіру, лимит пен мақсат қою. Қолданушы қосымшаны қалай қолдану керегін сұраса, осы тізімге сүйен.\nКөрнекі блоктар: нақты деректен қосымша өзі сызады, сен сан жазбайсың, тек белгіні жеке жолға қой: [[forecast]] ай соңына болжам; [[rule]] 50/30/20 талдауы (кіріс бар болса); [[income]] келесі түсім болжамы; [[plan]] осы айдың жоспары (өткен айлардағы әдетке негізделген болжам); [[cats]] санаттар бөлінісі; [[months]] айларды салыстыру; [[days]] күндік график; [[recurring]] тұрақты төлемдер; [[rates]] валюта курсы. Қолданушы график, көрсет, салыстыр десе, тиісті блокты қой.\nЕсептеу: күрделі арифметиканы өзің істеме, [[calc:1500*4+200]] деп жаз, қосымша есептеп береді.\nЕсеп құралдары (сандарды өзің ЕШҚАШАН ойдан айтпа, нақты кезеңге сан керек болса осыларды қолдан, қосымша есептеп мәтінге қояды): [[q:spend cat=food month=2026-10]] шығын сомасы; [[q:income month=2026-10]] кіріс; [[q:count cat=food last=30]] жазба саны; [[q:avgday last=30]] күніне орташа; [[q:top cat=food last=90 n=3]] ең көп жұмсалған орындар; [[q:max last=30]] ең ірі төлем; [[q:cmp a=2026-10 b=2026-11 cat=food]] екі айды салыстыру. Параметрлер: cat, merchant, month=ЖЖЖЖ-АА, from=ЖЖЖЖ-АА-КК, to=ЖЖЖЖ-АА-КК, last=күн саны, type=in/out. Сценарий блоктары, жеке жолға: [[sim:cat=food,cut=20]] (санатты 20% қысқартсаң, 6 және 12 айда қанша үнем; cat жазбасаң барлық шығын), [[goalplan:amount=300000,months=6]] немесе [[goalplan:amount=300000,monthly=40000]] (мақсатқа жету есебі). «Қанша кетті», «салыстыр», «қысқартсам не болады», «қанша айда жинаймын» сұрақтарында осыларды қой, сан жазбай.\nИнвестиция мен нарық: нақты акция, валюта немесе криптовалютаны сатып ал/сатпа деп айтпа, болашақ бағаны болжама; тек түсіндір, тәуекелді ескерт, бұл қаржылық кеңес емес екенін бір сөйлеммен ата. Қолданушының жинағын алдымен қор (3–6 айлық шығын) және қарыз жабуға бағытта.\nӘрекеттер: қолданушы жазба қосуды, өзгертуді немесе өшіруді сұраса, жауап соңына [[do:{...}]] жаз, қолданушы растайды. Үлгі: [[do:{"op":"add","type":"out","amount":3500,"merchant":"Magnum","cat":"food","date":"2026-11-24"}]] [[do:{"op":"edit","id":"t123","set":{"cat":"food","amount":2000}}]] [[do:{"op":"delete","id":"t123"}]]. id-ді тек деректегі «Соңғы жазбалар» тізімінен ал, жоқ болса нақтылап сұра. cat мәндері: food, transport, subs, telecom, shop, health, edu, home, fun, transfer, other, income. Бюджет ережелері (қолданушының жағдайына сай біреуін ғана нақты сандармен ұсын, бәрін тізбелеме): 50/30/20 (қажеттілік/қалау/жинақ); 70/20/10 (кіріс аз болса: шығын/жинақ/қарызды өтеу немесе көмек); «алдымен өзіңе төле» (түскен күні 10–20% жинаққа аудару); 24 сағат ережесі (қымбат сатып алуды бір күн күту); аптасына бір шығынсыз күн; конверт әдісі (санатқа лимит қою).\nҚосымша әрекеттер: лимит [[do:{"op":"limit","cat":"food","amount":80000}]] (amount 0 — лимитті алу); жинақ мақсаты [[do:{"op":"goal","name":"Телефон","amount":300000,"date":"2027-02-01"}]]; қолданушы өз әдеті, мақсаты, табысы туралы тұрақты нәрсе айтса, оны [[do:{"op":"note","text":"қысқа факт"}]] деп сақта. Бірнеше әрекет болса, әрқайсысын жеке [[do:...]] жаз. Әрекетті орындадым деп айтпа, «растасаң қосамын» деп айт.\nТек берілген деректерге сүйен, сан ойлап таппа. Валюта курсы деректе берілсе ғана ата. Жауап деректе жоқ болса, соны ашық айт.';
+const CHAT_SYS='Сен — «Үнем» қосымшасының ЖИ көмекшісісің. Үнем — ақшаны үнемдеуге арналған қосымша: банк хабарламаларынан шығындарды өзі жазып отырады. Қосымшаның негізін қалаған — Аскеров Алмас (кім жасады деп сұраса, осылай жауап бер).\nМәнер: адамдай, жылы, табиғи сөйлес, қолданушыға «сен» де. Сәлемдессе — сәлем бер, жағдайын сұра; қарапайым әңгімеге де қысқа жауап бер, одан кейін қажет болса ақша тақырыбына жеңіл бұр. Таза қазақ тілінде, қысқа сөйлеммен жаз; орыс сөзін қазақ сөзінің орнына қолданба (деректегі атаулардан басқа). Ойдан сөз құрастырма. Эмодзиді орынды (1–2) қолдан, маңызды сан мен сөзді **қалың**, екпінді *курсив* етіп жаза аласың, қысқа тізімге «- » қолдан. Тақырып (#) қолданба. Әдетте 3–6 сөйлем.\nҚосымша бөлімдері (тек осыларды ата, басқа бөлім ойлап таппа): Басты (шығын, карталар, ескертулер, түсім болжамы, жазылымдар, «Нарық»: USD, EUR, RUB, CNY, алтын, Bitcoin графигімен), Тарих (іздеу, түзету), осы чат, Баптау (карталар, айлық лимит, санат лимиті, жинақ мақсаты, көрініс, PIN-код және саусақ ізі, көшірме алу мен қалпына келтіру, деректі өшіру, ЖИ кілті, Android-те банк хабарламаларын автоматты оқу және «Үнем» хабарламасын қосу/өшіру). Қосымша мүмкіндіктері: банк push-ын өзі оқып жазба қосады (Kaspi, Freedom, Halyk, Jusan, BCC, Google Wallet); түсім келгенде жинаққа бөлуді ұсынады; тұрақты төлемдер мен жазылымдарды табады; ескерту береді; чат арқылы жазба қосу, өзгерту, өшіру, лимит пен мақсат қою. Қолданушы қосымшаны қалай қолдану керегін сұраса, осы тізімге сүйен.\nКөрнекі блоктар: нақты деректен қосымша өзі сызады, сен сан жазбайсың, тек белгіні жеке жолға қой: [[forecast]] ай соңына болжам; [[rule]] 50/30/20 талдауы (кіріс бар болса); [[income]] келесі түсім болжамы; [[plan]] осы айдың жоспары (өткен айлардағы әдетке негізделген болжам); [[cats]] санаттар бөлінісі; [[months]] айларды салыстыру; [[days]] күндік график; [[recurring]] тұрақты төлемдер; [[rates]] валюта курсы. Қолданушы график, көрсет, салыстыр десе, тиісті блокты қой.\nЕсептеу: күрделі арифметиканы өзің істеме, [[calc:1500*4+200]] деп жаз, қосымша есептеп береді.\nЕсеп құралдары (сандарды өзің ЕШҚАШАН ойдан айтпа, нақты кезеңге сан керек болса осыларды қолдан, қосымша есептеп мәтінге қояды): [[q:spend cat=food month=2026-10]] шығын сомасы; [[q:income month=2026-10]] кіріс; [[q:count cat=food last=30]] жазба саны; [[q:avgday last=30]] күніне орташа; [[q:top cat=food last=90 n=3]] ең көп жұмсалған орындар; [[q:max last=30]] ең ірі төлем; [[q:cmp a=2026-10 b=2026-11 cat=food]] екі айды салыстыру. Параметрлер: cat, merchant, month=ЖЖЖЖ-АА, from=ЖЖЖЖ-АА-КК, to=ЖЖЖЖ-АА-КК, last=күн саны, type=in/out. Сценарий блоктары, жеке жолға: [[sim:cat=food,cut=20]] (санатты 20% қысқартсаң, 6 және 12 айда қанша үнем; cat жазбасаң барлық шығын), [[goalplan:amount=300000,months=6]] немесе [[goalplan:amount=300000,monthly=40000]] (мақсатқа жету есебі). «Қанша кетті», «салыстыр», «қысқартсам не болады», «қанша айда жинаймын» сұрақтарында осыларды қой, сан жазбай.\nҚосымша блоктар (жеке жолға): [[norm]] бүгінгі норма, [[loans]] қарыз бен рассрочка. Сатып алу туралы сұраса («X ₸ тұратын затты алсам ба»): бағасын білмесең бір рет сұра; сосын қысқа жауап бер: (1) айлық лимит пен қалған сома, (2) қарыз/рассрочка және мақсатқа әсері, (3) шешім: алуға болады / күт 24 сағат / басқа жол (жинап ал); бір қысқа сөйлем ұсыныс. Қарыз туралы: алдымен мөлшерлемесі жоғарысын жап, рассрочканы мерзімінен кешіктірме, жаңа рассрочка қосудан алдын ескерт. Аз ақша жинауға шыдамсыз болса, түсімнен автоматты бөліп қоюды ұсын.\nИнвестиция мен нарық: нақты акция, валюта немесе криптовалютаны сатып ал/сатпа деп айтпа, болашақ бағаны болжама; тек түсіндір, тәуекелді ескерт, бұл қаржылық кеңес емес екенін бір сөйлеммен ата. Қолданушының жинағын алдымен қор (3–6 айлық шығын) және қарыз жабуға бағытта.\nӘрекеттер: қолданушы жазба қосуды, өзгертуді немесе өшіруді сұраса, жауап соңына [[do:{...}]] жаз, қолданушы растайды. Үлгі: [[do:{"op":"add","type":"out","amount":3500,"merchant":"Magnum","cat":"food","date":"2026-11-24"}]] [[do:{"op":"edit","id":"t123","set":{"cat":"food","amount":2000}}]] [[do:{"op":"delete","id":"t123"}]]. id-ді тек деректегі «Соңғы жазбалар» тізімінен ал, жоқ болса нақтылап сұра. cat мәндері: food, transport, subs, telecom, shop, health, edu, home, fun, transfer, other, income. Бюджет ережелері (қолданушының жағдайына сай біреуін ғана нақты сандармен ұсын, бәрін тізбелеме): 50/30/20 (қажеттілік/қалау/жинақ); 70/20/10 (кіріс аз болса: шығын/жинақ/қарызды өтеу немесе көмек); «алдымен өзіңе төле» (түскен күні 10–20% жинаққа аудару); 24 сағат ережесі (қымбат сатып алуды бір күн күту); аптасына бір шығынсыз күн; конверт әдісі (санатқа лимит қою).\nҚосымша әрекеттер: лимит [[do:{"op":"limit","cat":"food","amount":80000}]] (amount 0 — лимитті алу); жинақ мақсаты [[do:{"op":"goal","name":"Телефон","amount":300000,"date":"2027-02-01"}]]; қолданушы өз әдеті, мақсаты, табысы туралы тұрақты нәрсе айтса, оны [[do:{"op":"note","text":"қысқа факт"}]] деп сақта. Бірнеше әрекет болса, әрқайсысын жеке [[do:...]] жаз. Әрекетті орындадым деп айтпа, «растасаң қосамын» деп айт.\nТек берілген деректерге сүйен, сан ойлап таппа. Валюта курсы деректе берілсе ғана ата. Жауап деректе жоқ болса, соны ашық айт.';
 const REVIEW_SYS='Сен қазақ тілінің редакторы және есепшісің. Төмендегі мәтінді тексер: емле мен грамматиканы, табиғи емес немесе ойдан шыққан сөздерді түзет; сандарды деректермен салыстырып, қате болса түзет. Мағынасын өзгертпе, жаңа ақпарат қоспа, ұзартпа. Эмодзиді, **қалың**, *курсив* белгілерін және ⟦0⟧ сияқты белгілерді сол күйінде қалдыр. Тек түзетілген мәтінді қайтар, түсініктеме жазба.';
 const AUTO_Q='Деректерге қарап, қолданушыға бүгінгі кеңесті жаз: ең маңызды байқауды нақты сомамен айт, соңында бір нақты қадам ұсын. Керек болса бір көрнекі блок қой. 4 сөйлемнен аспасын. Деректер аз немесе бәрі жақсы болса, мақтап жібермей, ақылға қонымды қысқа айт.';
 const WEBQ=/интернет|баға|бағасы|тұрады|акция|жеңілдік|арзанырақ|арзан балама|балама|тариф|іздеп/i;
 const RATEQ=/курс|доллар|евро|рубл|юань|валют|usd|eur|rub|cny|\bдоллар/i;
-const CHIPS=[{t:'Бүгін қанша жұмсай аламын?'},{t:'Ай соңына болжам',local:'[[forecast]]'},{t:'Санаттар',local:'[[cats]]'},{t:'Доллар курсы',local:'[[rates]]',rates:1},{t:'Ай жоспары',local:'[[plan]]'},{t:'50/30/20',local:'[[rule]]'},{t:'Айдың Wrapped',wrap:1},{t:'Қай шығынды азайтам?'},{t:'Соңғы жазбаны өшір'}];
+const CHIPS=[{t:'Бүгінгі норма',local:'[[norm]]'},{t:'Қарыздарым',local:'[[loans]]'},{t:'Бұл затты алсам ба?'},{t:'Ай соңына болжам',local:'[[forecast]]'},{t:'Санаттар',local:'[[cats]]'},{t:'Доллар курсы',local:'[[rates]]',rates:1},{t:'Ай жоспары',local:'[[plan]]'},{t:'50/30/20',local:'[[rule]]'},{t:'Айдың Wrapped',wrap:1},{t:'Қай шығынды азайтам?'},{t:'Соңғы жазбаны өшір'}];
 S.chat={msgs:lsGet('aq.v1.chat',[]),busy:false,err:'',q:'',autoNext:0};
 function drawChips(){const el=$('#qchips');if(el&&!el.dataset.d){el.innerHTML=CHIPS.map((c,i)=>'<button class="chip" data-act="sug" data-i="'+i+'" type="button">'+esc(c.t)+'</button>').join('');el.dataset.d='1'}}
 function chatPush(r,t,web,acts){const C=S.chat;if(r==='a'&&Math.random()<.65&&String(t).length<900)C.rv=Date.now()+C.msgs.length;C.msgs.push({r,t,web:!!web,acts:acts&&acts.length?acts:undefined,ts:Date.now()+C.msgs.length});C.msgs=C.msgs.slice(-30);lsSet('aq.v1.chat',C.msgs)}
@@ -1144,6 +1152,7 @@ function blockHtml(k){
   const T=new Date(),y=T.getFullYear(),m=T.getMonth();
   if(k==='income'){const I=incomeForecast();return I?'<div class="blk inc">'+incomeInner(I)+'</div>':'<div class="blk"><span class="note">Түсім болжамы үшін кемінде екі айдағы кіріс керек.</span></div>'}
   if(k==='plan')return planBlock();
+  if(k==='loans'||k==='norm'){const h=k==='loans'?loansCard():normCard();return h?h.replace('<section class="card">','<div class="blk">').replace('</section>','</div>'):'<div class="blk"><span class="note">'+(k==='loans'?'Қарыз қосылмаған. Баптау → Қарыз және рассрочка.':'Норма үшін баптауда айлық лимитті қойыңыз.')+'</span></div>'}
   if(k==='rule')return ruleBlock();
   if(k==='forecast'){const x=forecastHtml.call(null,true);return x?'<div class="blk">'+x.replace(/^<section class="card">/,'').replace(/<\/section>$/,'')+'</div>':'<div class="blk"><span class="note">Болжам үшін дерек әлі аз.</span></div>'}
   if(k==='cats'){const out=outIn(y,m),tot=sumOf(out);if(!tot)return '<div class="blk"><span class="note">Бұл айда шығын жоқ.</span></div>';const rows=Array.from(groupBy(out,t=>t.cat)).sort((a,b)=>b[1].sum-a[1].sum).slice(0,7);return '<div class="blk"><div class="blk-h">'+MONTHS[m]+' · санаттар</div>'+rows.map(r=>'<div class="crow"><span class="cdot" style="background:var(--c-'+r[0]+')"></span><span>'+CATS[r[0]].n+'</span><span class="num cv">'+money(r[1].sum)+'</span><div class="cb"><i style="width:'+Math.max(3,Math.round(r[1].sum/tot*100))+'%;background:var(--c-'+r[0]+')"></i></div></div>').join('')+'</div>'}
@@ -1153,7 +1162,7 @@ function blockHtml(k){
   if(k==='rates'){const r=S.rates;if(!r)return '<div class="blk"><span class="note">Курсты жүктей алмадым.</span></div>';return '<div class="blk"><div class="blk-h">Курс · теңге</div>'+[['USD','Доллар'],['EUR','Еуро'],['RUB','Рубль'],['CNY','Юань']].map(c=>'<div class="rrow"><span>1 '+c[0]+' <span class="note">'+c[1]+'</span></span><b class="num">'+fx(r[c[0]])+' ₸</b></div>').join('')+'<div class="note" style="margin-top:6px">Нарықтық курс, банк курсынан аздап өзгеше болуы мүмкін</div></div>'}
   return '';
 }
-const BLKRE=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan|income)\]\]|\[\[(sim|goalplan):([^\]]*)\]\]/g;
+const BLKRE=/\[\[(forecast|cats|months|days|recurring|rates|rule|plan|income|loans|norm)\]\]|\[\[(sim|goalplan):([^\]]*)\]\]/g;
 function richHtml(t){let out='',last=0,m;BLKRE.lastIndex=0;while((m=BLKRE.exec(t))){out+=mdText(t.slice(last,m.index))+(m[2]==='sim'?simBlock(m[3]):m[2]==='goalplan'?goalplanBlock(m[3]):blockHtml(m[1]));last=m.index+m[0].length}return out+mdText(t.slice(last))}
 /* әрекеттер */
 const ISO=/^\d{4}-\d{2}-\d{2}$/;
@@ -1449,6 +1458,7 @@ function alerts(){
     if(p>=1)r.push({h:CATS[c].n+': лимит асты',t:money(sp)+' жұмсалды, лимит '+money(L[c]),bad:1});
     else if(p>=.8)r.push({h:CATS[c].n+': лимиттің '+Math.round(p*100)+'%-ы',t:'Қалғаны '+money(L[c]-sp)})});
   recurring().forEach(x=>{if(x.cat==='subs'){const d=Math.round((x.next-startOfDay(Date.now()))/DAY);if(d>=0&&d<=1)r.push({h:(d?'Ертең':'Бүгін')+' жазылым төлемі',t:x.name+' · '+money(x.amount)})}});
+  loansList().forEach(l=>{const n=loanNext(l);if(n.paidNow)return;if(n.days<0)r.push({h:'Төлем мерзімі өтті: '+l.name,t:money(l.monthly)+' · «Төледім» деп белгіле',bad:1});else if(n.days<=3)r.push({h:l.name+': төлем жақын',t:(n.days===0?'Бүгін':n.days===1?'Ертең':n.days+' күннен кейін')+' · '+money(l.monthly)})});
   const md=medianOut(),recent=S.txs.filter(t=>t.type==='out'&&!OWN.has(t.id)&&t.cat!=='transfer'&&t.ts>=Date.now()-3*DAY);
   if(md>0)recent.forEach(t=>{if(t.amount>=Math.max(3*md,10000))r.push({h:'Әдеттен үлкен төлем',t:t.merchant+' · '+money(t.amount)+' · '+dayLabel(t.ts).toLowerCase()+' (әдеттегіден ~'+Math.round(t.amount/md)+' есе көп)',bad:1})});
   S.txs.filter(t=>t.type==='out'&&t.ts>=Date.now()-3*DAY).forEach((t,i,a)=>{if(a.some(u=>u!==t&&u.amount===t.amount&&mkey(u.merchant)===mkey(t.merchant)&&t.ts>u.ts&&t.ts-u.ts<=20*60*1000))r.push({h:'Қайталанған төлем болуы мүмкін',t:t.merchant+' · '+money(t.amount)+' — 20 минут ішінде екі рет',bad:1})});
@@ -1540,6 +1550,46 @@ function mkSeries(days){
   const H=lsGet('aq.v1.mkd',{}),L=lsGet('aq.v1.mkl',null);if(!L)return null;
   const pts=[];for(let n=days;n>=1;n--){const o=H[mkDate(n)];if(o)pts.push(o)}pts.push(L.r);
   return pts.length>=3?pts:null;
+}
+/* ---------- қарыз және рассрочка ---------- */
+const ymOf=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
+function loanNext(l){
+  const T=new Date(),y=T.getFullYear(),m=T.getMonth(),dim=(yy,mm)=>new Date(yy,mm+1,0).getDate();
+  const paidNow=l.paid===ymOf(Date.now());let yy=y,mm=m;if(paidNow){mm++;if(mm>11){mm=0;yy++}}
+  const d=new Date(yy,mm,Math.min(l.day||1,dim(yy,mm))).getTime();
+  return {ts:d,days:Math.round((d-startOfDay(Date.now()))/DAY),paidNow};
+}
+const loansList=()=>(S.settings.loans||[]).filter(l=>l&&l.left>0&&l.monthly>0);
+function drawLoans(){const el=$('#lnList');if(!el)return;const L=loansList();el.innerHTML=L.length?L.map(l=>'<div class="hrow"><span class="ht" style="padding:10px 12px">'+esc(l.name)+' · қалды '+money(l.left)+' · '+money(l.monthly)+'/ай · '+l.day+'-күні</span><button class="ibtn sm" data-act="loanDel" data-id="'+esc(l.id)+'" aria-label="Өшіру" type="button">✕</button></div>').join(''):'<p class="note" style="margin:8px 0 0">Қосылған қарыз жоқ</p>'}
+function loansCard(){
+  const L=loansList();if(!L.length)return '';
+  const tot=L.reduce((a,l)=>a+l.left,0),mon=L.reduce((a,l)=>a+l.monthly,0);
+  return '<section class="card"><h2>Қарыз және рассрочка</h2><p class="note" style="margin:4px 0 8px">Жалпы қалды <b class="num">'+money(tot)+'</b> · айына <b class="num">'+money(mon)+'</b></p><div class="list">'
+   +L.map(l=>{const n=loanNext(l),pr=Math.min(100,Math.round((1-l.left/(l.total||l.left))*100)),mm=Math.ceil(l.left/l.monthly);
+     const when=n.paidNow?'бұл ай төленді':(n.days<0?'мерзімі өтті!':n.days===0?'бүгін':n.days===1?'ертең':n.days+' күннен кейін');
+     return '<div style="padding:8px 0;border-top:1px solid var(--line)"><div class="rrow"><span>'+esc(l.name)+' <span class="note">· '+when+' · ~'+mm+' ай қалды</span></span><b class="num">'+money(l.monthly)+'</b></div><div style="height:6px;border-radius:3px;background:var(--accent-soft);margin:6px 0"><div style="height:6px;border-radius:3px;background:var(--accent);width:'+pr+'%"></div></div><div class="rrow"><span class="note">Қалды '+money(l.left)+' · '+pr+'% төленді</span>'+(n.paidNow?'':'<button class="btn ghost sm" data-act="loanPay" data-id="'+esc(l.id)+'" type="button">Төледім</button>')+'</div></div>'}).join('')+'</div></section>';
+}
+function normCard(){
+  const B=S.settings.budget||0;if(!(B>0))return '';
+  const T=new Date(),y=T.getFullYear(),m=T.getMonth(),dim=new Date(y,m+1,0).getDate(),left=dim-T.getDate()+1;
+  const out=outIn(y,m).filter(t=>t.cat!=='transfer'),spent=sumOf(out),today=sumOf(out.filter(t=>startOfDay(t.ts)===startOfDay(Date.now())));
+  const due=loansList().reduce((a,l)=>{const n=loanNext(l);return a+((!n.paidNow&&new Date(n.ts).getMonth()===m)?l.monthly:0)},0);
+  const free=B-spent-due,norm=Math.floor(free/left),rest=norm-0;
+  const bad=free<=0;
+  return '<section class="card"><h2>Бүгінгі норма</h2><div class="rrow" style="margin-top:6px"><span>'+(bad?'Айлық лимит таусылды':'Бүгін жұмсауға болады')+'</span><b class="num" style="font-size:20px;color:'+(bad?'var(--bad)':'var(--accent)')+'">'+(bad?'0 ₸':money(Math.max(0,norm)))+'</b></div><p class="note" style="margin:6px 0 0">Лимит '+money(B)+' − жұмсалды '+money(spent)+(due>0?' − рассрочка/қарыз '+money(due):'')+' = '+money(Math.max(0,free))+', '+left+' күнге бөлінген. Бүгін жұмсалды: '+money(today)+'.</p></section>';
+}
+function reviewCard(){
+  const T=new Date();if(T.getDate()>7)return '';
+  const pd=new Date(T.getFullYear(),T.getMonth()-1,1),py=pd.getFullYear(),pm=pd.getMonth(),qd=new Date(T.getFullYear(),T.getMonth()-2,1);
+  const A=outIn(py,pm).filter(t=>t.cat!=='transfer'),B=outIn(qd.getFullYear(),qd.getMonth()).filter(t=>t.cat!=='transfer');
+  if(A.length<3)return '';
+  const sa=sumOf(A),sb=sumOf(B),inc=sumOf(S.txs.filter(t=>t.type==='in'&&!OWN.has(t.id)&&inMonth(t.ts,py,pm)));
+  const ca=groupBy(A,t=>t.cat),cb=groupBy(B,t=>t.cat);let top=null,grow=null;
+  ca.forEach((v,k)=>{if(!top||v.sum>top.v.sum)top={k,v};const b=cb.get(k)?cb.get(k).sum:0;if(b>0&&v.sum-b>3000&&(!grow||v.sum-b>grow.d))grow={k,d:v.sum-b,p:Math.round((v.sum/b-1)*100)}});
+  const ch=sb>0?Math.round((sa/sb-1)*100):null;
+  const lines=[MONTHS[pm]+' шолуы','Шығын: '+money(sa)+(ch!=null?' ('+(ch>=0?'+':'')+ch+'% өткен айдан)':''),inc>0?'Кіріс: '+money(inc)+(inc>sa?' · қалдық '+money(inc-sa):''):'',top?'Ең көп: '+CATS[top.k].n+' '+money(top.v.sum):'',grow?'Ең көп өскен: '+CATS[grow.k].n+' +'+grow.p+'%':''].filter(Boolean);
+  window.__review=lines.join('\n')+'\nҮнем қосымшасы';
+  return '<section class="card"><h2>'+lines[0]+'</h2><div class="list">'+lines.slice(1).map(x=>'<div class="rrow"><span>'+esc(x)+'</span></div>').join('')+'</div><div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="reviewShare" type="button">Бөлісу</button></div></section>';
 }
 function sugCard(){
   const pc=S.settings.savePct==null?10:S.settings.savePct;if(!(pc>0))return '';
@@ -1729,6 +1779,12 @@ document.addEventListener('click',e=>{
     case 'bioToggle':{try{localStorage.setItem('aq.v1.bio',bioOn()?'0':'1')}catch(x){}pinUi();break}
     case 'notifToggle':{const N=window.UnemNative;try{N.setNotify(!N.notifyOn())}catch(x){}nativeUi();break}
     case 'sugOk':case 'sugNo':{const t=S.txs.find(x=>x.id===b.dataset.id);if(!t)break;const pc=S.settings.savePct==null?10:S.settings.savePct,am=Math.round(t.amount*pc/100);S.settings.sugDone=(S.settings.sugDone||[]).concat([t.id]).slice(-30);if(b.dataset.act==='sugOk'&&am>0){S.settings.saved=(Number(S.settings.saved)||0)+am;toast(money(am)+' жинаққа бөлінді')}saveSettings();render();break}
+    case 'loanAdd':{const nm=String($('#lnName').value||'').trim().slice(0,40),lf=Math.round(parseFloat(String($('#lnLeft').value).replace(/\s/g,'').replace(',','.'))),mo=Math.round(parseFloat(String($('#lnMon').value).replace(/\s/g,'').replace(',','.'))),dy=Math.round(Number($('#lnDay').value));
+      if(!nm||!(lf>0)||!(mo>0)||!(dy>=1&&dy<=31)||lf>1e10){toast('Атауы, сома, айлық төлем және күнін толтырыңыз');break}
+      S.settings=Object.assign({},S.settings,{loans:(S.settings.loans||[]).concat([{id:uid(),name:nm,total:lf,left:lf,monthly:mo,day:dy,paid:dy<=new Date().getDate()?ymOf(Date.now()):''}])});['#lnName','#lnLeft','#lnMon','#lnDay'].forEach(x=>$(x).value='');saveSettings().then(()=>{drawLoans();render();toast('Қосылды')});break}
+    case 'loanDel':{S.settings=Object.assign({},S.settings,{loans:(S.settings.loans||[]).filter(l=>l.id!==b.dataset.id)});saveSettings().then(()=>{drawLoans();render()});break}
+    case 'loanPay':{const L=(S.settings.loans||[]).map(l=>l.id===b.dataset.id?Object.assign({},l,{left:Math.max(0,l.left-l.monthly),paid:ymOf(Date.now())}):l);S.settings=Object.assign({},S.settings,{loans:L});saveSettings();render();toast('Төлем белгіленді');break}
+    case 'reviewShare':{const txt=window.__review||'';let ok=false;try{if(window.UnemNative&&window.UnemNative.share){window.UnemNative.share(txt);ok=true}}catch(e){}if(!ok&&navigator.share){navigator.share({text:txt}).catch(()=>{});ok=true}if(!ok){try{navigator.clipboard.writeText(txt);toast('Көшірілді')}catch(e){}}break}
     case 'clearRules':S.settings=Object.assign({},S.settings,{rules:{}});saveSettings().then(()=>{openSettings();toast('Тазаланды')});break;
     case 'ask':runAsk();break;
     case 'notifSet':try{window.UnemNative.openSettings()}catch(e){}break;
@@ -1812,7 +1868,7 @@ function subscribeCloud(){
   S.coll.onSnapshot(snap=>{
     const txs=[];let st=null;
     snap.docs.forEach(d=>{const x=d.data();if(!x)return;if(d.id==='settings')st=x;else if(x.kind==='tx')txs.push(Object.assign({},x,{id:d.id}))});
-    S.txs=txs;if(st)S.settings={budget:Number(st.budget)||0,rules:st.rules||{},cards:st.cards||[],goal:st.goal||undefined,saved:st.saved||0,savePct:st.savePct,sugDone:st.sugDone||[],catLimits:st.catLimits||{}};
+    S.txs=txs;if(st)S.settings={budget:Number(st.budget)||0,rules:st.rules||{},cards:st.cards||[],goal:st.goal||undefined,loans:st.loans||[],saved:st.saved||0,savePct:st.savePct,sugDone:st.sugDone||[],catLimits:st.catLimits||{}};
     S.ready=true;first=false;render();
   },err=>{if(first||!S.ready){startLocal()}else{toast('Байланыс үзілді. Жазбалар жаңармай тұр.')}});
 }
@@ -1908,11 +1964,11 @@ async function fbSync(manual){
     if(cs){
       const cards=(ls.cards||[]).slice();(cs.cards||[]).forEach(c=>{if(c&&!cards.some(x=>x.id===c.id))cards.push(c)});
       const lNew=(ls.mt||0)>=(cs.mt||0);
-      const win=lNew?ls:cs,merged={budget:win.budget||0,rules:Object.assign({},cs.rules||{},ls.rules||{}),cards,goal:win.goal,saved:win.saved,savePct:win.savePct,sugDone:win.sugDone||[],catLimits:win.catLimits||{},mt:Math.max(ls.mt||0,cs.mt||0)};
-      const before=JSON.stringify({budget:ls.budget||0,rules:ls.rules||{},cards:ls.cards||[],goal:ls.goal,saved:ls.saved,savePct:ls.savePct,sugDone:ls.sugDone||[],catLimits:ls.catLimits||{},mt:ls.mt||0});
+      const win=lNew?ls:cs,merged={budget:win.budget||0,rules:Object.assign({},cs.rules||{},ls.rules||{}),cards,goal:win.goal,loans:win.loans||[],saved:win.saved,savePct:win.savePct,sugDone:win.sugDone||[],catLimits:win.catLimits||{},mt:Math.max(ls.mt||0,cs.mt||0)};
+      const before=JSON.stringify({budget:ls.budget||0,rules:ls.rules||{},cards:ls.cards||[],goal:ls.goal,loans:ls.loans||[],saved:ls.saved,savePct:ls.savePct,sugDone:ls.sugDone||[],catLimits:ls.catLimits||{},mt:ls.mt||0});
       if(JSON.stringify(merged)!==before){S.settings=Object.assign({},ls,merged);changed=true}
     }
-    const sStr=JSON.stringify({budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[],goal:S.settings.goal,saved:S.settings.saved,savePct:S.settings.savePct,sugDone:S.settings.sugDone||[],catLimits:S.settings.catLimits||{},mt:S.settings.mt||0});
+    const sStr=JSON.stringify({budget:S.settings.budget||0,rules:S.settings.rules||{},cards:S.settings.cards||[],goal:S.settings.goal,loans:S.settings.loans||[],saved:S.settings.saved,savePct:S.settings.savePct,sugDone:S.settings.sugDone||[],catLimits:S.settings.catLimits||{},mt:S.settings.mt||0});
     if(sStr!==val.settings)up['settings']=sStr;
     const me=FB.devices[DEVID];if(!me||Date.now()-(me.t||0)>10*60000||me.n!==devName()){up['devices/'+DEVID]={n:devName(),t:Date.now()};FB.devices[DEVID]=up['devices/'+DEVID]}
     const real=Object.keys(up).some(k=>!k.startsWith('devices/'));
