@@ -581,7 +581,7 @@ html[data-home=tiles] .wcard .big{font-size:26px}
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 51 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 52 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -643,10 +643,24 @@ function detectCat(text,rules){
   for(const [c,re] of RULES){if(re.test(low))return c}
   return 'other';
 }
+/* кіріс/шығыс белгісін анықтау: Kaspi, Halyk, Freedom, BCC хабарламалары әртүрлі жазады */
+const IN_WORDS=/пополнени|пополнил|поступлени|поступил|зачислен|зачисл|получен|получил|вам перевели|вам отправил|входящ|перевод\s+(?:от|поступил)|переведено вам|перевод на вашу|возврат|вернул|кэшбэк|кешбэк|cashback|жалақы|зарплат|стипенди|аванс|кіріс|түсім|түсті|келді|толықтыр|сізге.{0,30}аударылды|аударым келді|өтеу қайтарылды/i;
+const IN_TOPUP_NOT=/пополнени[а-яё]*[\s:.,\-]*(?:мобильн|телефон|номер|связ|баланса\s+(?:телефон|мобильн|сотов)|интернет|игр|steam|кошельк|beeline|билайн|activ|актив|altel|алтел|tele2|теле2)/i;
+const OUT_WORDS=/покупк|оплата|оплачено|списани|списано|платеж|платёж|снятие|выдача наличных|отправлен|перевод\s+на\s|перевод\s+(?:с\s+вашей|для)|төлем|сатып алу|аударылды\s+(?:қайда|на)/i;
+function isIncome(line,low){
+  if(/(?:^|[\s:(\-–—])[\-–−]\s*\d/.test(line)&&!/\+\s*\d/.test(line))return false;
+  if(/(?:^|[\s:(])\+\s*\d/.test(line))return true;
+  if(IN_TOPUP_NOT.test(low))return false;
+  const inW=IN_WORDS.test(low),outW=OUT_WORDS.test(low);
+  if(inW&&outW){
+    return /(?:пополнени|поступлени|зачислен|перевод\s+от|вам перевели|входящ|возврат|кэшбэк|кешбэк|cashback)/i.test(low)&&!/покупк|оплата|списани/i.test(low);
+  }
+  return inW;
+}
 function parseLine(line,rules,nowTs){
   const cashback=/кеш?бэк|cashback/i.test(line);
   line=line.replace(/\s*кеш?бэк в обработке[\s\S]*$/i,'').replace(/кеш?бэк\s*\d+(?:[.,]\d+)?\s*%/ig,' ').replace(/списано с\s*\S+\s*\*+\d{3,4}/ig,function(m){return m.replace(/^[^*]*/,'')});
-  line=line.replace(/\s+с\s+карты(?=\s|$).*$/i,' ');
+  {const l2=line.replace(/\s+с\s+карты(?=\s|$).*$/i,' ');if(findAmount(l2))line=l2}
   const a=findAmount(line);
   if(!a||!(a.value>0))return null;
   let low=line.toLowerCase();
@@ -672,7 +686,7 @@ function parseLine(line,rules,nowTs){
   if(cashback)merchant='Кешбэк'+(merchant&&!/^кешбэк$/i.test(merchant)?' · '+merchant:'');
   let type='out',cat;
   if(cashback){type='in';cat='income'}
-  else if(INCOME_RE.test(low)){type='in';cat='income'}
+  else if(isIncome(line,low)){type='in';cat='income'}
   else{cat=detectCat(low,rules)}
   const bm=line.match(/(?:доступно|остаток|қолжетімді|қалдық)\s*:?\s*(\d{1,3}(?:[ \u00A0\u202F]\d{3})+|\d+)(?:[.,](\d{1,2}))?/i);
   const cm=line.match(/(?:\*{1,}|•{1,}|·{2,}|карт[аыиойе]*\s*)\s*(\d{4})(?!\d)/i);
