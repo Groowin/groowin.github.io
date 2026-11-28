@@ -581,7 +581,7 @@ html[data-home=tiles] .wcard .big{font-size:26px}
       <textarea class="field" id="bkText" hidden rows="4" placeholder="Көшірме мәтіні осында" style="margin-top:10px"></textarea>
       <div class="btns" style="margin-top:10px"><button class="btn ghost" data-act="clearRules" type="button">Санат жадын тазалау</button><button class="btn ghost" data-act="wipeAll" type="button" style="color:var(--bad)">Барлық деректі өшіру</button></div>
     </div>
-    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 52 · негізін қалаған Аскеров Алмас</p>
+    <p class="note" style="text-align:center;margin:0">Үнем · нұсқа 53 · негізін қалаған Аскеров Алмас</p>
   </div>
 </div>
 
@@ -658,6 +658,8 @@ function isIncome(line,low){
   return inW;
 }
 function parseLine(line,rules,nowTs){
+  const raw0=line;
+  if(!/₸|тг\b|тенге|kzt|тнг/i.test(line)&&/код подтверждения|никому не сообщ|одноразов|парол|\botp\b|verification code/i.test(line))return null;
   const cashback=/кеш?бэк|cashback/i.test(line);
   line=line.replace(/\s*кеш?бэк в обработке[\s\S]*$/i,'').replace(/кеш?бэк\s*\d+(?:[.,]\d+)?\s*%/ig,' ').replace(/списано с\s*\S+\s*\*+\d{3,4}/ig,function(m){return m.replace(/^[^*]*/,'')});
   {const l2=line.replace(/\s+с\s+карты(?=\s|$).*$/i,' ');if(findAmount(l2))line=l2}
@@ -688,6 +690,9 @@ function parseLine(line,rules,nowTs){
   if(cashback){type='in';cat='income'}
   else if(isIncome(line,low)){type='in';cat='income'}
   else{cat=detectCat(low,rules)}
+  if(/(^|\s)(gold|red)(\s|$)/i.test(merchant)&&/kaspi\s+(gold|red)/i.test(raw0))merchant=merchant.replace(/^(gold|red)\s*/i,'').replace(/^[\s,.;:\-]+/,'');
+  if(/банкомат/i.test(raw0))merchant=type==='in'?'Банкомат арқылы салым':'Банкоматтан қолма-қол';
+  else if(type==='in'&&(!merchant||/^(gold|red|атаусыз төлем|аударым|банкомате?)$/i.test(merchant)))merchant=/другого банка|басқа банк/i.test(raw0)?'Басқа картадан толтыру':'Түсім';
   const bm=line.match(/(?:доступно|остаток|қолжетімді|қалдық)\s*:?\s*(\d{1,3}(?:[ \u00A0\u202F]\d{3})+|\d+)(?:[.,](\d{1,2}))?/i);
   const cm=line.match(/(?:\*{1,}|•{1,}|·{2,}|карт[аыиойе]*\s*)\s*(\d{4})(?!\d)/i);
   return{amount:Math.round(a.value*100)/100,type,merchant,cat,ts,bank,card:cm?cm[1]:'',bal:bm?toNum(bm[1],bm[2]):null,src:(BANKISH.test(line)||bank)?'push':'text'};
@@ -828,6 +833,7 @@ let OWN=new Set();
 function reconcile(){
   OWN=new Set();const cs=S.settings.cards||[];const banks=new Set(cs.map(c=>c.bank));
   const outs=S.txs.filter(t=>t.type==='out'&&t.cat==='transfer'),ins=S.txs.filter(t=>t.type==='in');
+  ins.forEach(i=>{if(/банкомат|қолма-қол|наличн/i.test(i.merchant||''))OWN.add(i.id)});
   outs.forEach(o=>{const mb=bankOfName(o.merchant);if(mb&&mb!==o.bank&&banks.has(mb))OWN.add(o.id)});
   outs.forEach(o=>{const m=ins.find(i=>!OWN.has(i.id)&&i.amount===o.amount&&Math.abs(i.ts-o.ts)<=20*60*1000&&(i.bank||'')!==(o.bank||''));if(m){OWN.add(o.id);OWN.add(m.id)}});
 }
